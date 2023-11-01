@@ -3,10 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { AngularSetupComponent } from './angular-setup/angular-setup.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 
-const routes: Routes = [];
 const routes: Routes = [
   { path: 'home', redirectTo: '', pathMatch: 'full' },
+  { path: '', component: TransactionsComponent },
   { path: 'angular-setup', component: AngularSetupComponent },
+  // { path: 'detail/:id', component: HeroDetailComponent },
+  // { path: 'heroes', component: HeroesComponent }
 ];
 
 @NgModule({
