@@ -1,21 +1,22 @@
 <div class="app-container">
-  <nav>
-    <h1>9NAŬ</h1>
-    <ul>
-      <li>
+  <nav class="bg-light">
+    <div class="row align-items-center">
+      <h1 class="col ms-3 my-2">9NAŬ</h1>
+      <div class="col">
         <a routerLink="/home" routerLinkActive="active">Home</a>
-      </li>
-      <li>
+      </div>
+      <div class="col">
         <a routerLink="/angular-setup" routerLinkActive="active">
           Angular Setup
         </a>
-      </li>
-    </ul>
+      </div>
+    </div>
   </nav>
-  <div id="main-container">
+  <div class="body">
     <router-outlet></router-outlet>
   </div>
-  <footer>
-    <p>© 2017 9NAŬ</p>
+  <footer
+    class="bg-dark text-light d-flex justify-content-center align-items-center height-30">
+    <div>© 2023 9NAŬ</div>
   </footer>
 </div>
