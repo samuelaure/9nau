@@ -4,9 +4,14 @@ Angular SPA (single page application) frontend started from finances module
 
 ## Tasks
 
-- [ ] Setup Angular application
 - [x] Setup Angular application
 - [ ] Implement transactions tracker view and form to add transactions
+- [ ] Implement wallets and accounts
+- [ ] Implement balance overview. Include:
+  - Time wealth based on ((Living expenses blocked budget + Living expenses availability)  - planned living expenses)
+  - Emergency time wealth (Time wealth + Emergency funds)
+  - Global time wealth based on all transactions
+  - Funds: Available, emergency, all budgets
 
 # Angular README
 
