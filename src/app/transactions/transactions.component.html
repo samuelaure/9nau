@@ -1,1 +1,122 @@
-transactions component
+<h2>Transactions</h2>
+<div class="d-flex align-items-center">
+  <button (click)="openTransactionForm()" class="btn btn-primary">
+    Add New Transaction
+  </button>
+  <button (click)="toggleDecimals()" class="btn btn-primary">
+    Toggle Decimals
+  </button>
+  <button class="material-symbols-outlined" (click)="bulkDeleteTransactions()">
+    delete
+  </button>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>S</th>
+      <th>Date</th>
+      <th>From</th>
+      <th>To</th>
+      <th>Concept</th>
+      <th>Amount</th>
+      <th>Balance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let transaction of transactions; let i = index">
+      <td>
+        <input
+          type="checkbox"
+          (change)="checkboxChanged($event, transaction.id)" />
+      </td>
+      <td>{{ formatDate(transaction.date) }}</td>
+      <td>{{ transaction.from }}</td>
+      <td>{{ transaction.to }}</td>
+      <td>{{ transaction.concept }}</td>
+      <td [ngClass]="getAmountClass(transaction.amount)" class="text-end">
+        {{ getRoundedAmount(transaction.amount) }}
+      </td>
+      <td [ngClass]="getAmountClass(calculateBalance(i))" class="text-end">
+        {{ getRoundedAmount(calculateBalance(i)) }}
+      </td>
+      <td>
+        <button
+          class="material-symbols-outlined"
+          (click)="deleteTransaction(transaction.id)">
+          delete
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div
+  class="modal fade"
+  id="transactionModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="transactionModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="transactionModalLabel">New Transaction</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <form [formGroup]="newTransactionForm">
+        <div class="modal-body">
+          <div class="mb-3 d-flex align-items-center">
+            <span class="me-2">Date</span>
+            <input type="date" class="form-control" formControlName="date" />
+          </div>
+          <div class="mb-3">
+            <input
+              type="text"
+              class="form-control"
+              formControlName="from"
+              placeholder="From" />
+          </div>
+          <div class="mb-3">
+            <input
+              type="text"
+              class="form-control"
+              formControlName="to"
+              placeholder="To" />
+          </div>
+          <div class="mb-3">
+            <input
+              type="text"
+              class="form-control"
+              formControlName="concept"
+              placeholder="Concept" />
+          </div>
+          <div class="mb-3">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="amount"
+              placeholder="Amount" />
+          </div>
+        </div>
+        <div class="modal-footer d-flex">
+          <button
+            type="button"
+            class="btn btn-secondary justify-content-start me-auto"
+            data-bs-dismiss="modal">
+            Close
+          </button>
+          <button
+            type="submit"
+            (click)="createNewTransaction()"
+            class="btn btn-primary justify-content-end"
+            data-bs-dismiss="modal">
+            Save Transaction
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
