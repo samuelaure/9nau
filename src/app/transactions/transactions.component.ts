@@ -14,8 +14,6 @@ export class TransactionsComponent implements OnInit {
   accounts: any[] = [];
   categories: any[] = [];
   newTransactionForm: FormGroup;
-  transactions: Transaction[] = [];
-  contacts: any[] = [];
   showDecimals = false;
   decimalLimit = 2;
   transactionsSelected: any[] = [];
@@ -149,6 +147,27 @@ export class TransactionsComponent implements OnInit {
       this.deleteTransaction(index);
     }
   }
+
+  get fromToOptions(): { type: string; color: string; name: string }[] {
+    return [
+      ...this.accounts.map(a => ({
+        type: 'account',
+        color: 'text-primary',
+        name: a.name,
+      })),
+      ...this.contacts.map(c => ({
+        type: 'contact',
+        color: 'text-danger',
+        name: c.name,
+      })),
+      ...this.categories.map(c => ({
+        type: 'category',
+        color: 'text-warning',
+        name: c.name,
+      })),
+    ];
+  }
+
   executeFunction() {
     console.log(this.fromToOptions);
   }
