@@ -9,6 +9,10 @@ import { DatabaseService, Transaction } from '../../database/database.service';
   styleUrls: ['./transactions.component.scss'],
 })
 export class TransactionsComponent implements OnInit {
+  transactions: Transaction[] = [];
+  contacts: any[] = [];
+  accounts: any[] = [];
+  categories: any[] = [];
   newTransactionForm: FormGroup;
   transactions: Transaction[] = [];
   contacts: any[] = [];
@@ -19,6 +23,7 @@ export class TransactionsComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private databaseService: DatabaseService
+    private databaseService: DatabaseService,
   ) {
     this.newTransactionForm = this.formBuilder.group({
       date: [new Date().toISOString().split('T')[0], Validators.required],
@@ -46,6 +51,8 @@ export class TransactionsComponent implements OnInit {
         }
       );
       this.contacts = data.contacts;
+      this.accounts = data.accounts;
+      this.categories = data.categories;
     });
   }
 
@@ -141,5 +148,8 @@ export class TransactionsComponent implements OnInit {
     for (const index of this.transactionsSelected) {
       this.deleteTransaction(index);
     }
+  }
+  executeFunction() {
+    console.log(this.fromToOptions);
   }
 }
