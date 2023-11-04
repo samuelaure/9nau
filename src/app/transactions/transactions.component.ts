@@ -21,7 +21,6 @@ export class TransactionsComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private databaseService: DatabaseService
-    private databaseService: DatabaseService,
   ) {
     this.newTransactionForm = this.formBuilder.group({
       date: [new Date().toISOString().split('T')[0], Validators.required],
