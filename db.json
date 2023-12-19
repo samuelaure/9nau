@@ -1,1 +1,68 @@
-{}
+{
+  "transactions": [
+    {
+      "date": "2023-11-26T00:00:00.000Z",
+      "from": "BAHUG",
+      "to": "WOSE",
+      "concept": "TEST CONCEPT",
+      "amount": 333,
+      "id": 4
+    },
+    {
+      "date": "2023-11-02T00:00:00.000Z",
+      "from": "qwe",
+      "to": "asd",
+      "concept": "TEST CONCEPT",
+      "amount": 2,
+      "id": 6
+    },
+    {
+      "date": "2023-11-04T00:00:00.000Z",
+      "from": "Wise",
+      "to": "N26",
+      "concept": "TEST CONCEPT",
+      "amount": 333,
+      "id": 7
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Wise",
+      "id": 1
+    },
+    {
+      "name": "BBVA",
+      "id": 2
+    },
+    {
+      "name": "N26",
+      "id": 3
+    }
+  ],
+  "categories": [
+    {
+      "name": "Others expenses",
+      "id": 1
+    },
+    {
+      "name": "Living expenses",
+      "id": 2
+    },
+    {
+      "name": "Subscriptions",
+      "id": 3
+    }
+  ],
+  "contacts": [
+    {
+      "name": "SAM",
+      "email": "sam@locale.loc",
+      "id": 1
+    },
+    {
+      "name": "JUAN",
+      "email": "",
+      "id": 2
+    }
+  ]
+}

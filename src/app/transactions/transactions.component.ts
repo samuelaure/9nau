@@ -17,6 +17,8 @@ export class TransactionsComponent implements OnInit {
   showDecimals = false;
   decimalLimit = 2;
   transactionsSelected: any[] = [];
+  fromOptions: { option: string; value: string }[] = [];
+  toOptions: { option: string; value: string }[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -50,6 +52,8 @@ export class TransactionsComponent implements OnInit {
       this.contacts = data.contacts;
       this.accounts = data.accounts;
       this.categories = data.categories;
+      this.fromOptions = this.fromToOptions;
+      this.toOptions = this.fromToOptions;
     });
   }
 
@@ -147,22 +151,19 @@ export class TransactionsComponent implements OnInit {
     }
   }
 
-  get fromToOptions(): { type: string; color: string; name: string }[] {
+  get fromToOptions(): { option: string; value: string }[] {
     return [
       ...this.accounts.map(a => ({
-        type: 'account',
-        color: 'text-primary',
-        name: a.name,
+        option: `(Account) ${a.name}`,
+        value: a.name,
       })),
       ...this.contacts.map(c => ({
-        type: 'contact',
-        color: 'text-danger',
-        name: c.name,
+        option: `(Contacts) ${c.name}`,
+        value: c.name,
       })),
       ...this.categories.map(c => ({
-        type: 'category',
-        color: 'text-warning',
-        name: c.name,
+        option: `(Category) ${c.name}`,
+        value: c.name,
       })),
     ];
   }

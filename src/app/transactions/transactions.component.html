@@ -76,18 +76,20 @@
             <input type="date" class="form-control" formControlName="date" />
           </div>
           <div class="mb-3">
-            <input
-              type="text"
-              class="form-control"
-              formControlName="from"
-              placeholder="From" />
+            <select class="form-select" formControlName="from">
+              <option value="">Select "From"</option>
+              <option *ngFor="let option of toOptions" [value]="option.value">
+                {{ option.option }}
+              </option>
+            </select>
           </div>
           <div class="mb-3">
-            <input
-              type="text"
-              class="form-control"
-              formControlName="to"
-              placeholder="To" />
+            <select class="form-select" formControlName="to">
+              <option value="">Select "To"</option>
+              <option *ngFor="let option of toOptions" [value]="option.value">
+                {{ option.option }}
+              </option>
+            </select>
           </div>
           <div class="mb-3">
             <input
