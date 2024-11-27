@@ -1,0 +1,55 @@
+# env
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# Node
+**/node_modules
+**/npm-debug.log
+**/yarn-error.log
+
+# Compiled output
+**/dist
+**/tmp
+**/out-tsc
+**/bazel-out
+**/build
+
+# Logs
+**/logs
+**/*.log
+**/npm-debug.log*
+
+# System files
+**/.DS_Store
+**/Thumbs.db
+
+# Miscellaneous
+**/.angular/cache
+**/.sass-cache/
+**/connect.lock
+**/coverage
+**/libpeerconnection.log
+**/testem.log
+**/typings
+**/.nyc_output
+
+# IDEs and editors
+**/.idea/*
+**/.idea
+**/.project
+**/.classpath
+**/.c9/
+**/*.launch
+**/.settings/
+**/*.sublime-workspace
+
+# IDE - VSCode
+**/.vscode/*
+**/!.vscode/settings.json
+**/!.vscode/tasks.json
+**/!.vscode/launch.json
+**/!.vscode/extensions.json
+**/.history/*
