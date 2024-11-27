@@ -18,15 +18,33 @@ export type Transaction = {
 export class DatabaseService {
   private databaseUrl = 'http://localhost:3333';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getData(): Observable<any> {
-    return this.http.get(`${this.databaseUrl}/db`);
+    
+    return this.http.get(`${this.databaseUrl}`);
+  }
+
+  getTransactions(): Observable<any> {
+    return this.http.get(`${this.databaseUrl}/transactions`);
+  }
+
+  getContacts(): Observable<any> {
+    return this.http.get(`${this.databaseUrl}/contacts`);
+  }
+
+  getAccounts(): Observable<any> {
+    return this.http.get(`${this.databaseUrl}/accounts`);
+  }
+
+  getCategories(): Observable<any> {
+    return this.http.get(`${this.databaseUrl}/categories`);
   }
 
   createTransaction(transaction: any): Observable<any> {
     return this.http.post(`${this.databaseUrl}/transactions/`, transaction);
   }
+
   updateTransaction(index: number, transaction: any): Observable<any> {
     return this.http.put(
       `${this.databaseUrl}/transactions/${index}`,

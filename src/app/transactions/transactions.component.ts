@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DatabaseService, Transaction } from '../../database/database.service';
+import { DefaultService } from '../api';
 
 @Component({
   selector: 'app-transactions',
@@ -22,39 +23,48 @@ export class TransactionsComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private databaseService: DatabaseService
+    private api: DefaultService
   ) {
     this.newTransactionForm = this.formBuilder.group({
       date: [new Date().toISOString().split('T')[0], Validators.required],
       from: ['BAHUG', Validators.required],
       to: ['WOSE', Validators.required],
       concept: ['TEST CONCEPT', Validators.required],
-      amount: ['333', Validators.required],
+      amount: ['999', Validators.required],
     });
   }
 
   ngOnInit(): void {
-    this.onInit();
+    // this.onInit();
+    this.api.getHelloWorld().subscribe((data) => {
+      console.log(data);
+    });
   }
 
   onInit() {
-    this.databaseService.getData().subscribe((data: any) => {
-      this.transactions = data.transactions.sort(
-        (
-          a: { date: string | number | Date },
-          b: { date: string | number | Date }
-        ) => {
-          const dateA = new Date(a.date).getTime();
-          const dateB = new Date(b.date).getTime();
-          return dateA - dateB;
-        }
-      );
-      this.contacts = data.contacts;
-      this.accounts = data.accounts;
-      this.categories = data.categories;
-      this.fromOptions = this.fromToOptions;
-      this.toOptions = this.fromToOptions;
-    });
+    // this.databaseService.getTransactions().subscribe((data: Transaction[]) => {
+    //   this.transactions = data.sort(
+    //     (
+    //       a: { date: string | number | Date },
+    //       b: { date: string | number | Date }
+    //     ) => {
+    //       const dateA = new Date(a.date).getTime();
+    //       const dateB = new Date(b.date).getTime();
+    //       return dateA - dateB;
+    //     }
+    //   );
+    // })
+    // this.databaseService.getContacts().subscribe((data: any) => {
+    //   this.contacts = data;
+    // });
+    // this.databaseService.getAccounts().subscribe((data: any) => {
+    //   this.accounts = data;
+    // });
+    // this.databaseService.getCategories().subscribe((data: any) => {
+    //   this.categories = data;
+    // });
+    this.fromOptions = this.fromToOptions;
+    this.toOptions = this.fromToOptions;
   }
 
   formatDate(date: string): string {
@@ -115,10 +125,10 @@ export class TransactionsComponent implements OnInit {
 
       console.log(newTransaction);
 
-      this.databaseService.createTransaction(newTransaction).subscribe(() => {
-        console.log('Database updated successfully.');
-        this.onInit();
-      });
+      // this.databaseService.createTransaction(newTransaction).subscribe(() => {
+      //   console.log('Database updated successfully.');
+      //   this.onInit();
+      // });
 
       this.newTransactionForm.reset({
         date: new Date().toISOString().split('T')[0],
@@ -128,10 +138,10 @@ export class TransactionsComponent implements OnInit {
   }
 
   deleteTransaction(index: number) {
-    this.databaseService.deleteTransaction(index).subscribe(() => {
-      console.log('Database updated successfully.');
-      this.onInit();
-    });
+    // this.databaseService.deleteTransaction(index).subscribe(() => {
+    //   console.log('Database updated successfully.');
+    //   this.onInit();
+    // });
   }
 
   checkboxChanged(event: any, index: number) {
@@ -169,6 +179,13 @@ export class TransactionsComponent implements OnInit {
   }
 
   executeFunction() {
-    console.log(this.fromToOptions);
+    this.api.getHelloWorld().subscribe({
+      next: (data) => {
+        console.log(data);
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    })
   }
 }
