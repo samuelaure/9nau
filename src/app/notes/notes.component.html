@@ -2,11 +2,9 @@
 <table class="table">
     <thead>
       <tr>
-        <th>S</th>
-        <th>Date</th>
-        <th>Concept</th>
-        <th>Amount</th>
-        <th>Balance</th>
+        <th>R</th>
+        <th>Freq</th>
+        <th>Content</th>
       </tr>
     </thead>
     <tbody>
@@ -16,10 +14,8 @@
             type="checkbox"
             (change)="checkboxChanged($event, note.id)" />
         </td>
-        <td>{{ formatDate(note.createdAt) }}</td>
+        <td>{{ note.reminderFrequency }}</td>
         <td>{{ note.content }}</td>
-        <td>{{ note.remindAt }}</td>
-        <td>{{ note.remindedAt }}</td>
         <!-- <td>
           <button
             class="material-symbols-outlined"

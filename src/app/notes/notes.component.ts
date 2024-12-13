@@ -55,9 +55,12 @@ export class NotesComponent implements OnInit {
     return new Date(date).toLocaleDateString();
   }
 
-  checkboxChanged(event: any, index: number) {
+  checkboxChanged(event: any, index: string) {
     if (event.target.checked) {
       this.notesSelected.push(index);
+      this.databaseService.updateNote(index, { remindedAt: new Date().toISOString() }).subscribe(() => {
+        this.notes = this.notes.filter(note => note.id !== index);
+      });
     } else {
       this.notesSelected = this.notesSelected.filter(
         i => i !== index
