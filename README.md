@@ -1,6 +1,11 @@
 # 9NAŬ
 
-Angular SPA (single page application) frontend started from finances module
+Angular SPA (single page application) frontend.
+
+This version came after I started the React Native version looking to have a mobile app, but since RN is a new tech for me, and I want to implement something fast, I switched back to Angular.
+
+This web app will remind you of your notes at a frequency you choose so you can review them all and keep the information fresh in your mind. The purpuse is to rewire your brain by integrating concepts by repetition.
+
 
 ## Tasks
 
