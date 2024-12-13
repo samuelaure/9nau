@@ -2,11 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AngularSetupComponent } from './angular-setup/angular-setup.component';
 import { TransactionsComponent } from './transactions/transactions.component';
+import { NotesComponent } from './notes/notes.component';
 
 const routes: Routes = [
   { path: 'home', redirectTo: '', pathMatch: 'full' },
-  { path: '', component: TransactionsComponent },
+  { path: 'transactions', component: TransactionsComponent },
   { path: 'angular-setup', component: AngularSetupComponent },
+  { path: '', component: NotesComponent },
   // { path: 'detail/:id', component: HeroDetailComponent },
   // { path: 'heroes', component: HeroesComponent }
 ];

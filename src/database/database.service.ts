@@ -1,4 +1,3 @@
-// data.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -16,47 +15,66 @@ export type Transaction = {
   providedIn: 'root',
 })
 export class DatabaseService {
-  private databaseUrl = 'http://localhost:3333';
+  private databasePath = 'http://localhost:3333';
 
   constructor(private http: HttpClient) { }
 
-  getData(): Observable<any> {
-    
-    return this.http.get(`${this.databaseUrl}`);
+  getNotes(): Observable<any> {
+    return this.http.get(`${this.databasePath}/note/remindables`);
   }
 
-  getTransactions(): Observable<any> {
-    return this.http.get(`${this.databaseUrl}/transactions`);
+  getNote(id: string): Observable<any> {
+    return this.http.get(`${this.databasePath}/note/${id}`);
   }
 
-  getContacts(): Observable<any> {
-    return this.http.get(`${this.databaseUrl}/contacts`);
+  createNote(note: any): Observable<any> {
+    return this.http.post(`${this.databasePath}/note`, note);
   }
 
-  getAccounts(): Observable<any> {
-    return this.http.get(`${this.databaseUrl}/accounts`);
+  updateNote(id: string, note: any): Observable<any> {
+    return this.http.patch(`${this.databasePath}/note/${id}`, note);
   }
 
-  getCategories(): Observable<any> {
-    return this.http.get(`${this.databaseUrl}/categories`);
+  deleteNote(id: string): Observable<any> {
+    return this.http.delete(`${this.databasePath}/note/${id}`);
   }
 
-  createTransaction(transaction: any): Observable<any> {
-    return this.http.post(`${this.databaseUrl}/transactions/`, transaction);
-  }
+  // getData(): Observable<any> {
+  //   return this.http.get(`${this.databasePath}`);
+  // }
 
-  updateTransaction(index: number, transaction: any): Observable<any> {
-    return this.http.put(
-      `${this.databaseUrl}/transactions/${index}`,
-      transaction
-    );
-  }
+  // getTransactions(): Observable<any> {
+  //   return this.http.get(`${this.databasePath}/transactions`);
+  // }
 
-  deleteTransaction(index: number) {
-    return this.http.delete(`${this.databaseUrl}/transactions/${index}`);
-  }
+  // getContacts(): Observable<any> {
+  //   return this.http.get(`${this.databasePath}/contacts`);
+  // }
 
-  updateContacts(contacts: any): Observable<any> {
-    return this.http.put(`${this.databaseUrl}/contacts`, contacts);
-  }
+  // getAccounts(): Observable<any> {
+  //   return this.http.get(`${this.databasePath}/accounts`);
+  // }
+
+  // getCategories(): Observable<any> {
+  //   return this.http.get(`${this.databasePath}/categories`);
+  // }
+
+  // createTransaction(transaction: any): Observable<any> {
+  //   return this.http.post(`${this.databasePath}/transactions/`, transaction);
+  // }
+
+  // updateTransaction(index: number, transaction: any): Observable<any> {
+  //   return this.http.put(
+  //     `${this.databasePath}/transactions/${index}`,
+  //     transaction
+  //   );
+  // }
+
+  // deleteTransaction(index: number) {
+  //   return this.http.delete(`${this.databasePath}/transactions/${index}`);
+  // }
+
+  // updateContacts(contacts: any): Observable<any> {
+  //   return this.http.put(`${this.databasePath}/contacts`, contacts);
+  // }
 }

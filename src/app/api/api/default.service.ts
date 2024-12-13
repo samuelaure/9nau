@@ -33,7 +33,7 @@ import {
 })
 export class DefaultService implements DefaultServiceInterface {
 
-    protected basePath = 'http://localhost:3000';
+    protected basePath = 'http://localhost:3333';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
     public encoder: HttpParameterCodec;

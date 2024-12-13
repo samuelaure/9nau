@@ -9,6 +9,7 @@ import { TransactionsComponent } from './transactions/transactions.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ApiModule, Configuration, ConfigurationParameters } from './api';
+import { NotesComponent } from './notes/notes.component';
 
 export function apiConfigFactory(): Configuration {
   const params: ConfigurationParameters = {
@@ -18,7 +19,7 @@ export function apiConfigFactory(): Configuration {
 }
 
 @NgModule({
-  declarations: [AppComponent, AngularSetupComponent, TransactionsComponent],
+  declarations: [AppComponent, AngularSetupComponent, TransactionsComponent, NotesComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
