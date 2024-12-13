@@ -1,6 +1,6 @@
 # 9NAŬ REMINDER
 
-This React Native app will remind you of your notes at a frequency you choose so you can review them all and keep the information fresh in your mind.
+This React Native app will remind you of your notes at a frequency you choose so you can review them all and keep the information fresh in your mind. The purpuse is to rewire your brain by integrating concepts by repetition.
 
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
