@@ -77,4 +77,8 @@ export class DatabaseService {
   // updateContacts(contacts: any): Observable<any> {
   //   return this.http.put(`${this.databasePath}/contacts`, contacts);
   // }
+
+  testFunction(): Observable<any> {
+    return this.http.get(`${this.databasePath}/note/test`);
+  }
 }

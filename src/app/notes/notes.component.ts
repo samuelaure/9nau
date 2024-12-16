@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DatabaseService } from 'src/database/database.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-notes',
@@ -10,9 +12,16 @@ import { DatabaseService } from 'src/database/database.service';
 export class NotesComponent implements OnInit {
   notes: any[] = [];
   notesSelected: any[] = [];
+  newNoteForm: FormGroup;
 
-  constructor (protected databaseService: DatabaseService) {
+  constructor(protected databaseService: DatabaseService) {
+    this.newNoteForm = new FormGroup({
+      content: new FormControl('', Validators.required),
+      frequency: new FormControl(1, Validators.required),
+      writtenAt: new FormControl('', Validators.required),
+    });
   }
+
   ngOnInit(): void {
     this.onInit();
   }
@@ -20,37 +29,31 @@ export class NotesComponent implements OnInit {
   onInit() {
     this.databaseService.getNotes().subscribe(
       (data: any[]) => {
-        // Ensure data is an array before calling sort
         if (data && Array.isArray(data)) {
-          this.notes = data.sort(
-            (a: { createdAt: string | number | Date }, b: { createdAt: string | number | Date }) => {
-              const dateA = new Date(a.createdAt).getTime();
-              const dateB = new Date(b.createdAt).getTime();
-              return dateA - dateB;
-            }
-          );
+          this.notes = data;
           console.log('this.notes', this.notes);
         } else {
           console.error('Data is not an array or is null/undefined');
-          this.notes = []; // Assign an empty array if data is invalid
+          this.notes = [];
         }
       },
       (error) => {
         console.error('Error fetching notes:', error);
-        this.notes = []; // Assign an empty array in case of error
+        this.notes = [];
       }
     );
-    // this.databaseService.getContacts().subscribe((data: any) => {
-    //   this.contacts = data;
-    // });
-    // this.databaseService.getAccounts().subscribe((data: any) => {
-    //   this.accounts = data;
-    // });
-    // this.databaseService.getCategories().subscribe((data: any) => {
-    //   this.categories = data;
-    // });
   }
-  
+
+  createNewnote() {
+    const content = this.newNoteForm.value.content;
+    const reminderFrequency = this.newNoteForm.value.frequency;
+    const writtenAt = new Date(this.newNoteForm.value.writtenAt) || new Date();
+    this.databaseService.createNote({ content, reminderFrequency, writtenAt }).subscribe(() => {
+      this.newNoteForm.reset({ writtenAt: writtenAt });
+      this.onInit();
+    });
+  }
+
   formatDate(date: string): string {
     return new Date(date).toLocaleDateString();
   }
@@ -67,5 +70,26 @@ export class NotesComponent implements OnInit {
       );
     }
     console.log(this.notesSelected);
+  }
+
+  openNoteForm() {
+    const modalElement = document.getElementById('noteModal');
+    if (modalElement) {
+      const noteModal = new bootstrap.Modal(modalElement);
+      noteModal.show();
+    } else {
+      console.error('Modal element not found.');
+    }
+  }
+
+  testFunction() {
+    this.databaseService.testFunction().subscribe({
+      next: (data) => {
+        console.log(data);
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    })
   }
 }

@@ -1,28 +1,70 @@
 <h2>Notes</h2>
+<div class="d-flex align-items-center">
+  <button (click)="openNoteForm()" class="btn btn-primary">
+    Add New Note
+  </button>
+  <button (click)="testFunction()" class="btn btn-primary">
+    Test function
+  </button>
+</div>
 <table class="table">
-    <thead>
-      <tr>
-        <th>R</th>
-        <th>Freq</th>
-        <th>Content</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let note of notes; let i = index">
-        <td>
-          <input
-            type="checkbox"
-            (change)="checkboxChanged($event, note.id)" />
-        </td>
-        <td>{{ note.reminderFrequency }}</td>
-        <td>{{ note.content }}</td>
-        <!-- <td>
-          <button
-            class="material-symbols-outlined"
-            (click)="deleteNote(note.id)">
-            delete
+  <thead>
+    <tr>
+      <th>R</th>
+      <th>Freq</th>
+      <th>Content</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let note of notes; let i = index">
+      <td>
+        <input type="checkbox" (change)="checkboxChanged($event, note.id)" />
+      </td>
+      <td>{{ note.reminderFrequency }}</td>
+      <td>{{ note.content }}</td>
+      <!-- <td>
+        <button
+          class="material-symbols-outlined"
+          (click)="deleteNote(note.id)">
+          delete
+        </button>
+      </td> -->
+    </tr>
+  </tbody>
+</table>
+<div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="noteModalLabel">New note</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="newNoteForm">
+        <div class="modal-body">
+          <div class="mb-3 d-flex align-items-center">
+            <span class="me-2">Content</span>
+            <input type="text" class="form-control" formControlName="content" placeholder="..." />
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <span class="me-2">Frequency</span>
+            <input type="number" class="form-control" formControlName="frequency" placeholder="..." />
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <span class="me-2">Written At</span>
+            <input type="date" class="form-control" formControlName="writtenAt"/>
+          </div>
+        </div>
+        <div class="modal-footer d-flex">
+          <button type="button" class="btn btn-secondary justify-content-start me-auto" data-bs-dismiss="modal">
+            Close
           </button>
-        </td> -->
-      </tr>
-    </tbody>
-  </table>
+          <button type="submit" (click)="createNewnote()" class="btn btn-primary justify-content-end"
+            data-bs-dismiss="modal">
+            Save note
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
