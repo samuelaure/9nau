@@ -24,7 +24,7 @@ export class DatabaseService {
   }
 
   createNote(note: any): Observable<any> {
-    return this.http.post(`${this.databasePath}/block/text`, note);
+    return this.http.post(`${this.databasePath}/block`, note);
   }
 
   updateNote(id: string, note: any): Observable<any> {
