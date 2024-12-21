@@ -21,7 +21,7 @@
         <input type="checkbox" (change)="checkboxChanged($event, note.id)" />
       </td>
       <td>{{ note.reminderFrequency }}</td>
-      <td>{{ note.content }}</td>
+      <td>{{ note.properties.content }}</td>
       <!-- <td>
         <button
           class="material-symbols-outlined"
@@ -48,7 +48,7 @@
           </div>
           <div class="mb-3 d-flex align-items-center">
             <span class="me-2">Frequency</span>
-            <input type="number" class="form-control" formControlName="frequency" placeholder="..." />
+            <input type="number" class="form-control" formControlName="reminderFrequency" placeholder="..." />
           </div>
           <div class="mb-3 d-flex align-items-center">
             <span class="me-2">Written At</span>

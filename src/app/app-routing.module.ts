@@ -6,9 +6,9 @@ import { NotesComponent } from './notes/notes.component';
 
 const routes: Routes = [
   { path: 'home', redirectTo: '', pathMatch: 'full' },
+  { path: '', component: NotesComponent },
   { path: 'transactions', component: TransactionsComponent },
   { path: 'angular-setup', component: AngularSetupComponent },
-  { path: '', component: NotesComponent },
   // { path: 'detail/:id', component: HeroDetailComponent },
   // { path: 'heroes', component: HeroesComponent }
 ];

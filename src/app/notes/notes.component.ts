@@ -17,8 +17,8 @@ export class NotesComponent implements OnInit {
   constructor(protected databaseService: DatabaseService) {
     this.newNoteForm = new FormGroup({
       content: new FormControl('', Validators.required),
-      frequency: new FormControl(1, Validators.required),
       writtenAt: new FormControl('', Validators.required),
+      reminderFrequency: new FormControl(1, Validators.required),
     });
   }
 
@@ -45,10 +45,8 @@ export class NotesComponent implements OnInit {
   }
 
   createNewnote() {
-    const content = this.newNoteForm.value.content;
-    const reminderFrequency = this.newNoteForm.value.frequency;
-    const writtenAt = new Date(this.newNoteForm.value.writtenAt) || new Date();
-    this.databaseService.createNote({ content, reminderFrequency, writtenAt }).subscribe(() => {
+    const { content, reminderFrequency, writtenAt } = this.newNoteForm.value;
+    this.databaseService.createNote({ type: 'text', properties: { content, writtenAt }, reminderFrequency }).subscribe(() => {
       this.newNoteForm.reset({ writtenAt: writtenAt });
       this.onInit();
     });
@@ -60,7 +58,6 @@ export class NotesComponent implements OnInit {
 
   checkboxChanged(event: any, index: string) {
     if (event.target.checked) {
-      this.notesSelected.push(index);
       this.databaseService.updateNote(index, { remindedAt: new Date().toISOString() }).subscribe(() => {
         this.notes = this.notes.filter(note => note.id !== index);
       });

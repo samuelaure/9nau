@@ -20,23 +20,15 @@ export class DatabaseService {
   constructor(private http: HttpClient) { }
 
   getNotes(): Observable<any> {
-    return this.http.get(`${this.databasePath}/note/remindables`);
-  }
-
-  getNote(id: string): Observable<any> {
-    return this.http.get(`${this.databasePath}/note/${id}`);
+    return this.http.get(`${this.databasePath}/block/text/remindables`);
   }
 
   createNote(note: any): Observable<any> {
-    return this.http.post(`${this.databasePath}/note`, note);
+    return this.http.post(`${this.databasePath}/block/text`, note);
   }
 
   updateNote(id: string, note: any): Observable<any> {
-    return this.http.patch(`${this.databasePath}/note/${id}`, note);
-  }
-
-  deleteNote(id: string): Observable<any> {
-    return this.http.delete(`${this.databasePath}/note/${id}`);
+    return this.http.patch(`${this.databasePath}/block/${id}`, note);
   }
 
   // getData(): Observable<any> {
@@ -79,6 +71,6 @@ export class DatabaseService {
   // }
 
   testFunction(): Observable<any> {
-    return this.http.get(`${this.databasePath}/note/test`);
+    return this.http.get(`${this.databasePath}/block/text/test`);
   }
 }
