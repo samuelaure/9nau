@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { DatabaseService } from 'src/database/database.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import * as bootstrap from 'bootstrap';
@@ -13,11 +12,19 @@ export class NotesComponent implements OnInit {
   notes: any[] = [];
   notesSelected: any[] = [];
   newNoteForm: FormGroup;
+  habits: any[] = [];
+  habitsSelected: any[] = [];
+  newHabitForm: FormGroup;
+  date: string = new Date().toISOString().slice(0, 10);
 
   constructor(protected databaseService: DatabaseService) {
     this.newNoteForm = new FormGroup({
       content: new FormControl('', Validators.required),
       writtenAt: new FormControl('', Validators.required),
+      reminderFrequency: new FormControl(1, Validators.required),
+    });
+    this.newHabitForm = new FormGroup({
+      habit: new FormControl('', Validators.required),
       reminderFrequency: new FormControl(1, Validators.required),
     });
   }
@@ -27,11 +34,25 @@ export class NotesComponent implements OnInit {
   }
 
   onInit() {
-    this.databaseService.getNotes().subscribe(
+    this.databaseService.getBlocks('habit', this.date).subscribe(
+      (data: any[]) => {
+        if (data && Array.isArray(data)) {
+          this.habits = data;
+        } else {
+          console.error('Data is not an array or is null/undefined');
+          this.habits = [];
+        }
+      },
+      (error) => {
+        console.error('Error fetching habits:', error);
+        this.habits = [];
+      }
+    );
+
+    this.databaseService.getBlocks('text', this.date).subscribe(
       (data: any[]) => {
         if (data && Array.isArray(data)) {
           this.notes = data;
-          console.log('this.notes', this.notes);
         } else {
           console.error('Data is not an array or is null/undefined');
           this.notes = [];
@@ -44,39 +65,54 @@ export class NotesComponent implements OnInit {
     );
   }
 
-  createNewnote() {
+  createNote() {
     const { content, reminderFrequency, writtenAt } = this.newNoteForm.value;
-    this.databaseService.createNote({ type: 'text', properties: { content, writtenAt }, reminderFrequency }).subscribe(() => {
+    this.databaseService.createBlock({ type: 'text', properties: { content, writtenAt }, reminderFrequency }).subscribe(() => {
       this.newNoteForm.reset({ writtenAt: writtenAt });
       this.onInit();
     });
   }
 
-  formatDate(date: string): string {
-    return new Date(date).toLocaleDateString();
+  createHabit() {
+    const { habit, reminderFrequency } = this.newHabitForm.value;
+    this.databaseService.createBlock({ type: 'habit', properties: { habit }, reminderFrequency }).subscribe(() => {
+      this.newHabitForm.reset();
+      this.onInit();
+    });
   }
 
   checkboxChanged(event: any, index: string) {
     if (event.target.checked) {
-      this.databaseService.updateNote(index, { remindedAt: new Date().toISOString() }).subscribe(() => {
+      this.databaseService.updateBlock(index, { remindedAt: new Date().toISOString() }).subscribe(() => {
         this.notes = this.notes.filter(note => note.id !== index);
+        this.habits = this.habits.filter(habit => habit.id !== index);
       });
     } else {
-      this.notesSelected = this.notesSelected.filter(
-        i => i !== index
-      );
+      console.log('XXX');
+      // this.notesSelected = this.notesSelected.filter(
+      //   i => i !== index
+      // );
     }
-    console.log(this.notesSelected);
   }
 
-  openNoteForm() {
-    const modalElement = document.getElementById('noteModal');
+  openForm(blockTypeForm: string) {
+    const modalElement = blockTypeForm === 'note' ? document.getElementById('noteModal') : document.getElementById('habitModal');
     if (modalElement) {
-      const noteModal = new bootstrap.Modal(modalElement);
-      noteModal.show();
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
     } else {
       console.error('Modal element not found.');
     }
+  }
+
+  changeDate(difference: number): void {
+    if (typeof difference !== 'number') {
+      throw new Error('Invalid difference input');
+    }
+    const updatedDate = new Date(new Date(this.date).toISOString().slice(0, 10));
+    updatedDate.setDate(updatedDate.getDate() + difference);
+    this.date = updatedDate.toISOString().slice(0, 10);
+    this.onInit();
   }
 
   testFunction() {

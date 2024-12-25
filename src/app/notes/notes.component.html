@@ -1,6 +1,42 @@
+<div style="display: flex; justify-content: space-between; align-items: center;">
+  <div (click)="changeDate(-1)"><</div> <!-- left arrow -->
+  <span>{{this.date}}</span>
+  <div (click)="changeDate(1)">></div> <!-- right arrow -->
+</div>
+<h2>Habits</h2>
+<div class="d-flex align-items-center">
+  <button (click)="openForm('habit')" class="btn btn-primary">
+    Add New Habit
+  </button>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>R</th>
+      <th>Freq</th>
+      <th>Habit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let habit of habits; let i = index">
+      <td>
+        <input type="checkbox" (change)="checkboxChanged($event, habit.id)" />
+      </td>
+      <td>{{ habit.reminderFrequency }}</td>
+      <td>{{ habit.properties.habit }}</td>
+      <!-- <td>
+        <button
+          class="material-symbols-outlined"
+          (click)="deleteNote(note.id)">
+          delete
+        </button>
+      </td> -->
+    </tr>
+  </tbody>
+</table>
 <h2>Notes</h2>
 <div class="d-flex align-items-center">
-  <button (click)="openNoteForm()" class="btn btn-primary">
+  <button (click)="openForm('note')" class="btn btn-primary">
     Add New Note
   </button>
   <button (click)="testFunction()" class="btn btn-primary">
@@ -32,8 +68,39 @@
     </tr>
   </tbody>
 </table>
-<div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel"
+<div class="modal fade" id="habitModal" tabindex="-1" role="dialog" aria-labelledby="habitModalLabel"
   aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="habitModalLabel">New habit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="newHabitForm">
+        <div class="modal-body">
+          <div class="mb-3 d-flex align-items-center">
+            <span class="me-2">Habit</span>
+            <input type="text" class="form-control" formControlName="habit" placeholder="..." />
+          </div>
+          <div class="mb-3 d-flex align-items-center">
+            <span class="me-2">Frequency</span>
+            <input type="number" class="form-control" formControlName="reminderFrequency" placeholder="..." />
+          </div>
+        </div>
+        <div class="modal-footer d-flex">
+          <button type="button" class="btn btn-secondary justify-content-start me-auto" data-bs-dismiss="modal">
+            Close
+          </button>
+          <button type="submit" (click)="createHabit()" class="btn btn-primary justify-content-end"
+            data-bs-dismiss="modal">
+            Save habit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -52,14 +119,14 @@
           </div>
           <div class="mb-3 d-flex align-items-center">
             <span class="me-2">Written At</span>
-            <input type="date" class="form-control" formControlName="writtenAt"/>
+            <input type="date" class="form-control" formControlName="writtenAt" />
           </div>
         </div>
         <div class="modal-footer d-flex">
           <button type="button" class="btn btn-secondary justify-content-start me-auto" data-bs-dismiss="modal">
             Close
           </button>
-          <button type="submit" (click)="createNewnote()" class="btn btn-primary justify-content-end"
+          <button type="submit" (click)="createNote()" class="btn btn-primary justify-content-end"
             data-bs-dismiss="modal">
             Save note
           </button>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export type Transaction = {
@@ -19,16 +19,18 @@ export class DatabaseService {
 
   constructor(private http: HttpClient) { }
 
-  getNotes(): Observable<any> {
-    return this.http.get(`${this.databasePath}/block/text/remindables`);
+  getBlocks(type: string, date: string): Observable<any> {
+    const ISODate = new Date(date).toISOString();
+    const params = new HttpParams().set('date', ISODate);
+    return this.http.get(`${this.databasePath}/block/${type}/remindables`, { params });
   }
 
-  createNote(note: any): Observable<any> {
-    return this.http.post(`${this.databasePath}/block`, note);
+  createBlock(block: any): Observable<any> {
+    return this.http.post(`${this.databasePath}/block`, block);
   }
 
-  updateNote(id: string, note: any): Observable<any> {
-    return this.http.patch(`${this.databasePath}/block/${id}`, note);
+  updateBlock(id: string, block: any): Observable<any> {
+    return this.http.patch(`${this.databasePath}/block/${id}`, block);
   }
 
   // getData(): Observable<any> {
