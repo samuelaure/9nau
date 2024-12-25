@@ -1,137 +1,128 @@
-<div style="display: flex; justify-content: space-between; align-items: center;">
-  <div (click)="changeDate(-1)"><</div> <!-- left arrow -->
-  <span>{{this.date}}</span>
-  <div (click)="changeDate(1)">></div> <!-- right arrow -->
-</div>
-<h2>Habits</h2>
-<div class="d-flex align-items-center">
-  <button (click)="openForm('habit')" class="btn btn-primary">
-    Add New Habit
-  </button>
-</div>
-<table class="table">
-  <thead>
-    <tr>
-      <th>R</th>
-      <th>Freq</th>
-      <th>Habit</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let habit of habits; let i = index">
-      <td>
-        <input type="checkbox" (change)="checkboxChanged($event, habit.id)" />
-      </td>
-      <td>{{ habit.reminderFrequency }}</td>
-      <td>{{ habit.properties.habit }}</td>
-      <!-- <td>
-        <button
-          class="material-symbols-outlined"
-          (click)="deleteNote(note.id)">
-          delete
-        </button>
-      </td> -->
-    </tr>
-  </tbody>
-</table>
-<h2>Notes</h2>
-<div class="d-flex align-items-center">
-  <button (click)="openForm('note')" class="btn btn-primary">
-    Add New Note
-  </button>
-  <button (click)="testFunction()" class="btn btn-primary">
-    Test function
-  </button>
-</div>
-<table class="table">
-  <thead>
-    <tr>
-      <th>R</th>
-      <th>Freq</th>
-      <th>Content</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let note of notes; let i = index">
-      <td>
-        <input type="checkbox" (change)="checkboxChanged($event, note.id)" />
-      </td>
-      <td>{{ note.reminderFrequency }}</td>
-      <td>{{ note.properties.content }}</td>
-      <!-- <td>
-        <button
-          class="material-symbols-outlined"
-          (click)="deleteNote(note.id)">
-          delete
-        </button>
-      </td> -->
-    </tr>
-  </tbody>
-</table>
-<div class="modal fade" id="habitModal" tabindex="-1" role="dialog" aria-labelledby="habitModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="habitModalLabel">New habit</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form [formGroup]="newHabitForm">
-        <div class="modal-body">
-          <div class="mb-3 d-flex align-items-center">
-            <span class="me-2">Habit</span>
-            <input type="text" class="form-control" formControlName="habit" placeholder="..." />
-          </div>
-          <div class="mb-3 d-flex align-items-center">
-            <span class="me-2">Frequency</span>
-            <input type="number" class="form-control" formControlName="reminderFrequency" placeholder="..." />
-          </div>
-        </div>
-        <div class="modal-footer d-flex">
-          <button type="button" class="btn btn-secondary justify-content-start me-auto" data-bs-dismiss="modal">
-            Close
-          </button>
-          <button type="submit" (click)="createHabit()" class="btn btn-primary justify-content-end"
-            data-bs-dismiss="modal">
-            Save habit
-          </button>
-        </div>
-      </form>
+<div class="container vw-100">
+  <div class="row">
+    <div class="col d-flex justify-content-end align-items-center fs-4 fw-bold" (click)="changeDate(-1)">&#8592;</div>
+    <span class="col d-flex justify-content-center fs-4 fw-bold">{{this.date}}</span>
+    <div class="col d-flex justify-content-start fs-4 fw-bold" (click)="changeDate(1)">&#8594;</div>
+  </div>
+  <div class="d-flex justify-content-center">
+    <button (click)="changeDate(0)" class="btn btn-primary">Today</button>
+  </div>
+  <div class="mb-5">
+    <div class="d-flex align-items-center">
+      <h2 class="text-light">Habits</h2>
+      <button (click)="openForm('habit')" class="btn btn-primary ms-3">Add New Habit</button>
+    </div>
+    <div class="row mt-2 bg-light border-2 border-bottom" style="height: 40px">
+      <div class="col-1 d-flex justify-content-center align-items-center border-3 border-end fs-5 fw-bold">R</div>
+      <div class="col-1 d-flex justify-content-center align-items-center border-3 border-end fs-5 fw-bold">Freq</div>
+      <div class="col-10 d-flex justify-content-center align-items-center fs-5 fw-bold">Habit</div>
+    </div>
+    <div *ngFor="let habit of habits; let i = index" class="row bg-light">
+      <div class="col-1 d-flex justify-content-center border-3 border-end "><input type="checkbox"
+          (change)="checkboxChanged($event, habit.id)" /></div>
+      <div class="col-1 d-flex justify-content-center border-3 border-end ">{{ habit.reminderFrequency }}</div>
+      <div class="col-10">{{ habit.properties.habit }}</div>
+      <!-- <div>
+      <button
+        class="material-symbols-outlined"
+        (click)="deleteNote(note.id)">
+        delete
+      </button>
+    </div> -->
     </div>
   </div>
-</div>
-<div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="noteModalLabel">New note</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <div class="mb-5">
+    <div class="d-flex align-items-center">
+      <h2 class="text-light">Notes</h2>
+      <button (click)="openForm('note')" class="btn btn-primary ms-3">
+        Add New Note
+      </button>
+    </div>
+    <div class="row mt-2 bg-light border-2 border-bottom" style="height: 40px">
+      <div class="col-1 d-flex justify-content-center align-items-center border-2 border-end fs-5 fw-bold">R</div>
+      <div class="col-1 d-flex justify-content-center align-items-center border-2 border-end fs-5 fw-bold">Freq</div>
+      <div class="col-10 d-flex justify-content-center align-items-center fs-5 fw-bold">Content</div>
+    </div>
+    <div *ngFor="let note of notes; let i = index" class="row bg-light border-2 border-bottom">
+      <div class="col-1 d-flex justify-content-center border-2 border-end"><input type="checkbox"
+          (change)="checkboxChanged($event, note.id)" /></div>
+      <div class="col-1 d-flex justify-content-center border-2 border-end">{{ note.reminderFrequency }}</div>
+      <div class="col-10">{{ note.properties.content }}</div>
+      <!-- <div>
+      <button
+        class="material-symbols-outlined"
+        (click)="deleteNote(note.id)">
+        delete
+      </button>
+    </div> -->
+    </div>
+  </div>
+  <div class="modal fade" id="habitModal" tabindex="-1" role="dialog" aria-labelledby="habitModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="habitModalLabel">New habit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form [formGroup]="newHabitForm">
+          <div class="modal-body">
+            <div class="mb-3 d-flex align-items-center">
+              <span class="me-2">Habit</span>
+              <input type="text" class="form-control" formControlName="habit" placeholder="..." />
+            </div>
+            <div class="mb-3 d-flex align-items-center">
+              <span class="me-2">Frequency</span>
+              <input type="number" class="form-control" formControlName="reminderFrequency" placeholder="..." />
+            </div>
+          </div>
+          <div class="modal-footer d-flex">
+            <button type="button" class="btn btn-secondary justify-content-start me-auto" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button type="submit" (click)="createHabit()" class="btn btn-primary justify-content-end"
+              data-bs-dismiss="modal">
+              Save habit
+            </button>
+          </div>
+        </form>
       </div>
-      <form [formGroup]="newNoteForm">
-        <div class="modal-body">
-          <div class="mb-3 d-flex align-items-center">
-            <span class="me-2">Content</span>
-            <input type="text" class="form-control" formControlName="content" placeholder="..." />
-          </div>
-          <div class="mb-3 d-flex align-items-center">
-            <span class="me-2">Frequency</span>
-            <input type="number" class="form-control" formControlName="reminderFrequency" placeholder="..." />
-          </div>
-          <div class="mb-3 d-flex align-items-center">
-            <span class="me-2">Written At</span>
-            <input type="date" class="form-control" formControlName="writtenAt" />
-          </div>
+    </div>
+  </div>
+  <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="noteModalLabel">New note</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-footer d-flex">
-          <button type="button" class="btn btn-secondary justify-content-start me-auto" data-bs-dismiss="modal">
-            Close
-          </button>
-          <button type="submit" (click)="createNote()" class="btn btn-primary justify-content-end"
-            data-bs-dismiss="modal">
-            Save note
-          </button>
-        </div>
-      </form>
+        <form [formGroup]="newNoteForm">
+          <div class="modal-body">
+            <div class="mb-3 d-flex align-items-center">
+              <span class="me-2">Content</span>
+              <input type="text" class="form-control" formControlName="content" placeholder="..." />
+            </div>
+            <div class="mb-3 d-flex align-items-center">
+              <span class="me-2">Frequency</span>
+              <input type="number" class="form-control" formControlName="reminderFrequency" placeholder="..." />
+            </div>
+            <div class="mb-3 d-flex align-items-center">
+              <span class="me-2">Written At</span>
+              <input type="date" class="form-control" formControlName="writtenAt" />
+            </div>
+          </div>
+          <div class="modal-footer d-flex">
+            <button type="button" class="btn btn-secondary justify-content-start me-auto" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button type="submit" (click)="createNote()" class="btn btn-primary justify-content-end"
+              data-bs-dismiss="modal">
+              Save note
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>

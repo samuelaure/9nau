@@ -1,32 +1,28 @@
 <div class="app-container">
   <nav class="bg-dark">
     <div class="row align-items-center">
-      <h1 class="col ms-3 my-2">9NAŬ</h1>
+      <h1 class="col ms-3 my-2 text-light">9NAŬ</h1>
       <div class="col">
         <a routerLink="/home" routerLinkActive="active">Home</a>
       </div>
       <div class="col">
-        <a routerLink="/" routerLinkActive="active">
-          Notes
-        </a>
+        <a routerLink="/" routerLinkActive="active">Notes</a>
       </div>
       <div class="col">
-        <a routerLink="/transactions" routerLinkActive="active">
-          Transactions
-        </a>
+        <a routerLink="/transactions" routerLinkActive="active">Transactions</a>
       </div>
       <div class="col">
-        <a routerLink="/angular-setup" routerLinkActive="active">
-          Angular Setup
-        </a>
+        <a routerLink="/angular-setup" routerLinkActive="active">Angular Setup</a>
+      </div>
+      <div class="col">
+        <button (click)="testFunction()" class="col btn btn-secondary">Test function</button>
       </div>
     </div>
   </nav>
   <div class="body">
     <router-outlet></router-outlet>
   </div>
-  <footer
-    class="bg-dark text-light d-flex justify-content-center align-items-center height-30">
+  <footer class="bg-dark text-light d-flex justify-content-center align-items-center height-30">
     <div>© 2024 9NAŬ</div>
   </footer>
 </div>

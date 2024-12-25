@@ -109,20 +109,13 @@ export class NotesComponent implements OnInit {
     if (typeof difference !== 'number') {
       throw new Error('Invalid difference input');
     }
-    const updatedDate = new Date(new Date(this.date).toISOString().slice(0, 10));
-    updatedDate.setDate(updatedDate.getDate() + difference);
-    this.date = updatedDate.toISOString().slice(0, 10);
+    if (difference === 0) {
+      this.date = new Date().toISOString().slice(0, 10);
+    } else {
+      const updatedDate = new Date(new Date(this.date).toISOString().slice(0, 10));
+      updatedDate.setDate(updatedDate.getDate() + difference);
+      this.date = updatedDate.toISOString().slice(0, 10);
+    }
     this.onInit();
-  }
-
-  testFunction() {
-    this.databaseService.testFunction().subscribe({
-      next: (data) => {
-        console.log(data);
-      },
-      error: (error) => {
-        console.error(error);
-      },
-    })
   }
 }
