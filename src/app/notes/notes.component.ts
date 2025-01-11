@@ -118,4 +118,10 @@ export class NotesComponent implements OnInit {
     }
     this.onInit();
   }
+
+  dateToShow(date: string): string {
+    const dateToShow = new Date(date).toLocaleDateString();
+    const day = new Date(date).toLocaleString('es-es', { weekday: 'long' });
+    return dateToShow + ' ' + day;
+  }
 }
