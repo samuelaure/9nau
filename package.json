@@ -1,16 +1,18 @@
 {
-  "name": "9nau",
+  "name": "9naŭ",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "The 9naŭ platform for life and business growth.",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "pnpm --filter api build",
+    "format": "prettier --write \"**/*.ts\"",
+    "lint": "eslint \"{apps,packages}/**/*.ts\" --fix"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Samuel Aure",
+  "license": "UNLICENSED",
   "packageManager": "pnpm@10.13.1",
   "devDependencies": {
+    "@nestjs/cli": "^11.0.7",
     "@types/node": "^24.1.0",
     "eslint": "^9.32.0",
     "prettier": "^3.6.2",
