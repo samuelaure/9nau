@@ -1,0 +1,9 @@
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+.next/
+
+# Lockfiles
+pnpm-lock.yaml
