@@ -1,10 +1,11 @@
 # Dependencies
-/node_modules
+node_modules/
 
 # Build artifacts
-/dist
-/.next/
-/out/
+dist/
+.next/
+out/
+generated/
 
 # Logs
 logs
@@ -40,7 +41,7 @@ lerna-debug.log*
 Thumbs.db
 
 # Test reports
-/coverage
+coverage/
 
 # Temporary files
 *.tmp

@@ -1,15 +1,36 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Block {
+  id         String   @id @default(cuid())
+  type       String
+  properties Json     @default("{}")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  parentId   String?
+  parent     Block?   @relation("BlockChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children   Block[]  @relation("BlockChildren")
+
+  relationsFrom Relation[] @relation("FromBlock")
+  relationsTo   Relation[] @relation("ToBlock")
+}
+
+model Relation {
+  id         String @id @default(cuid())
+  type       String
+  properties Json   @default("{}")
+
+  fromBlockId String
+  fromBlock   Block  @relation("FromBlock", fields: [fromBlockId], references: [id], onDelete: Cascade)
+  toBlockId   String
+  toBlock     Block  @relation("ToBlock",fields: [toBlockId],references: [id], onDelete: Cascade)
+
+  @@unique([fromBlockId, toBlockId, type])
 }
