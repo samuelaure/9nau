@@ -4,9 +4,11 @@
   "description": "The 9naŭ platform for life and business growth.",
   "private": true,
   "scripts": {
-    "build": "pnpm --filter api build",
+    "build": "tsc --build",
     "format": "prettier --write \"**/*.ts\"",
-    "lint": "eslint \"{apps,packages}/**/*.ts\" --fix"
+    "lint": "eslint \"{apps,packages}/**/*.ts\" --fix",
+    "dev:api": "pnpm run build && pnpm --filter api run start:dev",
+    "dev:web": "pnpm run build && pnpm --filter web run dev"
   },
   "author": "Samuel Aure",
   "license": "UNLICENSED",

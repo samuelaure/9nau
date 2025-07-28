@@ -9,6 +9,11 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2021",
     "sourceMap": true,
-    "incremental": true
-  }
+    "incremental": true,
+    "composite": true
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../../packages/types" }
+  ]
 }
