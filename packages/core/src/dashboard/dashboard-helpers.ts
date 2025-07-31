@@ -36,11 +36,7 @@ export function buildHierarchy(blocks: Block[]): HierarchicalBlock[] {
         parent.children.push(blocksMap.get(block.id)!)
       }
     } else {
-      // Only push to roots if the block itself is a HierarchicalBlock
-      const rootCandidate = blocksMap.get(block.id)
-      if (rootCandidate) {
-        roots.push(rootCandidate)
-      }
+      roots.push(blocksMap.get(block.id)!)
     }
   })
 
@@ -86,9 +82,9 @@ export function groupBlocksByDate(blocks: Block[]): Map<string, Block[]> {
  * @returns A formatted date string (e.g., '27/10/2023, Friday').
  */
 export function formatDisplayDate(dateStr: string | undefined): string {
-  // Updated to accept string | undefined
   if (!dateStr) return ''
-  const date = new Date(dateStr + 'T00:00:00') // Ensure correct date parsing
+  // Add T00:00:00 to handle timezone issues and ensure correct date parsing
+  const date = new Date(dateStr + 'T00:00:00')
   return format(date, 'dd/MM/yyyy, EEEE')
 }
 
@@ -119,10 +115,9 @@ export const findItemAndParent = (
 } | null => {
   for (let i = 0; i < items.length; i++) {
     const item = items[i]
-    // Safely access item properties and children using optional chaining and nullish coalescing
-    if (item?.id === itemId)
-      return { item, parent, parentList: items, index: i }
-    if (item?.children) {
+    if (!item) continue // This check resolves the 'possibly undefined' error.
+    if (item.id === itemId) return { item, parent, parentList: items, index: i }
+    if (item.children) {
       const found = findItemAndParent(item.children, itemId, item)
       if (found) return found
     }

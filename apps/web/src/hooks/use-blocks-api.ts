@@ -44,7 +44,7 @@ export const useUpdateBlock = () => {
     Block,
     Error,
     { id: string; updateDto: UpdateBlockDto },
-    { previousBlocks: Block[] | undefined } // Explicitly define TContext here
+    { previousBlocks: Block[] | undefined }
   >({
     mutationFn: ({ id, updateDto }) =>
       apiClient.patch(`/blocks/${id}`, updateDto),

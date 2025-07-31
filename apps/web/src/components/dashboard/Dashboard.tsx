@@ -1,5 +1,5 @@
 import { useMemo, useRef, useEffect } from 'react'
-import { addDays, subDays, format } from 'date-fns' // Import format from date-fns
+import { addDays, subDays, format } from 'date-fns'
 import { Block } from '@9nau/types'
 import { DailyPeriod } from './DailyPeriod'
 import { useDashboardStore } from '@/lib/state/dashboard-store'
@@ -53,6 +53,7 @@ export function Dashboard({
     const handleScroll = () => {
       if (viewMode === 'list' && mainRef?.current) {
         const { scrollTop, scrollHeight, clientHeight } = mainRef.current
+        // Load more when user is near the bottom
         if (scrollHeight - scrollTop - clientHeight < 200) {
           loadMorePastDays()
         }
@@ -64,7 +65,7 @@ export function Dashboard({
   }, [viewMode, mainRef, loadMorePastDays])
 
   const allGroupedData = useMemo(() => {
-    const today = new Date(getTodayDateString() + 'T00:00:00') // Use normalized today
+    const today = new Date(getTodayDateString() + 'T00:00:00')
     const dateArray = []
     for (let i = visibleFutureDays; i > 0; i--) {
       dateArray.push(addDays(today, i))
@@ -74,14 +75,13 @@ export function Dashboard({
     }
 
     return dateArray.map((date) => {
-      const dateStr = format(date, 'yyyy-MM-dd'); // Format the date object to string
+      const dateStr = format(date, 'yyyy-MM-dd')
       const dailyNotes = notesByDate.get(dateStr) || []
-      // Filter actions and experiences for the specific date string, ensuring correct type assertion
       const dailyActions = actions.filter(
-        (a): a is HierarchicalBlock => (a.properties.date as string) === dateStr
+        (a) => (a.properties.date as string) === dateStr
       )
       const dailyExperiences = experiences.filter(
-        (e): e is HierarchicalBlock => (e.properties.date as string) === dateStr
+        (e) => (e.properties.date as string) === dateStr
       )
       return { dateStr, dailyActions, dailyExperiences, dailyNotes }
     })
@@ -94,13 +94,11 @@ export function Dashboard({
   ])
 
   if (viewMode === 'horizontal') {
-    const dateStr = format(currentDate, 'yyyy-MM-dd'); // Use currentDate for horizontal view
+    const dateStr = format(currentDate, 'yyyy-MM-dd')
     const dataForDay = {
-      dailyActions: actions.filter(
-        (a): a is HierarchicalBlock => (a.properties.date as string) === dateStr
-      ),
+      dailyActions: actions.filter((a) => (a.properties.date as string) === dateStr),
       dailyExperiences: experiences.filter(
-        (e): e is HierarchicalBlock => (e.properties.date as string) === dateStr
+        (e) => (e.properties.date as string) === dateStr
       ),
       dailyNotes: notesByDate.get(dateStr) || [],
     }

@@ -4,12 +4,11 @@ import { useMemo } from 'react'
 import { NoteInput } from '@/components/notes/note-input'
 import { Dashboard } from '@/components/dashboard/Dashboard'
 import { useGetBlocks } from '@/hooks/use-blocks-api'
-import { groupBlocksByDate, buildHierarchy } from '@9nau/core'
+import { groupBlocksByDate, buildHierarchy, formatDisplayDate } from '@9nau/core'
 import { Block } from '@9nau/types'
 import { useDashboardStore } from '@/lib/state/dashboard-store'
 import { useUiStore } from '@/lib/state/ui-store'
 import { NoteGrid } from '@/components/notes/NoteGrid'
-import { formatDisplayDate } from '@9nau/core' // Keep this import as it's a helper function
 
 export default function HomePage() {
   const activeView = useUiStore((s) => s.activeView)
@@ -17,19 +16,19 @@ export default function HomePage() {
 
   const queryParams = useMemo(() => {
     if (activeView === 'home') {
-      return { status: 'not:trash' } // Fetch everything not in trash for home view
+      return {}
     }
-    return { status: activeView } // Fetch by specific status for other views
+    return { status: activeView }
   }, [activeView])
 
   const { data: blocks, isLoading, isError } = useGetBlocks(queryParams)
-
+  
   useMemo(() => {
     if (blocks) {
       setAllBlocks(blocks)
     }
   }, [blocks, setAllBlocks])
-
+  
   const processedData = useMemo(() => {
     if (!blocks) {
       return {
@@ -46,7 +45,7 @@ export default function HomePage() {
     const notesByDate = groupBlocksByDate(notes)
     const actionsHierarchy = buildHierarchy(actions)
     const experiencesHierarchy = buildHierarchy(experiences)
-
+    
     const groupedNotes = notes
       .sort(
         (a, b) =>
@@ -54,9 +53,7 @@ export default function HomePage() {
       )
       .reduce(
         (acc, note) => {
-          // Ensure note.properties.date is a string or provide a fallback
-          const dateProp = note.properties.date as string | undefined;
-          // formatDisplayDate now correctly handles string | undefined
+          const dateProp = note.properties.date as string | undefined
           const dateKey = formatDisplayDate(
             dateProp || new Date(note.createdAt).toISOString().split('T')[0]
           )
