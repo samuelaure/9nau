@@ -7,6 +7,7 @@ import { EditNoteModal } from '@/components/notes/EditNoteModal';
 import { useDashboardStore } from '@/lib/state/dashboard-store';
 import { Button } from '@9nau/ui/components/button';
 import { ArrowUp } from 'lucide-react';
+import { cn } from "@9nau/ui/lib/utils";
 
 export function AppProvider({
   children
@@ -62,7 +63,7 @@ export function AppProvider({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div ref={mainContentRef} className="h-full overflow-y-auto">
+      <div ref={mainContentRef} className={cn("h-full", viewMode === 'list' ? 'overflow-y-auto' : 'overflow-y-hidden')}>
         {children}
         <EditNoteModal />
         <div className="fixed bottom-8 right-8 z-50 flex flex-col space-y-2">

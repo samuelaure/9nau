@@ -15,10 +15,10 @@ export default function MainLayout({
   return (
     <div className="flex flex-col h-screen bg-white font-sans">
       <Header />
-      <div className="flex-1 relative overflow-y-auto">
+      <div className="flex-1 relative">
         <Sidebar />
         <main
-          className="flex-1 overflow-y-auto p-4 md:p-8 bg-white transition-all duration-300"
+          className="flex-1 p-4 md:p-8 bg-white transition-all duration-300"
           style={{ marginLeft: isSidebarOpen ? '288px' : '80px' }}
         >
           {children}
