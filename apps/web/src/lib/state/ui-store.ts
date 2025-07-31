@@ -1,6 +1,13 @@
 import { create } from 'zustand'
 
-export type View = 'home' | 'inbox' | 'actions' | 'experiences' | 'trash'
+export type View =
+  | 'home'
+  | 'inbox'
+  | 'actions'
+  | 'experiences'
+  | 'information'
+  | 'schedule'
+  | 'trash'
 
 interface UiState {
   isSidebarOpen: boolean

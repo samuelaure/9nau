@@ -4,13 +4,13 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Block } from '@9nau/types';
 import { HierarchicalSection } from './HierarchicalSection';
 import { NotesInboxSection } from '../notes/NotesInboxSection';
-import { formatDisplayDate, isDateToday } from '@9nau/core';
+import { formatDisplayDate, isDateToday, HierarchicalBlock } from '@9nau/core'; // Import HierarchicalBlock
 import { useDashboardStore } from '@/lib/state/dashboard-store';
 
 interface DailyPeriodProps {
   dateStr: string;
-  dailyActions: Block[];
-  dailyExperiences: Block[];
+  dailyActions: HierarchicalBlock[]; // Changed to HierarchicalBlock[]
+  dailyExperiences: HierarchicalBlock[]; // Changed to HierarchicalBlock[]
   dailyNotes: Block[];
   showHeader?: boolean;
 }

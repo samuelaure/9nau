@@ -1,20 +1,21 @@
-import { useMemo, useRef, useEffect } from 'react';
-import { addDays, subDays } from 'date-fns';
-import { Block } from '@9nau/types';
-import { DailyPeriod } from './DailyPeriod';
-import { useDashboardStore } from '@/lib/state/dashboard-store';
+import { useMemo, useRef, useEffect } from 'react'
+import { addDays, subDays, format } from 'date-fns' // Import format from date-fns
+import { Block } from '@9nau/types'
+import { DailyPeriod } from './DailyPeriod'
+import { useDashboardStore } from '@/lib/state/dashboard-store'
 import {
   getTodayDateString,
   isDateToday,
   formatDisplayDate,
-} from '@9nau/core';
-import { Button } from '@9nau/ui/components/button';
-import { ChevronsLeft, ChevronsRight } from 'lucide-react';
+  HierarchicalBlock,
+} from '@9nau/core'
+import { Button } from '@9nau/ui/components/button'
+import { ChevronsLeft, ChevronsRight, ArrowUp, X } from 'lucide-react'
 
 interface DashboardProps {
-  notesByDate: Map<string, Block[]>;
-  actions: Block[];
-  experiences: Block[];
+  notesByDate: Map<string, Block[]>
+  actions: HierarchicalBlock[]
+  experiences: HierarchicalBlock[]
 }
 
 export function Dashboard({
@@ -27,70 +28,82 @@ export function Dashboard({
     currentDate,
     setCurrentDate,
     visiblePastDays,
+    visibleFutureDays,
     loadMorePastDays,
-  } = useDashboardStore(s => ({
+    showFutureDays,
+    hideFutureDays,
+  } = useDashboardStore((s) => ({
     viewMode: s.viewMode,
     currentDate: s.currentDate,
     setCurrentDate: s.actions.setCurrentDate,
     visiblePastDays: s.visiblePastDays,
+    visibleFutureDays: s.visibleFutureDays,
     loadMorePastDays: s.actions.loadMorePastDays,
-  }));
+    showFutureDays: s.actions.showFutureDays,
+    hideFutureDays: s.actions.hideFutureDays,
+  }))
 
-  const mainRef = useDashboardStore(s => s.mainContentRef);
-  const todayRef = useRef<HTMLDivElement>(null);
+  const mainRef = useDashboardStore((s) => s.mainContentRef)
+  const todayRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    useDashboardStore.setState({ todayRef });
-  }, [todayRef]);
+    useDashboardStore.setState({ todayRef })
+  }, [todayRef])
 
   useEffect(() => {
     const handleScroll = () => {
       if (viewMode === 'list' && mainRef?.current) {
-        const { scrollTop, scrollHeight, clientHeight } = mainRef.current;
+        const { scrollTop, scrollHeight, clientHeight } = mainRef.current
         if (scrollHeight - scrollTop - clientHeight < 200) {
-          loadMorePastDays();
+          loadMorePastDays()
         }
       }
-    };
-    const mainEl = mainRef?.current;
-    mainEl?.addEventListener('scroll', handleScroll);
-    return () => mainEl?.removeEventListener('scroll', handleScroll);
-  }, [viewMode, mainRef, loadMorePastDays]);
+    }
+    const mainEl = mainRef?.current
+    mainEl?.addEventListener('scroll', handleScroll)
+    return () => mainEl?.removeEventListener('scroll', handleScroll)
+  }, [viewMode, mainRef, loadMorePastDays])
 
   const allGroupedData = useMemo(() => {
-    const todayStr = getTodayDateString();
-    const dateArray = [];
+    const today = new Date(getTodayDateString() + 'T00:00:00') // Use normalized today
+    const dateArray = []
+    for (let i = visibleFutureDays; i > 0; i--) {
+      dateArray.push(addDays(today, i))
+    }
     for (let i = 0; i < visiblePastDays; i++) {
-      dateArray.push(subDays(new Date(todayStr), i));
+      dateArray.push(subDays(today, i))
     }
 
-    const allDates = new Set([
-      ...dateArray.map(d => getTodayDateString()),
-      ...Array.from(notesByDate.keys()),
-      ...actions.map(a => getTodayDateString()),
-      ...experiences.map(e => getTodayDateString()),
-    ]);
-
-    return Array.from(allDates)
-      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
-      .map(dateStr => {
-        const dailyNotes = notesByDate.get(dateStr) || [];
-        const dailyActions = actions.filter(
-          a => getTodayDateString() === dateStr
-        );
-        const dailyExperiences = experiences.filter(
-          e => getTodayDateString() === dateStr
-        );
-        return { dateStr, dailyActions, dailyExperiences, dailyNotes };
-      });
-  }, [notesByDate, actions, experiences, visiblePastDays]);
+    return dateArray.map((date) => {
+      const dateStr = format(date, 'yyyy-MM-dd'); // Format the date object to string
+      const dailyNotes = notesByDate.get(dateStr) || []
+      // Filter actions and experiences for the specific date string, ensuring correct type assertion
+      const dailyActions = actions.filter(
+        (a): a is HierarchicalBlock => (a.properties.date as string) === dateStr
+      )
+      const dailyExperiences = experiences.filter(
+        (e): e is HierarchicalBlock => (e.properties.date as string) === dateStr
+      )
+      return { dateStr, dailyActions, dailyExperiences, dailyNotes }
+    })
+  }, [
+    notesByDate,
+    actions,
+    experiences,
+    visiblePastDays,
+    visibleFutureDays,
+  ])
 
   if (viewMode === 'horizontal') {
-    const dateStr = getTodayDateString();
+    const dateStr = format(currentDate, 'yyyy-MM-dd'); // Use currentDate for horizontal view
     const dataForDay = {
-      dailyActions: actions.filter(a => getTodayDateString() === dateStr),
-      dailyExperiences: experiences.filter(e => getTodayDateString() === dateStr),
+      dailyActions: actions.filter(
+        (a): a is HierarchicalBlock => (a.properties.date as string) === dateStr
+      ),
+      dailyExperiences: experiences.filter(
+        (e): e is HierarchicalBlock => (e.properties.date as string) === dateStr
+      ),
       dailyNotes: notesByDate.get(dateStr) || [],
-    };
+    }
 
     return (
       <div>
@@ -103,7 +116,7 @@ export function Dashboard({
             <ChevronsLeft className="w-4 h-4" />
           </Button>
           <h2 className="text-base font-semibold text-gray-700 w-56 text-center">
-            {formatDisplayDate(getTodayDateString())}
+            {formatDisplayDate(format(currentDate, 'yyyy-MM-dd'))}
           </h2>
           <Button
             variant="ghost"
@@ -114,18 +127,34 @@ export function Dashboard({
           </Button>
         </div>
         <div ref={isDateToday(dateStr) ? todayRef : null}>
-          <DailyPeriod
-            showHeader={false}
-            dateStr={dateStr}
-            {...dataForDay}
-          />
+          <DailyPeriod showHeader={false} dateStr={dateStr} {...dataForDay} />
         </div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-center text-gray-500">
+        <button
+          onClick={() => showFutureDays(7)}
+          className="flex-grow flex items-center justify-center hover:text-gray-700 transition-colors p-1.5 rounded-lg hover:bg-gray-100"
+        >
+          <ArrowUp className="w-4 h-4" />
+          <span className="ml-2 text-[10px] font-semibold tracking-wider uppercase">
+            Future
+          </span>
+        </button>
+        {visibleFutureDays > 0 && (
+          <button
+            onClick={hideFutureDays}
+            className="ml-2 text-sm font-semibold p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            title="Hide Future"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
       {allGroupedData.map(
         ({ dateStr, dailyActions, dailyExperiences, dailyNotes }) => (
           <div key={dateStr} ref={isDateToday(dateStr) ? todayRef : null}>
@@ -139,5 +168,5 @@ export function Dashboard({
         )
       )}
     </div>
-  );
+  )
 }

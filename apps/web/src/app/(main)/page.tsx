@@ -1,22 +1,34 @@
-'use client';
+'use client'
 
-import { useMemo } from 'react';
-import { NoteInput } from '@/components/notes/note-input';
-import { Dashboard } from '@/components/dashboard/Dashboard';
-import { useGetBlocks } from '@/hooks/use-blocks-api';
-import { groupBlocksByDate, buildHierarchy } from '@9nau/core';
-import { Block } from '@9nau/types';
-import { useDashboardStore } from '@/lib/state/dashboard-store';
+import { useMemo } from 'react'
+import { NoteInput } from '@/components/notes/note-input'
+import { Dashboard } from '@/components/dashboard/Dashboard'
+import { useGetBlocks } from '@/hooks/use-blocks-api'
+import { groupBlocksByDate, buildHierarchy } from '@9nau/core'
+import { Block } from '@9nau/types'
+import { useDashboardStore } from '@/lib/state/dashboard-store'
+import { useUiStore } from '@/lib/state/ui-store'
+import { NoteGrid } from '@/components/notes/NoteGrid'
+import { formatDisplayDate } from '@9nau/core' // Keep this import as it's a helper function
 
 export default function HomePage() {
-  const { data: blocks, isLoading, isError } = useGetBlocks({});
-  const setAllBlocks = useDashboardStore(s => s.actions.setAllBlocks);
+  const activeView = useUiStore((s) => s.activeView)
+  const setAllBlocks = useDashboardStore((s) => s.actions.setAllBlocks)
+
+  const queryParams = useMemo(() => {
+    if (activeView === 'home') {
+      return { status: 'not:trash' } // Fetch everything not in trash for home view
+    }
+    return { status: activeView } // Fetch by specific status for other views
+  }, [activeView])
+
+  const { data: blocks, isLoading, isError } = useGetBlocks(queryParams)
 
   useMemo(() => {
     if (blocks) {
-      setAllBlocks(blocks);
+      setAllBlocks(blocks)
     }
-  }, [blocks, setAllBlocks]);
+  }, [blocks, setAllBlocks])
 
   const processedData = useMemo(() => {
     if (!blocks) {
@@ -24,23 +36,46 @@ export default function HomePage() {
         notesByDate: new Map<string, Block[]>(),
         actionsHierarchy: [],
         experiencesHierarchy: [],
-      };
+        groupedNotes: {},
+      }
     }
-    const notes = blocks.filter((b: Block) => b.type === 'note');
-    const actions = blocks.filter((b: Block) => b.type === 'action');
-    const experiences = blocks.filter((b: Block) => b.type === 'experience');
+    const notes = blocks.filter((b: Block) => b.type === 'note')
+    const actions = blocks.filter((b: Block) => b.type === 'action')
+    const experiences = blocks.filter((b: Block) => b.type === 'experience')
 
-    const notesByDate = groupBlocksByDate(notes);
-    const actionsHierarchy = buildHierarchy(actions);
-    const experiencesHierarchy = buildHierarchy(experiences);
+    const notesByDate = groupBlocksByDate(notes)
+    const actionsHierarchy = buildHierarchy(actions)
+    const experiencesHierarchy = buildHierarchy(experiences)
 
-    return { notesByDate, actionsHierarchy, experiencesHierarchy };
-  }, [blocks]);
+    const groupedNotes = notes
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+      .reduce(
+        (acc, note) => {
+          // Ensure note.properties.date is a string or provide a fallback
+          const dateProp = note.properties.date as string | undefined;
+          // formatDisplayDate now correctly handles string | undefined
+          const dateKey = formatDisplayDate(
+            dateProp || new Date(note.createdAt).toISOString().split('T')[0]
+          )
+          if (!acc[dateKey]) {
+            acc[dateKey] = []
+          }
+          acc[dateKey].push(note)
+          return acc
+        },
+        {} as Record<string, Block[]>
+      )
+
+    return { notesByDate, actionsHierarchy, experiencesHierarchy, groupedNotes }
+  }, [blocks])
 
   if (isLoading) {
     return (
       <div className="text-center text-gray-500 mt-10">Loading data...</div>
-    );
+    )
   }
 
   if (isError) {
@@ -48,17 +83,41 @@ export default function HomePage() {
       <div className="text-center text-red-500 mt-10">
         Failed to load data. Please try again later.
       </div>
-    );
+    )
   }
 
   return (
     <>
       <NoteInput />
-      <Dashboard
-        notesByDate={processedData.notesByDate}
-        actions={processedData.actionsHierarchy}
-        experiences={processedData.experiencesHierarchy}
-      />
+      {activeView === 'home' ? (
+        <Dashboard
+          notesByDate={processedData.notesByDate}
+          actions={processedData.actionsHierarchy}
+          experiences={processedData.experiencesHierarchy}
+        />
+      ) : (
+        <div className="space-y-8">
+          {Object.keys(processedData.groupedNotes).length === 0 ? (
+            <div className="text-center text-gray-500 mt-20">
+              This section is empty.
+            </div>
+          ) : (
+            Object.entries(processedData.groupedNotes).map(
+              ([date, notesForDate]) => (
+                <div key={date}>
+                  <div className="flex items-center mb-4">
+                    <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider pr-3 whitespace-nowrap">
+                      {date}
+                    </div>
+                    <div className="flex-grow h-px bg-gray-200"></div>
+                  </div>
+                  <NoteGrid notes={notesForDate} />
+                </div>
+              )
+            )
+          )}
+        </div>
+      )}
     </>
-  );
+  )
 }

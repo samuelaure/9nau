@@ -15,20 +15,25 @@ interface DashboardState {
   viewMode: ViewMode
   currentDate: Date
   visiblePastDays: number
+  visibleFutureDays: number
   draggedItem: Block | null
   dropTarget: DropTarget | null
   editingNote: Block | null
-  allBlocks: Block[] // New state to hold all blocks
+  allBlocks: Block[]
+  focusedItemId: string | null
   mainContentRef: RefObject<HTMLDivElement> | null
   todayRef: RefObject<HTMLDivElement> | null
   actions: {
     setViewMode: (mode: ViewMode) => void
     setCurrentDate: (date: Date) => void
     loadMorePastDays: () => void
+    showFutureDays: (days: number) => void
+    hideFutureDays: () => void
     setDraggedItem: (item: Block | null) => void
     setDropTarget: (target: DropTarget | null) => void
     setEditingNoteId: (id: string | null) => void
-    setAllBlocks: (blocks: Block[]) => void // New action
+    setAllBlocks: (blocks: Block[]) => void
+    setFocusedItemId: (id: string | null) => void
   }
 }
 
@@ -36,10 +41,12 @@ const useDashboardStore = create<DashboardState>((set, get) => ({
   viewMode: 'list',
   currentDate: new Date(),
   visiblePastDays: 7,
+  visibleFutureDays: 0,
   draggedItem: null,
   dropTarget: null,
   editingNote: null,
   allBlocks: [],
+  focusedItemId: null,
   mainContentRef: null,
   todayRef: null,
   actions: {
@@ -47,6 +54,8 @@ const useDashboardStore = create<DashboardState>((set, get) => ({
     setCurrentDate: (date) => set({ currentDate: date }),
     loadMorePastDays: () =>
       set((state) => ({ visiblePastDays: state.visiblePastDays + 7 })),
+    showFutureDays: (days) => set({ visibleFutureDays: days }),
+    hideFutureDays: () => set({ visibleFutureDays: 0 }),
     setDraggedItem: (item) => {
       set({ draggedItem: item })
       if (item === null) {
@@ -64,7 +73,8 @@ const useDashboardStore = create<DashboardState>((set, get) => ({
       set({ editingNote: noteToEdit || null })
     },
     setAllBlocks: (blocks) => set({ allBlocks: blocks }),
+    setFocusedItemId: (id) => set({ focusedItemId: id }),
   },
 }))
 
-export { useDashboardStore as useDashboardStore }
+export { useDashboardStore }
