@@ -7,8 +7,8 @@
     "build": "tsc --build",
     "format": "prettier --write \"**/*.ts\"",
     "lint": "eslint \"{apps,packages}/**/*.ts\" --fix",
-    "dev:api": "pnpm run build && pnpm --filter api run start:dev",
-    "dev:web": "pnpm run build && pnpm --filter web run dev"
+    "dev:api": "pnpm --filter api run start:dev",
+    "dev:web": "pnpm --filter web run dev"
   },
   "author": "Samuel Aure",
   "license": "UNLICENSED",

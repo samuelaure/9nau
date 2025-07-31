@@ -16,7 +16,11 @@
     "paths": {
       "@9nau/types": ["packages/types/src/index.ts"],
       "@9nau/core": ["packages/core/src/index.ts"],
-      "@9nau/ui": ["packages/ui/src/index.ts"]
+      "@9nau/ui/*": ["packages/ui/src/*"],
+      "@/components/*": ["apps/web/src/components/*"],
+      "@/lib/*": ["apps/web/src/lib/*"],
+      "@/providers/*": ["apps/web/src/providers/*"],
+      "@/hooks/*": ["apps/web/src/hooks/*"]
     }
   },
   "exclude": ["node_modules"]
