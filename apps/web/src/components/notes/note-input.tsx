@@ -20,6 +20,11 @@ export function NoteInput() {
         }
     }, [text]);
 
+    const handleCancel = () => {
+        setText('');
+        setExpanded(false);
+    };
+
     const handleSubmit = () => {
         if (text.trim()) {
             const today = new Date();
@@ -32,9 +37,8 @@ export function NoteInput() {
                 type: 'note',
                 properties: { text: text.trim(), status: 'inbox', date: dateInUserTimeZone },
             });
-            setText('');
-            setExpanded(false);
         }
+        handleCancel();
     };
     
     React.useEffect(() => { 
@@ -45,7 +49,7 @@ export function NoteInput() {
         };
         document.addEventListener('mousedown', handleClickOutside); 
         return () => document.removeEventListener('mousedown', handleClickOutside); 
-    }, [text]);
+    }, [formRef.current, text]);
 
     if (!isExpanded) {
         return (
@@ -70,11 +74,12 @@ export function NoteInput() {
                         onChange={(e) => setText(e.target.value)} 
                         placeholder="Take a note..."
                         className="w-full resize-none outline-none text-base bg-transparent"
-                        style={{ maxHeight: '50vh' }}
+                        style={{ maxHeight: '70vh' }}
                         rows={1}
                         autoFocus
                     />
-                    <div className="flex justify-end mt-2">
+                    <div className="flex justify-end mt-2 space-x-2">
+                        <Button type="button" variant="ghost" onClick={handleCancel}>Cancel</Button>
                         <Button type="submit" variant="ghost">Done</Button>
                     </div>
                 </div>
