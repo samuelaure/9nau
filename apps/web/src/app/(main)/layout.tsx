@@ -15,7 +15,7 @@ export default function MainLayout({
   return (
     <div className="flex flex-col h-screen bg-white font-sans">
       <Header />
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-y-auto">
         <Sidebar />
         <main
           className="flex-1 overflow-y-auto p-4 md:p-8 bg-white transition-all duration-300"

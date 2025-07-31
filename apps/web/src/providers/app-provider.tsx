@@ -62,11 +62,13 @@ export function AppProvider({
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
-      <EditNoteModal />
-      <div className="fixed bottom-8 right-8 z-50 flex flex-col space-y-2">
-        {showGoToToday && <Button onClick={handleGoToToday} variant="secondary" className="shadow-lg">Today</Button>}
-        {showGoToTop && <Button onClick={handleGoToTop} size="icon" className="bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90"><ArrowUp className="w-6 h-6" /></Button>}
+      <div ref={mainContentRef} className="h-full overflow-y-auto">
+        {children}
+        <EditNoteModal />
+        <div className="fixed bottom-8 right-8 z-50 flex flex-col space-y-2">
+          {showGoToToday && <Button onClick={handleGoToToday} variant="secondary" className="shadow-lg">Today</Button>}
+          {showGoToTop && <Button onClick={handleGoToTop} size="icon" className="bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90"><ArrowUp className="w-6 h-6" /></Button>}
+        </div>
       </div>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
