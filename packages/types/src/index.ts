@@ -33,3 +33,11 @@ export interface CreateBlockDto {
   parentId?: string | null
   properties: Record<string, unknown>
 }
+
+/**
+ * The Data Transfer Object interface for updating an existing Block.
+ */
+export interface UpdateBlockDto {
+  properties?: Record<string, unknown>
+  parentId?: string | null
+}
