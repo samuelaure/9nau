@@ -22,9 +22,15 @@ export function NoteInput() {
 
     const handleSubmit = () => {
         if (text.trim()) {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const dateInUserTimeZone = `${year}-${month}-${day}`;
+
             createBlock.mutate({
                 type: 'note',
-                properties: { text: text.trim(), status: 'inbox' },
+                properties: { text: text.trim(), status: 'inbox', date: dateInUserTimeZone },
             });
             setText('');
             setExpanded(false);

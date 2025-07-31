@@ -41,7 +41,6 @@ export class BlocksService {
       properties: {
         ...((properties as Prisma.JsonObject) || {}),
         sortOrder,
-        date: new Date().toISOString().split('T')[0],
       },
       ...(parentId && {
         parent: {
