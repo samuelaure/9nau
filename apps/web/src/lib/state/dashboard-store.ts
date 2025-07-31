@@ -27,7 +27,7 @@ interface DashboardState {
     setViewMode: (mode: ViewMode) => void
     setCurrentDate: (date: Date) => void
     loadMorePastDays: () => void
-    showFutureDays: (days: number) => void
+    showFutureDays: () => void
     hideFutureDays: () => void
     setDraggedItem: (item: Block | null) => void
     setDropTarget: (target: DropTarget | null) => void
@@ -54,7 +54,8 @@ const useDashboardStore = create<DashboardState>((set, get) => ({
     setCurrentDate: (date) => set({ currentDate: date }),
     loadMorePastDays: () =>
       set((state) => ({ visiblePastDays: state.visiblePastDays + 7 })),
-    showFutureDays: (days) => set({ visibleFutureDays: days }),
+    showFutureDays: () =>
+      set((state) => ({ visibleFutureDays: state.visibleFutureDays + 1 })),
     hideFutureDays: () => set({ visibleFutureDays: 0 }),
     setDraggedItem: (item) => {
       set({ draggedItem: item })

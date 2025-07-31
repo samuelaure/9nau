@@ -135,7 +135,7 @@ export function Dashboard({
     <div className="space-y-6">
       <div className="flex items-center justify-center text-gray-500">
         <button
-          onClick={() => showFutureDays(7)}
+          onClick={() => showFutureDays()}
           className="flex-grow flex items-center justify-center hover:text-gray-700 transition-colors p-1.5 rounded-lg hover:bg-gray-100"
         >
           <ArrowUp className="w-4 h-4" />
