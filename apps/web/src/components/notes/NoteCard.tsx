@@ -34,7 +34,7 @@ export function NoteCard({ note }: NoteCardProps) {
         draggedItem?.id === note.id ? 'opacity-50' : 'opacity-100'
       )}
     >
-      <p className="whitespace-pre-wrap text-sm text-card-foreground break-words">
+      <p className="whitespace-pre-wrap text-sm text-card-foreground break-words max-h-80 overflow-hidden"> 
         {note.properties.text as string}
       </p>
     </div>
