@@ -20,12 +20,7 @@ export function NoteInput() {
         }
     }, [text]);
 
-    const handleCancel = () => {
-        setText('');
-        setExpanded(false);
-    };
-
-    const handleSubmit = () => {
+    const handleClose = () => {
         if (text.trim()) {
             const today = new Date();
             const year = today.getFullYear();
@@ -38,13 +33,14 @@ export function NoteInput() {
                 properties: { text: text.trim(), status: 'inbox', date: dateInUserTimeZone },
             });
         }
-        handleCancel();
+        setText('');
+        setExpanded(false);
     };
     
     React.useEffect(() => { 
         const handleClickOutside = (event: MouseEvent) => { 
             if (formRef.current && !formRef.current.contains(event.target as Node)) {
-                handleSubmit();
+                handleClose();
             } 
         };
         document.addEventListener('mousedown', handleClickOutside); 
@@ -66,7 +62,7 @@ export function NoteInput() {
     
     return (
         <div className="max-w-xl mx-auto mb-8">
-            <form ref={formRef} onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="bg-card rounded-lg shadow-lg border">
+            <form ref={formRef} onSubmit={(e) => { e.preventDefault(); handleClose(); }} className="bg-card rounded-lg shadow-lg border">
                 <div className="p-4">
                     <textarea 
                         ref={textAreaRef}
@@ -79,8 +75,7 @@ export function NoteInput() {
                         autoFocus
                     />
                     <div className="flex justify-end mt-2 space-x-2">
-                        <Button type="button" variant="ghost" onClick={handleCancel}>Cancel</Button>
-                        <Button type="submit" variant="ghost">Done</Button>
+                        <Button type="button" variant="ghost" onClick={handleClose}>Close</Button>
                     </div>
                 </div>
             </form>
