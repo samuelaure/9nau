@@ -36,7 +36,8 @@ export function DailyPeriod({
     setDraggedItem(null);
   };
 
-  const sortedNotes = [...dailyNotes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const inboxNotes = dailyNotes.filter(note => note.properties.status === 'inbox');
+  const sortedNotes = [...inboxNotes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   const content = (
     <div className={cn(showHeader && 'pt-4 pl-4 border-l-2 ml-2')}>
