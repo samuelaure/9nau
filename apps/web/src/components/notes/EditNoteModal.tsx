@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { Block } from '@9nau/types';
 import { useUpdateBlock } from '@/hooks/use-blocks-api';
 import { Button } from '@9nau/ui/components/button';
 import { useDashboardStore } from '@/lib/state/dashboard-store';
@@ -29,7 +28,14 @@ export function EditNoteModal() {
     }
   }, [text]);
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (textAreaRef.current && editingNote) {
+      textAreaRef.current.style.height = 'auto';
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
+    }
+  }, [editingNote]);
+
+  const handleSaveAndClose = () => {
     if (editingNote && text.trim() !== editingNote.properties.text) {
       updateBlock.mutate({
         id: editingNote.id,
@@ -42,14 +48,14 @@ export function EditNoteModal() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        handleSave();
+        handleSaveAndClose();
       }
     };
     if (editingNote) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [editingNote, text]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [editingNote, text, handleSaveAndClose]);
 
   if (!editingNote) return null;
 
@@ -61,6 +67,7 @@ export function EditNoteModal() {
         style={{ maxHeight: '85vh' }}
       >
         <textarea
+          key={editingNote.id}
           ref={textAreaRef}
           value={text}
           onChange={e => setText(e.target.value)}
@@ -70,7 +77,7 @@ export function EditNoteModal() {
           autoFocus
         />
         <div className="flex justify-end mt-2 flex-shrink-0">
-          <Button onClick={handleSave} variant="ghost">
+          <Button onClick={handleSaveAndClose} variant="ghost">
             Done
           </Button>
         </div>
