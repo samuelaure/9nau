@@ -40,14 +40,8 @@ export const useCreateBlock = () => {
 
 export const useUpdateBlock = () => {
   const queryClient = useQueryClient()
-  return useMutation<
-    Block,
-    Error,
-    { id: string; updateDto: UpdateBlockDto },
-    { previousBlocks: Block[] | undefined }
-  >({
-    mutationFn: ({ id, updateDto }) =>
-      apiClient.patch(`/blocks/${id}`, updateDto),
+  return useMutation<Block, Error, { id: string; updateDto: UpdateBlockDto }, { previousBlocks: Block[] | undefined }>({
+    mutationFn: ({ id, updateDto }) => apiClient.patch(`/blocks/${id}`, updateDto),
     onMutate: async ({ id, updateDto }) => {
       await queryClient.cancelQueries({ queryKey: ['blocks'] })
       // Capture the previous state correctly, ensuring it's an array of Block

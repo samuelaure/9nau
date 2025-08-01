@@ -52,10 +52,8 @@ const useDashboardStore = create<DashboardState>((set, get) => ({
   actions: {
     setViewMode: (mode) => set({ viewMode: mode }),
     setCurrentDate: (date) => set({ currentDate: date }),
-    loadMorePastDays: () =>
-      set((state) => ({ visiblePastDays: state.visiblePastDays + 7 })),
-    showFutureDays: () =>
-      set((state) => ({ visibleFutureDays: state.visibleFutureDays + 1 })),
+    loadMorePastDays: () => set((state) => ({ visiblePastDays: state.visiblePastDays + 7 })),
+    showFutureDays: () => set((state) => ({ visibleFutureDays: state.visibleFutureDays + 1 })),
     hideFutureDays: () => set({ visibleFutureDays: 0 }),
     setDraggedItem: (item) => {
       set({ draggedItem: item })

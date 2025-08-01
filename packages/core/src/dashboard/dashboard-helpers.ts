@@ -42,16 +42,12 @@ export function buildHierarchy(blocks: Block[]): HierarchicalBlock[] {
 
   const sortChildrenRecursive = (node: HierarchicalBlock) => {
     if (node.children && node.children.length > 0) {
-      node.children.sort(
-        (a, b) => (a.properties.sortOrder || 0) - (b.properties.sortOrder || 0)
-      )
+      node.children.sort((a, b) => (a.properties.sortOrder || 0) - (b.properties.sortOrder || 0))
       node.children.forEach(sortChildrenRecursive)
     }
   }
 
-  roots.sort(
-    (a, b) => (a.properties.sortOrder || 0) - (b.properties.sortOrder || 0)
-  )
+  roots.sort((a, b) => (a.properties.sortOrder || 0) - (b.properties.sortOrder || 0))
   roots.forEach(sortChildrenRecursive)
 
   return roots
@@ -65,9 +61,7 @@ export function buildHierarchy(blocks: Block[]): HierarchicalBlock[] {
 export function groupBlocksByDate(blocks: Block[]): Map<string, Block[]> {
   const grouped = new Map<string, Block[]>()
   blocks.forEach((block) => {
-    const dateKey =
-      (block.properties.date as string) ||
-      format(new Date(block.createdAt), 'yyyy-MM-dd')
+    const dateKey = (block.properties.date as string) || format(new Date(block.createdAt), 'yyyy-MM-dd')
     if (!grouped.has(dateKey)) {
       grouped.set(dateKey, [])
     }
@@ -97,8 +91,7 @@ export const getTodayDateString = () => format(new Date(), 'yyyy-MM-dd')
  * Checks if a given date string corresponds to today.
  * @param dateStr - The date string to check.
  */
-export const isDateToday = (dateStr: string) =>
-  isToday(new Date(dateStr + 'T00:00:00'))
+export const isDateToday = (dateStr: string) => isToday(new Date(dateStr + 'T00:00:00'))
 
 /**
  * Recursively finds an item and its parent within a hierarchical structure.

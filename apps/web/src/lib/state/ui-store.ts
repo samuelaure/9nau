@@ -1,13 +1,6 @@
 import { create } from 'zustand'
 
-export type View =
-  | 'home'
-  | 'inbox'
-  | 'actions'
-  | 'experiences'
-  | 'information'
-  | 'schedule'
-  | 'trash'
+export type View = 'home' | 'inbox' | 'actions' | 'experiences' | 'information' | 'schedule' | 'trash'
 
 interface UiState {
   isSidebarOpen: boolean
@@ -22,8 +15,7 @@ export const useUiStore = create<UiState>((set) => ({
   isSidebarOpen: true,
   activeView: 'home',
   actions: {
-    toggleSidebar: () =>
-      set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+    toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
     setView: (view) => set({ activeView: view }),
   },
 }))
