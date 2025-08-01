@@ -44,7 +44,6 @@ export const useUpdateBlock = () => {
     mutationFn: ({ id, updateDto }) => apiClient.patch(`/blocks/${id}`, updateDto),
     onMutate: async ({ id, updateDto }) => {
       await queryClient.cancelQueries({ queryKey: ['blocks'] })
-      // Capture the previous state correctly, ensuring it's an array of Block
       const previousBlocks = queryClient.getQueryData<Block[]>(['blocks'])
 
       queryClient.setQueryData<Block[]>(['blocks'], (old) => {
@@ -59,11 +58,9 @@ export const useUpdateBlock = () => {
             : block
         )
       })
-      // Return the context with the correct type for previousBlocks
       return { previousBlocks: previousBlocks }
     },
     onError: (err, variables, context) => {
-      // Ensure context.previousBlocks is checked for existence before use
       if (context?.previousBlocks) {
         queryClient.setQueryData(['blocks'], context.previousBlocks)
       }

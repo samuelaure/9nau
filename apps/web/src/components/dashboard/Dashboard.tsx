@@ -32,6 +32,8 @@ export function Dashboard({
     loadMorePastDays,
     showFutureDays,
     hideFutureDays,
+    setMainContentRef,
+    setTodayRef,
   } = useDashboardStore((s) => ({
     viewMode: s.viewMode,
     currentDate: s.currentDate,
@@ -41,13 +43,17 @@ export function Dashboard({
     loadMorePastDays: s.actions.loadMorePastDays,
     showFutureDays: s.actions.showFutureDays,
     hideFutureDays: s.actions.hideFutureDays,
+    setMainContentRef: s.actions.setMainContentRef,
+    setTodayRef: s.actions.setTodayRef,
   }))
 
-  const mainRef = useDashboardStore((s) => s.mainContentRef)
+  const mainRef = useRef<HTMLDivElement>(null)
   const todayRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
-    useDashboardStore.setState({ todayRef })
-  }, [todayRef])
+    setMainContentRef(mainRef);
+    setTodayRef(todayRef);
+  }, [mainRef, todayRef, setMainContentRef, setTodayRef]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,7 +110,7 @@ export function Dashboard({
     }
 
     return (
-      <div>
+      <div ref={mainRef}>
         <div className="flex items-center justify-center space-x-1 mb-2">
           <Button
             variant="ghost"
@@ -132,7 +138,7 @@ export function Dashboard({
   }
 
   return (
-    <div className="space-y-6">
+    <div ref={mainRef} className="space-y-6">
       <div className="flex items-center justify-center text-gray-500">
         <button
           onClick={() => showFutureDays()}

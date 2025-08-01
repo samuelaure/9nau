@@ -59,15 +59,11 @@ export function HierarchicalSection({
     }
   }
 
-  const handleAdd = (afterId: string | null) => {
-    const parentInfo = afterId ? findItemAndParent(items, afterId) : null
-    const parentId = parentInfo?.parent?.id || null
-    const newBlock: Omit<Block, 'id' | 'createdAt' | 'updatedAt'> & {
-      id?: string
-    } = {
+  const handleAdd = (afterId: string | null, parentId: string | null) => {
+    const newBlock: Omit<Block, 'id' | 'createdAt' | 'updatedAt'> = {
       type: sectionType,
       parentId,
-      properties: { text: '', date: dateStr },
+      properties: { text: '', date: dateStr, status: 'inbox' },
     }
     createBlock.mutate(newBlock, {
       onSuccess: (createdBlock) => {
@@ -84,7 +80,6 @@ export function HierarchicalSection({
     const found = findItemAndParent(items, id)
     if (found && found.index > 0) {
       const newParent = found.parentList[found.index - 1]
-      // Ensure newParent is not null/undefined before accessing its id
       if (newParent) {
         updateBlock.mutate(
           { id, updateDto: { parentId: newParent.id } },
@@ -118,17 +113,49 @@ export function HierarchicalSection({
   const handleDrop = () => {
     if (!draggedItem || !dropTarget) return
 
-    let newParentId = draggedItem.parentId
-    if (dropTarget.position === 'on') {
-      newParentId = dropTarget.id
-    } else if (dropTarget.id) {
-      const targetInfo = findItemAndParent(items, dropTarget.id)
-      newParentId = targetInfo?.parent?.id || null
-    } else {
-      newParentId = null
+    let newParentId: string | null = null;
+    let newSortOrder: number | undefined;
+
+    // Handle drops within the same section
+    if (draggedItem.type === dropTarget.section) {
+      if (dropTarget.position === 'on') {
+        newParentId = dropTarget.id
+        // For new children, sort order is not crucial as it will be handled by the backend
+      } else {
+        const targetItemInfo = findItemAndParent(items, dropTarget.id!);
+        if (targetItemInfo) {
+          newParentId = targetItemInfo.parent?.id || null;
+          // Calculate new sort order based on position relative to target
+          const targetIndex = targetItemInfo.parentList.findIndex(item => item.id === dropTarget.id);
+          const siblingIds = targetItemInfo.parentList.map(item => item.id);
+          let newSiblingIds: string[];
+
+          if (dropTarget.position === 'above') {
+            newSiblingIds = [
+              ...siblingIds.slice(0, targetIndex),
+              draggedItem.id,
+              ...siblingIds.slice(targetIndex)
+            ];
+          } else { // 'below'
+            newSiblingIds = [
+              ...siblingIds.slice(0, targetIndex + 1),
+              draggedItem.id,
+              ...siblingIds.slice(targetIndex + 1)
+            ];
+          }
+
+          // The sort order is a bit tricky with Prisma and JSONB.
+          // A simplified approach is to re-assign sort order for all siblings after the drag.
+          // For now, let's just update the parentId and rely on the backend to handle a basic sort.
+          // A more robust implementation would re-calculate all sibling sortOrders on the client.
+        } else {
+          // Dropping on the section header or end of list
+          newParentId = null;
+        }
+      }
     }
 
-    if (draggedItem.id === newParentId) return // Prevent dropping onto self
+    if (draggedItem.id === newParentId) return 
 
     updateBlock.mutate({
       id: draggedItem.id,
@@ -141,7 +168,7 @@ export function HierarchicalSection({
     level = 0
   ): JSX.Element => (
     <>
-      {itemList.map((item) => (
+      {itemList.map((item, index) => (
         <div
           key={item.id}
           style={{ marginLeft: `${level > 0 ? 1.5 : 0}rem` }}
@@ -156,6 +183,8 @@ export function HierarchicalSection({
             onDelete={handleDelete}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
+            parentList={itemList}
+            index={index}
           />
           {item.children?.length > 0 && renderList(item.children, level + 1)}
         </div>
@@ -205,7 +234,7 @@ export function HierarchicalSection({
           ) : (
             <div
               className="text-gray-500 italic text-sm pl-8 cursor-pointer"
-              onClick={() => handleAdd(null)}
+              onClick={() => handleAdd(null, null)}
             >
               Click to add an entry.
             </div>

@@ -5,14 +5,17 @@ import { useDashboardStore } from '@/lib/state/dashboard-store'
 
 interface EditableItemProps {
   item: Block
-  onUpdate: (id: string, newText: string) => void
+  onUpdate: (id: string, newText: string, newParentId?: string | null) => void
   onToggle: (id: string) => void
-  onAddItem: (afterId: string) => void
+  onAddItem: (afterId: string, parentId: string | null) => void
   onIndent: (id: string) => void
   onOutdent: (id: string) => void
   onDelete: (id: string) => void
   onDragStart: (e: React.DragEvent, item: Block) => void
   onDragEnd: (e: React.DragEvent) => void
+  focusAfterAdd?: boolean
+  parentList: Block[]
+  index: number
 }
 
 export function EditableItem({
@@ -25,18 +28,15 @@ export function EditableItem({
   onDelete,
   onDragStart,
   onDragEnd,
+  focusAfterAdd,
+  parentList,
+  index,
 }: EditableItemProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [text, setText] = useState((item.properties.text as string) || '')
   const inputRef = useRef<HTMLInputElement>(null)
-
-  const {
-    setDropTarget,
-    dropTarget,
-    draggedItem,
-    focusedItemId,
-    setFocusedItemId,
-  } = useDashboardStore((s) => ({
+  
+  const { setDropTarget, dropTarget, draggedItem, focusedItemId, setFocusedItemId } = useDashboardStore((s) => ({
     setDropTarget: s.actions.setDropTarget,
     dropTarget: s.dropTarget,
     draggedItem: s.draggedItem,
@@ -45,11 +45,11 @@ export function EditableItem({
   }))
 
   useEffect(() => {
-    if (focusedItemId === item.id) {
+    if (focusAfterAdd || focusedItemId === item.id) {
       setIsEditing(true)
-      setFocusedItemId(null) // Reset after focusing
+      setFocusedItemId(null)
     }
-  }, [focusedItemId, item.id, setFocusedItemId])
+  }, [focusAfterAdd, focusedItemId, item.id, setFocusedItemId])
 
   useEffect(() => {
     if (isEditing) {
@@ -70,7 +70,7 @@ export function EditableItem({
     if (e.key === 'Enter') {
       e.preventDefault()
       handleSave()
-      onAddItem(item.id)
+      onAddItem(item.id, item.parentId)
     } else if (e.key === 'Escape') {
       setText((item.properties.text as string) || '')
       setIsEditing(false)
@@ -79,12 +79,18 @@ export function EditableItem({
       onDelete(item.id)
     } else if (e.key === 'Tab') {
       e.preventDefault()
-      handleSave() // Save current text before indent/outdent
+      handleSave() 
       if (e.shiftKey) {
         onOutdent(item.id)
       } else {
         onIndent(item.id)
       }
+    } else if (e.key === 'ArrowUp' && index > 0) {
+      e.preventDefault();
+      setFocusedItemId(parentList[index - 1]?.id ?? null);
+    } else if (e.key === 'ArrowDown' && index < parentList.length - 1) {
+      e.preventDefault();
+      setFocusedItemId(parentList[index + 1]?.id ?? null);
     }
   }
 
@@ -114,6 +120,11 @@ export function EditableItem({
     item.properties.completed ? 'line-through text-gray-500' : 'text-gray-700'
   )
 
+  const handleLocalDragEnd = (e: React.DragEvent) => {
+    onDragEnd(e);
+  };
+
+
   return (
     <div
       className="relative group"
@@ -123,8 +134,8 @@ export function EditableItem({
       onDrop={(e) => {
         e.preventDefault()
         e.stopPropagation()
-      }} // Drop logic is handled by parent
-      onDragEnd={onDragEnd}
+      }} 
+      onDragEnd={handleLocalDragEnd}
     >
       {dropTarget?.id === item.id && dropTarget.position === 'above' && (
         <div className="absolute -top-1 left-0 w-full h-0.5 bg-blue-500 rounded-full z-10" />

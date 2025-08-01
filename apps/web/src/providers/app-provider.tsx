@@ -17,13 +17,18 @@ export function AppProvider({
   const [queryClient] = useState(() => new QueryClient());
   const mainContentRef = useRef<HTMLDivElement>(null);
 
-  const { todayRef, viewMode, currentDate } = useDashboardStore();
+  const { todayRef, viewMode, currentDate, actions: { setMainContentRef, setTodayRef } } = useDashboardStore(s => ({
+    todayRef: s.todayRef,
+    viewMode: s.viewMode,
+    currentDate: s.currentDate,
+    actions: s.actions,
+  }));
   const [showGoToToday, setShowGoToToday] = useState(false);
   const [showGoToTop, setShowGoToTop] = useState(false);
 
   useEffect(() => {
-    useDashboardStore.setState({ mainContentRef });
-  }, [mainContentRef]);
+    setMainContentRef(mainContentRef);
+  }, [mainContentRef, setMainContentRef]);
 
   useEffect(() => {
     const mainEl = mainContentRef.current;

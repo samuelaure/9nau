@@ -34,6 +34,8 @@ interface DashboardState {
     setEditingNoteId: (id: string | null) => void
     setAllBlocks: (blocks: Block[]) => void
     setFocusedItemId: (id: string | null) => void
+    setMainContentRef: (ref: RefObject<HTMLDivElement>) => void
+    setTodayRef: (ref: RefObject<HTMLDivElement>) => void
   }
 }
 
@@ -73,6 +75,8 @@ const useDashboardStore = create<DashboardState>((set, get) => ({
     },
     setAllBlocks: (blocks) => set({ allBlocks: blocks }),
     setFocusedItemId: (id) => set({ focusedItemId: id }),
+    setMainContentRef: (ref) => set({ mainContentRef: ref }),
+    setTodayRef: (ref) => set({ todayRef: ref }),
   },
 }))
 
