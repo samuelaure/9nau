@@ -4,13 +4,13 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Block } from '@9nau/types';
 import { HierarchicalSection } from './HierarchicalSection';
 import { NotesInboxSection } from '../notes/NotesInboxSection';
-import { formatDisplayDate, isDateToday, HierarchicalBlock } from '@9nau/core'; // Import HierarchicalBlock
+import { formatDisplayDate, isDateToday, HierarchicalBlock } from '@9nau/core';
 import { useDashboardStore } from '@/lib/state/dashboard-store';
 
 interface DailyPeriodProps {
   dateStr: string;
-  dailyActions: HierarchicalBlock[]; // Changed to HierarchicalBlock[]
-  dailyExperiences: HierarchicalBlock[]; // Changed to HierarchicalBlock[]
+  dailyActions: HierarchicalBlock[];
+  dailyExperiences: HierarchicalBlock[];
   dailyNotes: Block[];
   showHeader?: boolean;
 }
@@ -36,6 +36,8 @@ export function DailyPeriod({
     setDraggedItem(null);
   };
 
+  const sortedNotes = [...dailyNotes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
   const content = (
     <div className={cn(showHeader && 'pt-4 pl-4 border-l-2 ml-2')}>
       <HierarchicalSection
@@ -50,7 +52,7 @@ export function DailyPeriod({
         title="Experiences & Gratitude"
         items={dailyExperiences}
       />
-      <NotesInboxSection title="Notes Inbox" notes={dailyNotes} />
+      <NotesInboxSection title="Notes Inbox" notes={sortedNotes} />
     </div>
   );
 
