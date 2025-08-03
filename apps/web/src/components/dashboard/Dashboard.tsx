@@ -9,6 +9,7 @@ import {
   formatDisplayDate,
   HierarchicalBlock,
   findItemAndParent,
+  calculateSortOrder,
 } from '@9nau/core'
 import { Button } from '@9nau/ui/components/button'
 import { ChevronsLeft, ChevronsRight, ArrowUp, X } from 'lucide-react'
@@ -112,63 +113,93 @@ export function Dashboard({
 
   const handleDrop = () => {
     if (!draggedItem || !dropTarget) {
-      return;
+      return
     }
 
-    // Handle drops that change the date or are re-parented within the same date
-    if (draggedItem.type === dropTarget.section) {
-      // Logic for changing parentId and/or sortOrder (including reordering in place)
-      let newParentId: string | null = null;
-      let newSortOrder: number | undefined;
-      const newProperties: Record<string, unknown> = {};
+    // Prevent dropping an item onto itself
+    if (draggedItem.id === dropTarget.id) {
+      setDraggedItem(null)
+      setDropTarget(null)
+      return
+    }
+    
+    // Prevent dropping a note in the hierarchical sections via this handler
+    if (draggedItem.type === 'note') {
+      setDraggedItem(null)
+      setDropTarget(null)
+      return
+    }
 
-      if (dropTarget.position === 'on' && dropTarget.id) {
-        newParentId = dropTarget.id;
-      } else if (dropTarget.id) {
-        const items = draggedItem.type === 'action' ? actions : experiences;
-        const targetItemInfo = findItemAndParent(items, dropTarget.id);
-        if (targetItemInfo) {
-          newParentId = targetItemInfo.parent?.id ?? null;
-          // For now, setting sort order is complex due to the tree structure.
-          // Let's rely on the backend for a basic `parentId` change.
-          // A more advanced implementation would re-calculate all sibling sort orders.
-          if (dropTarget.position === 'above') {
-            newSortOrder = (targetItemInfo.item.properties.sortOrder || 0) - 0.5;
-          } else if (dropTarget.position === 'below') {
-            newSortOrder = (targetItemInfo.item.properties.sortOrder || 0) + 0.5;
-          }
-        }
-      } else { // Dropping at the end of a section (id is null)
-        newParentId = null;
+    const allItems = draggedItem.type === 'action' ? actions : experiences
+    
+    // Prevent dropping a parent onto one of its own children
+    const isDroppingOnChild = (item: Block, parentId: string | null): boolean => {
+      if (!parentId) return false
+      if (item.id === parentId) return true
+      const parentInfo = findItemAndParent(allItems, parentId)
+      if (parentInfo?.parent) {
+        return isDroppingOnChild(item, parentInfo.parent.id)
       }
+      return false
+    }
+    if (isDroppingOnChild(draggedItem, dropTarget.id)) {
+      setDraggedItem(null)
+      setDropTarget(null)
+      return
+    }
 
-      if (draggedItem.id === newParentId) {
-        setDraggedItem(null);
-        setDropTarget(null);
+    let newParentId: string | null = draggedItem.parentId
+    let newSortOrder: number | undefined = undefined
+    const newProperties: Record<string, unknown> = {}
+
+    if (dropTarget.id) { // Dropping on or near another item
+      const targetItemInfo = findItemAndParent(allItems, dropTarget.id)
+      if (!targetItemInfo) {
+        console.error("Could not find target item info for drop.")
         return;
       }
 
-      if (draggedItem.properties.date !== dropTarget.date) {
-        newProperties.date = dropTarget.date;
-        newParentId = null; // When changing date, it becomes a root item for the new day
+      if (dropTarget.position === 'on') {
+        newParentId = targetItemInfo.item.id
+        const lastChild = targetItemInfo.item.children?.[targetItemInfo.item.children.length - 1]
+        newSortOrder = (lastChild?.properties.sortOrder || 0) + 1
+      } else if (dropTarget.position === 'above' || dropTarget.position === 'below') {
+        newParentId = targetItemInfo.parent?.id ?? null
+        newSortOrder = calculateSortOrder(targetItemInfo.parentList, targetItemInfo.index, dropTarget.position)
       }
-
-      updateBlock.mutate({
-        id: draggedItem.id,
-        updateDto: { parentId: newParentId, properties: { ...draggedItem.properties, ...newProperties, sortOrder: newSortOrder } },
-      });
+    } else { // Dropping at the end of a section
+      newParentId = null // Root level for the day
+      const rootItems = allItems.filter(i => !i.parentId && i.properties.date === dropTarget.date);
+      const lastRootItem = rootItems[rootItems.length - 1];
+      newSortOrder = (lastRootItem?.properties.sortOrder || 0) + 1;
     }
-    // Dropping a note on a sidebar item (change status)
-    else if (draggedItem.type === 'note') {
+
+    if ((draggedItem.properties.date as string) !== dropTarget.date) {
+      newProperties.date = dropTarget.date
+      // When moving to a new date, it becomes a root item unless dropped specifically 'on' another item
+      if (dropTarget.position !== 'on') {
+        newParentId = null
+      }
+    }
+
+    const hasChanged =
+      newParentId !== draggedItem.parentId ||
+      (newSortOrder !== undefined && newSortOrder !== (draggedItem.properties.sortOrder as number)) ||
+      Object.keys(newProperties).length > 0
+
+    if (hasChanged) {
       updateBlock.mutate({
         id: draggedItem.id,
-        updateDto: { properties: { status: dropTarget.section } },
+        updateDto: {
+          parentId: newParentId,
+          properties: { ...newProperties, sortOrder: newSortOrder },
+        },
       })
     }
 
-    setDraggedItem(null);
-    setDropTarget(null);
-  };
+    setDraggedItem(null)
+    setDropTarget(null)
+  }
   
   if (viewMode === 'horizontal') {
     const dateStr = format(currentDate, 'yyyy-MM-dd')

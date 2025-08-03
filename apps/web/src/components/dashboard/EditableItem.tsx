@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Block } from '@9nau/types'
 import { cn } from '@9nau/ui/lib/utils'
 import { useDashboardStore } from '@/lib/state/dashboard-store'
+import { HierarchicalBlock } from '@9nau/core'
 
 interface EditableItemProps {
   item: Block
@@ -14,7 +15,7 @@ interface EditableItemProps {
   onDragStart: (e: React.DragEvent, item: Block) => void
   onDragEnd: (e: React.DragEvent) => void
   focusAfterAdd?: boolean
-  parentList: Block[]
+  parentList: HierarchicalBlock[]
   index: number
 }
 
@@ -36,10 +37,9 @@ export function EditableItem({
   const [text, setText] = useState((item.properties.text as string) || '')
   const inputRef = useRef<HTMLInputElement>(null)
   
-  const { setDropTarget, dropTarget, draggedItem, focusedItemId, setFocusedItemId } = useDashboardStore((s) => ({
+  const { setDropTarget, dropTarget, focusedItemId, setFocusedItemId } = useDashboardStore((s) => ({
     setDropTarget: s.actions.setDropTarget,
     dropTarget: s.dropTarget,
-    draggedItem: s.draggedItem,
     focusedItemId: s.focusedItemId,
     setFocusedItemId: s.actions.setFocusedItemId,
   }))
@@ -97,16 +97,19 @@ export function EditableItem({
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (!draggedItem || draggedItem.id === item.id) {
+    const currentDraggedItem = useDashboardStore.getState().draggedItem;
+    if (!currentDraggedItem || currentDraggedItem.id === item.id) {
       setDropTarget(null)
       return
     }
+
     const rect = e.currentTarget.getBoundingClientRect()
     const y = e.clientY - rect.top
     const height = rect.height
     let position: 'above' | 'below' | 'on' = 'on'
-    if (y < height * 0.3) position = 'above'
-    else if (y > height * 0.7) position = 'below'
+    if (y < height * 0.25) position = 'above'
+    else if (y > height * 0.75) position = 'below'
+    
     setDropTarget({
       id: item.id,
       position,
@@ -120,22 +123,14 @@ export function EditableItem({
     item.properties.completed ? 'line-through text-gray-500' : 'text-gray-700'
   )
 
-  const handleLocalDragEnd = (e: React.DragEvent) => {
-    onDragEnd(e);
-  };
-
-
   return (
     <div
       className="relative group"
       draggable
       onDragStart={(e) => onDragStart(e, item)}
       onDragOver={handleDragOver}
-      onDrop={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-      }} 
-      onDragEnd={handleLocalDragEnd}
+      onDragLeave={() => setDropTarget(null)}
+      onDragEnd={onDragEnd}
     >
       {dropTarget?.id === item.id && dropTarget.position === 'above' && (
         <div className="absolute -top-1 left-0 w-full h-0.5 bg-blue-500 rounded-full z-10" />

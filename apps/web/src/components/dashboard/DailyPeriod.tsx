@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { cn } from '@9nau/ui/lib/utils';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Block } from '@9nau/types';
 import { HierarchicalSection } from './HierarchicalSection';
 import { NotesInboxSection } from '../notes/NotesInboxSection';
@@ -23,20 +23,20 @@ export function DailyPeriod({
   showHeader = true,
 }: DailyPeriodProps) {
   const [isOpen, setIsOpen] = useState(() => isDateToday(dateStr));
-  const { setDropTarget, draggedItem } = useDashboardStore(s => ({
+  const { setDropTarget } = useDashboardStore(s => ({
     setDropTarget: s.actions.setDropTarget,
-    draggedItem: s.draggedItem,
   }));
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    const draggedItem = useDashboardStore.getState().draggedItem;
     if (draggedItem && draggedItem.type !== 'note') {
       setDropTarget({
         id: null,
         position: 'end',
         date: dateStr,
-        section: draggedItem.type,
+        section: draggedItem.type, // Drop into the correct section type for that day
       });
     }
   }

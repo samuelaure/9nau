@@ -48,15 +48,20 @@ export const useUpdateBlock = () => {
 
       queryClient.setQueryData<Block[]>(['blocks'], (old) => {
         if (!old) return []
-        return old.map((block) =>
-          block.id === id
-            ? {
-                ...block,
-                ...updateDto,
-                properties: { ...block.properties, ...updateDto.properties },
-              }
-            : block
-        )
+        return old.map((block) => {
+          if (block.id !== id) return block
+
+          const newBlock: Block = {
+            ...block,
+            properties: { ...block.properties, ...updateDto.properties },
+          }
+
+          if ('parentId' in updateDto) {
+            newBlock.parentId = updateDto.parentId ?? null
+          }
+
+          return newBlock
+        })
       })
       return { previousBlocks: previousBlocks }
     },

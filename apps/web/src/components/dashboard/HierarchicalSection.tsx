@@ -108,25 +108,30 @@ export function HierarchicalSection({
 
   const handleDragEnd = () => {
     setDraggedItem(null)
+    setDropTarget(null)
   }
   
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleSectionDragOver = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (!draggedItem || draggedItem.type !== sectionType) {
+    const currentDraggedItem = useDashboardStore.getState().draggedItem;
+    if (!currentDraggedItem || currentDraggedItem.type !== sectionType) {
       setDropTarget(null)
       return
     }
-    setDropTarget({
-      id: null,
-      position: 'end',
-      date: dateStr,
-      section: sectionType,
-    })
+    if (isOpen) {
+      setDropTarget({
+        id: null,
+        position: 'end',
+        date: dateStr,
+        section: sectionType,
+      })
+    }
   }
 
   const renderList = (
     itemList: HierarchicalBlock[],
+    parentListForContext: HierarchicalBlock[],
     level = 0
   ): JSX.Element => (
     <>
@@ -145,10 +150,10 @@ export function HierarchicalSection({
             onDelete={handleDelete}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
-            parentList={itemList}
+            parentList={parentListForContext}
             index={index}
           />
-          {item.children?.length > 0 && renderList(item.children, level + 1)}
+          {item.children?.length > 0 && renderList(item.children, item.children, level + 1)}
         </div>
       ))}
     </>
@@ -159,18 +164,7 @@ export function HierarchicalSection({
       <button
         className="flex items-center w-full text-left p-2 rounded-md hover:bg-gray-50"
         onClick={() => setIsOpen(!isOpen)}
-        onDragOver={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          if (draggedItem && draggedItem.type === sectionType) {
-            setDropTarget({
-              id: null,
-              position: 'end',
-              date: dateStr,
-              section: sectionType,
-            })
-          }
-        }}
+        onDragOver={handleSectionDragOver}
       >
         {isOpen ? (
           <ChevronDown className="w-4 h-4 mr-2" />
@@ -182,16 +176,21 @@ export function HierarchicalSection({
       {isOpen && (
         <div
           className="pl-2 mt-2"
-          onDragOver={handleDragOver}
+          onDragOver={handleSectionDragOver}
         >
           {items.length > 0 ? (
-            renderList(items)
+            renderList(items, items)
           ) : (
             <div
-              className="text-gray-500 italic text-sm pl-8 cursor-pointer"
+              className="text-gray-500 italic text-sm pl-8 cursor-pointer h-10 flex items-center"
               onClick={() => handleAdd(null, null)}
             >
               Click to add an entry.
+            </div>
+          )}
+          {dropTarget?.section === sectionType && dropTarget.position === 'end' && dropTarget.id === null && (
+            <div className="relative h-1">
+                <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-500 rounded-full z-10" />
             </div>
           )}
         </div>

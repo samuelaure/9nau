@@ -144,3 +144,45 @@ export const removeItemFromTree = (
   const newItems = recursiveFilter(items)
   return { newItems, removedItem }
 }
+
+/**
+ * Calculates a new sortOrder for an item being dropped relative to its new siblings.
+ * @param siblings - The list of siblings in the target drop location.
+ * @param targetIndex - The index of the item being dropped near.
+ * @param position - Whether the item is dropped 'above' or 'below' the target.
+ * @returns A new sortOrder number.
+ */
+export function calculateSortOrder(
+  siblings: HierarchicalBlock[],
+  targetIndex: number,
+  position: 'above' | 'below'
+): number {
+  if (position === 'above') {
+    const prevSibling = siblings[targetIndex - 1]
+    const targetSibling = siblings[targetIndex]
+    if (!targetSibling) {
+      // Should not happen if called correctly, but as a fallback, place it at the end
+      return (prevSibling?.properties.sortOrder || 0) + 1
+    }
+    if (!prevSibling) {
+      // Dropped at the beginning of the list
+      return (targetSibling.properties.sortOrder || 0) / 2
+    }
+    // Dropped between two items
+    return ((prevSibling.properties.sortOrder || 0) + (targetSibling.properties.sortOrder || 0)) / 2
+  } else {
+    // 'below'
+    const targetSibling = siblings[targetIndex]
+    const nextSibling = siblings[targetIndex + 1]
+    if (!targetSibling) {
+      // Should not happen, fallback to a high number
+      return Date.now()
+    }
+    if (!nextSibling) {
+      // Dropped at the end of the list
+      return (targetSibling.properties.sortOrder || 0) + 1
+    }
+    // Dropped between two items
+    return ((targetSibling.properties.sortOrder || 0) + (nextSibling.properties.sortOrder || 0)) / 2
+  }
+}
