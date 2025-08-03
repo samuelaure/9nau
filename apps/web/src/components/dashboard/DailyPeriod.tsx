@@ -23,24 +23,32 @@ export function DailyPeriod({
   showHeader = true,
 }: DailyPeriodProps) {
   const [isOpen, setIsOpen] = useState(() => isDateToday(dateStr));
-  const { setDropTarget, setDraggedItem, draggedItem } = useDashboardStore(s => ({
+  const { setDropTarget, draggedItem } = useDashboardStore(s => ({
     setDropTarget: s.actions.setDropTarget,
-    setDraggedItem: s.actions.setDraggedItem,
     draggedItem: s.draggedItem,
   }));
 
-  const handleDateHeaderDrop = (e: React.DragEvent<HTMLButtonElement>) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!draggedItem) return;
-    setDraggedItem(null);
-  };
+    if (draggedItem && draggedItem.type !== 'note') {
+      setDropTarget({
+        id: null,
+        position: 'end',
+        date: dateStr,
+        section: draggedItem.type,
+      });
+    }
+  }
 
   const inboxNotes = dailyNotes.filter(note => note.properties.status === 'inbox');
   const sortedNotes = [...inboxNotes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   const content = (
-    <div className={cn(showHeader && 'pt-4 pl-4 border-l-2 ml-2')}>
+    <div
+      className={cn(showHeader && 'pt-4 pl-4 border-l-2 ml-2')}
+      onDragOver={handleDragOver}
+    >
       <HierarchicalSection
         dateStr={dateStr}
         sectionType="action"
@@ -64,20 +72,7 @@ export function DailyPeriod({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-2 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
-        onDragOver={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (draggedItem) {
-            const correctSection = draggedItem.type;
-            setDropTarget({
-              id: null,
-              position: 'end',
-              date: dateStr,
-              section: correctSection,
-            });
-          }
-        }}
-        onDrop={handleDateHeaderDrop}
+        onDragOver={handleDragOver}
       >
         <span className="text-sm font-bold text-gray-600">
           {formatDisplayDate(dateStr)}

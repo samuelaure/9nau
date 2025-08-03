@@ -8,9 +8,11 @@ import {
   isDateToday,
   formatDisplayDate,
   HierarchicalBlock,
+  findItemAndParent,
 } from '@9nau/core'
 import { Button } from '@9nau/ui/components/button'
 import { ChevronsLeft, ChevronsRight, ArrowUp, X } from 'lucide-react'
+import { useUpdateBlock } from '@/hooks/use-blocks-api'
 
 interface DashboardProps {
   notesByDate: Map<string, Block[]>
@@ -34,6 +36,10 @@ export function Dashboard({
     hideFutureDays,
     setMainContentRef,
     setTodayRef,
+    draggedItem,
+    dropTarget,
+    setDraggedItem,
+    setDropTarget,
   } = useDashboardStore((s) => ({
     viewMode: s.viewMode,
     currentDate: s.currentDate,
@@ -45,8 +51,13 @@ export function Dashboard({
     hideFutureDays: s.actions.hideFutureDays,
     setMainContentRef: s.actions.setMainContentRef,
     setTodayRef: s.actions.setTodayRef,
+    draggedItem: s.draggedItem,
+    dropTarget: s.dropTarget,
+    setDraggedItem: s.actions.setDraggedItem,
+    setDropTarget: s.actions.setDropTarget,
   }))
 
+  const updateBlock = useUpdateBlock()
   const mainRef = useRef<HTMLDivElement>(null)
   const todayRef = useRef<HTMLDivElement>(null)
 
@@ -99,6 +110,66 @@ export function Dashboard({
     visibleFutureDays,
   ])
 
+  const handleDrop = () => {
+    if (!draggedItem || !dropTarget) {
+      return;
+    }
+
+    // Handle drops that change the date or are re-parented within the same date
+    if (draggedItem.type === dropTarget.section) {
+      // Logic for changing parentId and/or sortOrder (including reordering in place)
+      let newParentId: string | null = null;
+      let newSortOrder: number | undefined;
+      const newProperties: Record<string, unknown> = {};
+
+      if (dropTarget.position === 'on' && dropTarget.id) {
+        newParentId = dropTarget.id;
+      } else if (dropTarget.id) {
+        const items = draggedItem.type === 'action' ? actions : experiences;
+        const targetItemInfo = findItemAndParent(items, dropTarget.id);
+        if (targetItemInfo) {
+          newParentId = targetItemInfo.parent?.id ?? null;
+          // For now, setting sort order is complex due to the tree structure.
+          // Let's rely on the backend for a basic `parentId` change.
+          // A more advanced implementation would re-calculate all sibling sort orders.
+          if (dropTarget.position === 'above') {
+            newSortOrder = (targetItemInfo.item.properties.sortOrder || 0) - 0.5;
+          } else if (dropTarget.position === 'below') {
+            newSortOrder = (targetItemInfo.item.properties.sortOrder || 0) + 0.5;
+          }
+        }
+      } else { // Dropping at the end of a section (id is null)
+        newParentId = null;
+      }
+
+      if (draggedItem.id === newParentId) {
+        setDraggedItem(null);
+        setDropTarget(null);
+        return;
+      }
+
+      if (draggedItem.properties.date !== dropTarget.date) {
+        newProperties.date = dropTarget.date;
+        newParentId = null; // When changing date, it becomes a root item for the new day
+      }
+
+      updateBlock.mutate({
+        id: draggedItem.id,
+        updateDto: { parentId: newParentId, properties: { ...draggedItem.properties, ...newProperties, sortOrder: newSortOrder } },
+      });
+    }
+    // Dropping a note on a sidebar item (change status)
+    else if (draggedItem.type === 'note') {
+      updateBlock.mutate({
+        id: draggedItem.id,
+        updateDto: { properties: { status: dropTarget.section } },
+      })
+    }
+
+    setDraggedItem(null);
+    setDropTarget(null);
+  };
+  
   if (viewMode === 'horizontal') {
     const dateStr = format(currentDate, 'yyyy-MM-dd')
     const dataForDay = {
@@ -110,7 +181,7 @@ export function Dashboard({
     }
 
     return (
-      <div ref={mainRef}>
+      <div ref={mainRef} onDrop={handleDrop} className="relative">
         <div className="flex items-center justify-center space-x-1 mb-2">
           <Button
             variant="ghost"
@@ -138,7 +209,7 @@ export function Dashboard({
   }
 
   return (
-    <div ref={mainRef} className="space-y-6">
+    <div ref={mainRef} className="space-y-6 relative" onDrop={handleDrop}>
       <div className="flex items-center justify-center text-gray-500">
         <button
           onClick={() => showFutureDays()}

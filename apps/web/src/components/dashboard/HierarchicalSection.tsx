@@ -109,57 +109,19 @@ export function HierarchicalSection({
   const handleDragEnd = () => {
     setDraggedItem(null)
   }
-
-  const handleDrop = () => {
-    if (!draggedItem || !dropTarget) return
-
-    let newParentId: string | null = null;
-    let newSortOrder: number | undefined;
-
-    // Handle drops within the same section
-    if (draggedItem.type === dropTarget.section) {
-      if (dropTarget.position === 'on') {
-        newParentId = dropTarget.id
-        // For new children, sort order is not crucial as it will be handled by the backend
-      } else {
-        const targetItemInfo = findItemAndParent(items, dropTarget.id!);
-        if (targetItemInfo) {
-          newParentId = targetItemInfo.parent?.id || null;
-          // Calculate new sort order based on position relative to target
-          const targetIndex = targetItemInfo.parentList.findIndex(item => item.id === dropTarget.id);
-          const siblingIds = targetItemInfo.parentList.map(item => item.id);
-          let newSiblingIds: string[];
-
-          if (dropTarget.position === 'above') {
-            newSiblingIds = [
-              ...siblingIds.slice(0, targetIndex),
-              draggedItem.id,
-              ...siblingIds.slice(targetIndex)
-            ];
-          } else { // 'below'
-            newSiblingIds = [
-              ...siblingIds.slice(0, targetIndex + 1),
-              draggedItem.id,
-              ...siblingIds.slice(targetIndex + 1)
-            ];
-          }
-
-          // The sort order is a bit tricky with Prisma and JSONB.
-          // A simplified approach is to re-assign sort order for all siblings after the drag.
-          // For now, let's just update the parentId and rely on the backend to handle a basic sort.
-          // A more robust implementation would re-calculate all sibling sortOrders on the client.
-        } else {
-          // Dropping on the section header or end of list
-          newParentId = null;
-        }
-      }
+  
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!draggedItem || draggedItem.type !== sectionType) {
+      setDropTarget(null)
+      return
     }
-
-    if (draggedItem.id === newParentId) return 
-
-    updateBlock.mutate({
-      id: draggedItem.id,
-      updateDto: { parentId: newParentId },
+    setDropTarget({
+      id: null,
+      position: 'end',
+      date: dateStr,
+      section: sectionType,
     })
   }
 
@@ -193,19 +155,21 @@ export function HierarchicalSection({
   )
 
   return (
-    <div className="mb-4" onDrop={handleDrop}>
+    <div className="mb-4">
       <button
         className="flex items-center w-full text-left p-2 rounded-md hover:bg-gray-50"
         onClick={() => setIsOpen(!isOpen)}
         onDragOver={(e) => {
           e.preventDefault()
           e.stopPropagation()
-          setDropTarget({
-            id: null,
-            position: 'end',
-            date: dateStr,
-            section: sectionType,
-          })
+          if (draggedItem && draggedItem.type === sectionType) {
+            setDropTarget({
+              id: null,
+              position: 'end',
+              date: dateStr,
+              section: sectionType,
+            })
+          }
         }}
       >
         {isOpen ? (
@@ -218,16 +182,7 @@ export function HierarchicalSection({
       {isOpen && (
         <div
           className="pl-2 mt-2"
-          onDragOver={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            setDropTarget({
-              id: null,
-              position: 'end',
-              date: dateStr,
-              section: sectionType,
-            })
-          }}
+          onDragOver={handleDragOver}
         >
           {items.length > 0 ? (
             renderList(items)
