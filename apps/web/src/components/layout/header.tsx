@@ -7,7 +7,11 @@ import { Button } from '@9nau/ui/components/button';
 import { Input } from '@9nau/ui/components/input';
 import { cn } from '@9nau/ui/lib/utils';
 
-export function Header() {
+interface HeaderProps {
+    isScrolled: boolean;
+}
+
+export function Header({ isScrolled }: HeaderProps) {
     const { toggleSidebar } = useUiActions();
     const { viewMode, setViewMode } = useDashboardStore(s => ({
         viewMode: s.viewMode,
@@ -16,7 +20,10 @@ export function Header() {
     const currentView = useUiStore(s => s.activeView);
 
     return (
-        <header className="flex items-center h-16 border-b px-4 flex-shrink-0 bg-white z-30">
+        <header className={cn(
+            "fixed top-0 left-0 right-0 flex items-center h-16 border-b px-4 flex-shrink-0 bg-white z-30 transition-shadow duration-200",
+            isScrolled && "shadow-md"
+        )}>
             <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2">
                 <Menu className="h-6 w-6 text-gray-600" />
             </Button>
