@@ -155,7 +155,7 @@ export function EditableItem({
             onChange={(e) => setText(e.target.value)}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
-            className={cn(sharedClasses, 'bg-yellow-50 focus:outline-none')}
+            className={cn(sharedClasses, 'bg-transparent focus:outline-none')}
           />
         ) : (
           <span
