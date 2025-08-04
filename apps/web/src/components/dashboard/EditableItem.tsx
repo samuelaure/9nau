@@ -35,7 +35,7 @@ export function EditableItem({
 }: EditableItemProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [text, setText] = useState((item.properties.text as string) || '')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
   
   const { setDropTarget, dropTarget, focusedItemId, setFocusedItemId } = useDashboardStore((s) => ({
     setDropTarget: s.actions.setDropTarget,
@@ -51,9 +51,20 @@ export function EditableItem({
     }
   }, [focusAfterAdd, focusedItemId, item.id, setFocusedItemId])
 
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textAreaRef.current) {
+        textAreaRef.current.style.height = 'auto';
+        textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
+    }
+  }, [text, isEditing]);
+
   useEffect(() => {
     if (isEditing) {
-      inputRef.current?.focus()
+      textAreaRef.current?.focus()
+      // Move cursor to the end
+      const len = textAreaRef.current?.value.length ?? 0;
+      textAreaRef.current?.setSelectionRange(len, len);
     }
   }, [isEditing])
 
@@ -66,8 +77,9 @@ export function EditableItem({
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Save and add new item on Enter (if not pressing Shift)
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSave()
       onAddItem(item.id, item.parentId)
@@ -85,10 +97,10 @@ export function EditableItem({
       } else {
         onIndent(item.id)
       }
-    } else if (e.key === 'ArrowUp' && index > 0) {
+    } else if (e.key === 'ArrowUp' && (e.target as HTMLTextAreaElement).selectionStart === 0) {
       e.preventDefault();
       setFocusedItemId(parentList[index - 1]?.id ?? null);
-    } else if (e.key === 'ArrowDown' && index < parentList.length - 1) {
+    } else if (e.key === 'ArrowDown' && (e.target as HTMLTextAreaElement).selectionStart === text.length) {
       e.preventDefault();
       setFocusedItemId(parentList[index + 1]?.id ?? null);
     }
@@ -119,7 +131,7 @@ export function EditableItem({
   }
 
   const sharedClasses = cn(
-    'w-full py-0.5 px-1 rounded-md text-sm',
+    'w-full py-0.5 px-1 rounded-md text-sm whitespace-pre-wrap break-words',
     item.properties.completed ? 'line-through text-gray-500' : 'text-gray-700'
   )
 
@@ -148,14 +160,14 @@ export function EditableItem({
           <span className="mr-3 mt-1.5 text-gray-400 flex-shrink-0">•</span>
         )}
         {isEditing ? (
-          <input
-            ref={inputRef}
-            type="text"
+          <textarea
+            ref={textAreaRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
-            className={cn(sharedClasses, 'bg-transparent focus:outline-none')}
+            className={cn(sharedClasses, 'bg-transparent focus:outline-none resize-none overflow-hidden')}
+            rows={1}
           />
         ) : (
           <span
