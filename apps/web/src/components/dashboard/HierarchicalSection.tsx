@@ -27,7 +27,6 @@ export function HierarchicalSection({
   const {
     setDraggedItem,
     setDropTarget,
-    draggedItem,
     dropTarget,
     setFocusedItemId,
   } = useDashboardStore((s) => ({
