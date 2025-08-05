@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding test database...')
+  console.log('Seeding test database...');
   // Seed data for testing purposes
   // Example:
   // await prisma.block.createMany({
@@ -12,14 +12,14 @@ async function main() {
   //     { type: 'action', properties: { text: 'Test action 1', completed: false } },
   //   ],
   // });
-  console.log('Test database seeded.')
+  console.log('Test database seeded.');
 }
 
 main()
   .catch((e) => {
-    console.error(e)
-    process.exit(1)
+    console.error(e);
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect()
-  })
+    await prisma.$disconnect();
+  });
