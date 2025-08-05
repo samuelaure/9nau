@@ -8,7 +8,10 @@
     "format": "prettier --write \"**/*.ts\"",
     "lint": "eslint \"{apps,packages}/**/*.{ts,tsx}\" --fix",
     "dev:api": "pnpm --filter api run start:dev",
-    "dev:web": "pnpm --filter web run dev"
+    "dev:web": "pnpm --filter web run dev",
+    "test:all": "pnpm --stream -r test",
+    "test:unit": "pnpm --stream -r --filter \"./packages/*\" --filter \"./apps/*\" test",
+    "test:e2e": "cypress run --project ./apps/web"
   },
   "author": "Samuel Aure",
   "license": "UNLICENSED",
