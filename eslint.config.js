@@ -2,6 +2,7 @@ const eslintJs = require('@eslint/js')
 const tseslint = require('typescript-eslint')
 const prettierConfig = require('eslint-config-prettier')
 const eslintPluginReact = require('eslint-plugin-react')
+const globals = require('globals')
 
 module.exports = tseslint.config(
   {
@@ -17,6 +18,7 @@ module.exports = tseslint.config(
 
   eslintJs.configs.recommended,
   ...tseslint.configs.recommended,
+  
   {
     files: ['**/*.tsx'],
     plugins: {
@@ -40,6 +42,14 @@ module.exports = tseslint.config(
       'react/prop-types': 'off',
     },
   },
-
+  {
+    files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.test.ts', '**/*.test.tsx'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+    rules: {}
+  },
   prettierConfig
 );
