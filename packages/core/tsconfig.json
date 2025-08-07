@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./dist",
+    "types": ["jest"]
+  },
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../types"
+    }
+  ]
+}
