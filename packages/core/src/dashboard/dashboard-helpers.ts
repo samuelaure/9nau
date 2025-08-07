@@ -3,9 +3,9 @@ import { format, isToday } from 'date-fns'
 
 export type HierarchicalBlock = Block & {
   properties: {
-    text: string
-    sortOrder: number
-    date: string
+    text?: string
+    sortOrder?: number
+    date?: string
     [key: string]: unknown
   }
   children: HierarchicalBlock[]

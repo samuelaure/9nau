@@ -11,7 +11,7 @@ type DropTarget = {
   section: string
 }
 
-interface DashboardState {
+export interface DashboardState {
   viewMode: ViewMode
   currentDate: Date
   visiblePastDays: number
