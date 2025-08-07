@@ -1,15 +1,15 @@
 module.exports = {
   moduleFileExtensions: ['js', 'json', 'ts', 'tsx'],
   rootDir: 'src',
-  testEnvironment: 'jsdom', // Use jsdom for React components
-  testRegex: '.*\\.spec\\.(t|j)sx?$', // Look for .spec.ts or .spec.tsx
+  testEnvironment: 'jsdom',
+  testRegex: '.*\\.spec\\.(t|j)sx?$',
   transform: {
     '^.+\\.(t|j)sx?$': 'ts-jest',
   },
   moduleNameMapper: {
-    '^@9nau/ui/(.*)$': '<rootDir>/$1', // Alias for absolute imports within ui package
+    '^@9nau/ui/(.*)$': '<rootDir>/$1',
   },
-  setupFilesAfterEnv: ['<rootDir>/../jest.setup.ts'], // Setup file for @testing-library/react
+  setupFilesAfterEnv: ['<rootDir>/../jest.setup.ts'],
   collectCoverageFrom: ['**/*.(t|j)s?(x)'],
   coverageDirectory: '../coverage',
 };
