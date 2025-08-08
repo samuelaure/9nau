@@ -3,9 +3,14 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "./dist",
-    "types": ["jest"]
+    "rootDir": "./src",
+    "types": ["jest"],
+    "paths": {
+      "@9nau/types": ["../types/src/index.ts"]
+    }
   },
-  "include": ["src"],
+  "include": ["src", "test"],
+  "exclude": ["node_modules", "dist"],
   "references": [
     {
       "path": "../types"

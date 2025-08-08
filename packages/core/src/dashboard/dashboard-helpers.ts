@@ -42,12 +42,16 @@ export function buildHierarchy(blocks: Block[]): HierarchicalBlock[] {
 
   const sortChildrenRecursive = (node: HierarchicalBlock) => {
     if (node.children && node.children.length > 0) {
-      node.children.sort((a, b) => (a.properties.sortOrder || 0) - (b.properties.sortOrder || 0))
+      node.children.sort(
+        (a: HierarchicalBlock, b: HierarchicalBlock) => (a.properties.sortOrder || 0) - (b.properties.sortOrder || 0)
+      )
       node.children.forEach(sortChildrenRecursive)
     }
   }
 
-  roots.sort((a, b) => (a.properties.sortOrder || 0) - (b.properties.sortOrder || 0))
+  roots.sort(
+    (a: HierarchicalBlock, b: HierarchicalBlock) => (a.properties.sortOrder || 0) - (b.properties.sortOrder || 0)
+  )
   roots.forEach(sortChildrenRecursive)
 
   return roots
@@ -108,7 +112,7 @@ export const findItemAndParent = (
 } | null => {
   for (let i = 0; i < items.length; i++) {
     const item = items[i]
-    if (!item) continue // This check resolves the 'possibly undefined' error.
+    if (!item) continue
     if (item.id === itemId) return { item, parent, parentList: items, index: i }
     if (item.children) {
       const found = findItemAndParent(item.children, itemId, item)

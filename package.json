@@ -9,8 +9,8 @@
     "lint": "eslint \"{apps,packages}/**/*.{ts,tsx}\" --fix",
     "dev:api": "pnpm --filter api run start:dev",
     "dev:web": "pnpm --filter web run dev",
-    "test:all": "pnpm --stream -r test",
-    "test:unit": "pnpm --stream -r --filter \"./packages/*\" --filter \"./apps/*\" test",
+    "test:all": "jest --projects apps/api apps/web packages/core packages/ui",
+    "test:unit": "jest --projects apps/web packages/core packages/ui",
     "test:e2e": "cypress run --project ./apps/web"
   },
   "author": "Samuel Aure",

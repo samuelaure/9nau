@@ -117,7 +117,8 @@ describe('BlocksService', () => {
           properties: { status: 'trash' } as Prisma.JsonObject,
         },
       ];
-      prisma.block.findMany.mockResolvedValueOnce(blocks);
+      // Mock with the expected filtered array
+      prisma.block.findMany.mockResolvedValueOnce([blocks[0]!]);
 
       const query: FindBlocksQueryDto = { type: 'action' };
       const result = await service.findAll(query);
@@ -159,7 +160,8 @@ describe('BlocksService', () => {
           properties: { status: 'completed' } as Prisma.JsonObject,
         },
       ];
-      prisma.block.findMany.mockResolvedValueOnce(blocks);
+      // Mock with the expected filtered array
+      prisma.block.findMany.mockResolvedValueOnce([blocks[2]!]);
       const query: FindBlocksQueryDto = { status: 'completed' };
       const result = await service.findAll(query);
       expect(prisma.block.findMany).toHaveBeenCalledWith({
@@ -195,6 +197,7 @@ describe('BlocksService', () => {
           properties: { date: '2025-08-06' } as Prisma.JsonObject,
         },
       ];
+      // Mock with the unsorted array, as the service is responsible for sorting
       prisma.block.findMany.mockResolvedValueOnce(blocks);
       const result = await service.findAll({});
       expect(result.map((b) => b.id)).toEqual(['b2', 'b3', 'b1']);
