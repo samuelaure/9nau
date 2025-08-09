@@ -3,7 +3,13 @@
 describe('User Journeys', () => {
   // Clear the database and local state before each test suite
   before(() => {
-    cy.exec('pnpm --filter api run db:test:reset')
+    const databaseUrl = Cypress.env('DATABASE_URL')
+
+    cy.exec('pnpm --filter api run db:test:reset', {
+      env: {
+        DATABASE_URL: databaseUrl
+      }
+    })
     cy.clearLocalStorage()
   })
 
@@ -14,7 +20,7 @@ describe('User Journeys', () => {
 
     // 2. Create a new note
     const noteText = 'A new note for my daily plan'
-    cy.get('textarea[placeholder="Take a note..."]').click()
+    cy.contains('Take a note...').click()
     cy.get('textarea[placeholder="Take a note..."]').type(noteText)
     cy.get('button').contains('Close').click()
     cy.wait(500)

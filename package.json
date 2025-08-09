@@ -11,7 +11,7 @@
     "dev:web": "pnpm --filter web run dev",
     "test:all": "jest --projects apps/api apps/web packages/core packages/ui --runInBand",
     "test:unit": "jest --projects apps/web packages/core packages/ui --runInBand",
-    "test:e2e": "cypress run --project ./apps/web",
+    "test:e2e": "cypress run",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch"
   },
