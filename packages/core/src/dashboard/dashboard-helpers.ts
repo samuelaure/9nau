@@ -83,6 +83,9 @@ export function formatDisplayDate(dateStr: string | undefined): string {
   if (!dateStr) return ''
   // Add T00:00:00 to handle timezone issues and ensure correct date parsing
   const date = new Date(dateStr + 'T00:00:00')
+  if (isNaN(date.getTime())) {
+    return ''
+  }
   return format(date, 'dd/MM/yyyy, EEEE')
 }
 
@@ -95,7 +98,7 @@ export const getTodayDateString = () => format(new Date(), 'yyyy-MM-dd')
  * Checks if a given date string corresponds to today.
  * @param dateStr - The date string to check.
  */
-export const isDateToday = (dateStr: string) => isToday(new Date(dateStr + 'T00:00:00'))
+export const isDateToday = (dateStr: string) => isToday(new Date(dateStr))
 
 /**
  * Recursively finds an item and its parent within a hierarchical structure.

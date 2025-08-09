@@ -11,33 +11,23 @@ import {
 } from './dashboard-helpers'
 import { Block } from '@9nau/types'
 
-// Mock date-fns's isToday and format for consistent testing
-jest.mock('date-fns', () => ({
-  ...jest.requireActual('date-fns'),
-  isToday: jest.fn((date: Date) => {
-    const today = new Date('2025-08-05T00:00:00') // Fixed date for testing
-    return (
-      date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      date.getDate() === today.getDate()
-    )
-  }),
-  format: jest.fn((date: Date, fmt: string) => {
-    if (fmt === 'yyyy-MM-dd') {
-      return '2025-08-05' // Fixed date for testing
-    }
-    return jest.requireActual('date-fns').format(date, fmt)
-  }),
-}))
-
 describe('dashboard-helpers', () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2025-08-05T00:00:00'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   const mockBlocks: Block[] = [
     {
       id: '1',
       type: 'action',
       parentId: null,
       properties: { text: 'Root A', sortOrder: 10, date: '2025-08-05' },
-      createdAt: new Date(),
+      createdAt: new Date('2025-08-05'),
       updatedAt: new Date(),
     },
     {
@@ -45,7 +35,7 @@ describe('dashboard-helpers', () => {
       type: 'action',
       parentId: '1',
       properties: { text: 'Child A1', sortOrder: 20, date: '2025-08-05' },
-      createdAt: new Date(),
+      createdAt: new Date('2025-08-05'),
       updatedAt: new Date(),
     },
     {
@@ -53,7 +43,7 @@ describe('dashboard-helpers', () => {
       type: 'action',
       parentId: '1',
       properties: { text: 'Child A2', sortOrder: 15, date: '2025-08-05' },
-      createdAt: new Date(),
+      createdAt: new Date('2025-08-05'),
       updatedAt: new Date(),
     },
     {
@@ -61,7 +51,7 @@ describe('dashboard-helpers', () => {
       type: 'action',
       parentId: null,
       properties: { text: 'Root B', sortOrder: 5, date: '2025-08-04' },
-      createdAt: new Date(),
+      createdAt: new Date('2025-08-04'),
       updatedAt: new Date(),
     },
     {
@@ -69,7 +59,7 @@ describe('dashboard-helpers', () => {
       type: 'action',
       parentId: '4',
       properties: { text: 'Child B1', sortOrder: 10, date: '2025-08-04' },
-      createdAt: new Date(),
+      createdAt: new Date('2025-08-04'),
       updatedAt: new Date(),
     },
     {
@@ -93,7 +83,7 @@ describe('dashboard-helpers', () => {
       type: 'experience',
       parentId: null,
       properties: { text: 'Exp 1', sortOrder: 1, date: '2025-08-05' },
-      createdAt: new Date(),
+      createdAt: new Date('2025-08-05'),
       updatedAt: new Date(),
     },
   ]
@@ -196,22 +186,19 @@ describe('dashboard-helpers', () => {
       expect(formatDisplayDate(undefined)).toBe('')
     })
 
-    it('should handle invalid date strings gracefully (though new Date() handles many)', () => {
-      // This will likely result in "Invalid Date" but format still tries
-      expect(formatDisplayDate('invalid-date')).toBe('Invalid Date, Invalid Date')
+    it('should handle invalid date strings gracefully', () => {
+      expect(formatDisplayDate('invalid-date')).toBe('')
     })
   })
 
   describe('getTodayDateString', () => {
     it("should return today's date string in yyyy-MM-dd format", () => {
-      // Mocked date-fns.format will return '2025-08-05'
       expect(getTodayDateString()).toBe('2025-08-05')
     })
   })
 
   describe('isDateToday', () => {
     it("should return true for today's date string", () => {
-      // Mocked isToday will return true for '2025-08-05'
       expect(isDateToday('2025-08-05')).toBe(true)
     })
 
