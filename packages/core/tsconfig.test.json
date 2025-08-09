@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["jest"],
+    "paths": {
+      "@9nau/types": ["../types/src/index.ts"]
+    }
+  },
+  "include": ["src", "test"]
+}

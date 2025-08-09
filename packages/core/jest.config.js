@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   preset: 'ts-jest', 
   rootDir: '.',
@@ -7,7 +9,7 @@ module.exports = {
     '^.+\\.(t|j)s$': [
       'ts-jest', 
       { 
-        tsconfig: './tsconfig.json' 
+        tsconfig: path.resolve(__dirname, 'tsconfig.test.json')
       }
     ],
   },

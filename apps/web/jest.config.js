@@ -1,18 +1,24 @@
-module.exports = {
-  moduleFileExtensions: ['js', 'json', 'ts', 'tsx'],
-  rootDir: 'src',
-  testEnvironment: 'jsdom', // Use jsdom for React components
-  testRegex: '.*\\.spec\\.(t|j)sx?$', // Look for .spec.ts or .spec.tsx
-  transform: {
-    '^.+\\.(t|j)sx?$': 'ts-jest',
-  },
+const nextJest = require('next/jest');
+
+const createJestConfig = nextJest({
+  dir: './apps/web',
+});
+
+const customJestConfig = {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  testEnvironment: 'jsdom',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1', // Alias for absolute imports
+    '^@/(.*)$': '<rootDir>/src/$1',
     '^@9nau/ui/(.*)$': '<rootDir>/../../packages/ui/src/$1',
     '^@9nau/core/(.*)$': '<rootDir>/../../packages/core/src/$1',
     '^@9nau/types/(.*)$': '<rootDir>/../../packages/types/src/$1',
   },
-  setupFilesAfterEnv: ['<rootDir>/../jest.setup.ts'], // Setup file for @testing-library/react
-  collectCoverageFrom: ['**/*.(t|j)s?(x)'],
-  coverageDirectory: '../coverage',
+  transformIgnorePatterns: [
+    'node_modules/(?!(.*-fns|@9nau|lucide-react)/)',
+  ],
+  testPathIgnorePatterns: ['/node_modules/', '/.next/'],
+  testRegex: 'apps/web/src/.*\\.spec\\.(t|j)sx?$',
 };
+
+module.exports = createJestConfig(customJestConfig);
