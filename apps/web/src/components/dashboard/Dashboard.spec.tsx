@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { Dashboard } from './Dashboard';
 import { useDashboardStore } from '@/lib/state/dashboard-store';
 import { useUpdateBlock } from '@/hooks/use-blocks-api';
-import { HierarchicalBlock, getTodayDateString, isDateToday } from '@9nau/core';
+import { HierarchicalBlock, getTodayDateString, isDateToday, formatDisplayDate } from '@9nau/core';
 import { Block } from '@9nau/types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
@@ -15,6 +15,7 @@ jest.mock('@9nau/core', () => ({
   ...jest.requireActual('@9nau/core'),
   getTodayDateString: jest.fn(),
   isDateToday: jest.fn(),
+  formatDisplayDate: jest.fn(),
 }));
 
 const useDashboardStoreMock = useDashboardStore as unknown as jest.Mock;
@@ -37,9 +38,6 @@ describe('Dashboard', () => {
   const setDropTarget = jest.fn();
 
   const mockNotesByDate = new Map<string, Block[]>();
-  const mockActions: HierarchicalBlock[] = [
-    { id: 'action-1', type: 'action', parentId: null, properties: { date: '2025-08-05', text: 'Action 1', sortOrder: 1 }, createdAt: new Date(), updatedAt: new Date(), children: [] },
-  ];
   const mockExperiences: HierarchicalBlock[] = [
     { id: 'exp-1', type: 'experience', parentId: null, properties: { date: '2025-08-05', text: 'Experience 1', sortOrder: 1 }, createdAt: new Date(), updatedAt: new Date(), children: [] },
   ];
@@ -77,7 +75,7 @@ describe('Dashboard', () => {
 
   it('should render in list view by default', () => {
     render(
-      <Dashboard notesByDate={mockNotesByDate} actions={mockActions} experiences={mockExperiences} />,
+      <Dashboard notesByDate={mockNotesByDate} actions={[]} experiences={mockExperiences} />,
       { wrapper }
     );
     expect(screen.getByText('Future')).toBeInTheDocument();
@@ -85,7 +83,7 @@ describe('Dashboard', () => {
 
   it('should call showFutureDays on button click in list view', () => {
     render(
-      <Dashboard notesByDate={mockNotesByDate} actions={mockActions} experiences={mockExperiences} />,
+      <Dashboard notesByDate={mockNotesByDate} actions={[]} experiences={mockExperiences} />,
       { wrapper }
     );
     fireEvent.click(screen.getByRole('button', { name: 'Future' }));
@@ -98,8 +96,9 @@ describe('Dashboard', () => {
       viewMode: 'horizontal',
       currentDate: new Date('2025-08-05T00:00:00'),
     }));
+    (formatDisplayDate as jest.Mock).mockReturnValue('05/08/2025, Tuesday');
     render(
-      <Dashboard notesByDate={mockNotesByDate} actions={mockActions} experiences={mockExperiences} />,
+      <Dashboard notesByDate={mockNotesByDate} actions={[]} experiences={mockExperiences} />,
       { wrapper }
     );
     expect(screen.getByText('05/08/2025, Tuesday')).toBeInTheDocument();
@@ -114,7 +113,7 @@ describe('Dashboard', () => {
       currentDate: new Date('2025-08-05'),
     }));
     render(
-      <Dashboard notesByDate={mockNotesByDate} actions={mockActions} experiences={mockExperiences} />,
+      <Dashboard notesByDate={mockNotesByDate} actions={[]} experiences={mockExperiences} />,
       { wrapper }
     );
     fireEvent.click(screen.getByLabelText('Next Day'));
@@ -123,16 +122,14 @@ describe('Dashboard', () => {
 
   it('should handle drop event and update the block', () => {
     const today = getTodayDateString();
+    const mockActions: HierarchicalBlock[] = [
+        { id: 'action-2', type: 'action', parentId: null, properties: { date: today, text: 'Action 2', sortOrder: 10 }, createdAt: new Date(), updatedAt: new Date(), children: [] },
+        { id: 'action-1', type: 'action', parentId: null, properties: { date: today, text: 'Action 1', sortOrder: 1 }, createdAt: new Date(), updatedAt: new Date(), children: [] },
+      ];
+      
     useDashboardStoreMock.mockImplementation((selector) => selector({
       ...mockState,
-      draggedItem: {
-        id: 'action-1',
-        type: 'action',
-        parentId: null,
-        properties: { date: today, sortOrder: 10, text: 'Dragged Action' },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+      draggedItem: mockActions[1], // Dragging action-1
       dropTarget: {
         id: null,
         position: 'end',
@@ -150,7 +147,7 @@ describe('Dashboard', () => {
       id: 'action-1',
       updateDto: {
         parentId: null,
-        properties: { date: today, sortOrder: 11 },
+        properties: { sortOrder: 11 },
       },
     });
   });

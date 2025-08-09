@@ -169,7 +169,7 @@ export function Dashboard({
       }
     } else { // Dropping at the end of a section
       newParentId = null // Root level for the day
-      const rootItems = allItems.filter(i => !i.parentId && i.properties.date === dropTarget.date);
+      const rootItems = allItems.filter(i => i.id !== draggedItem.id && !i.parentId && i.properties.date === dropTarget.date);
       const lastRootItem = rootItems[rootItems.length - 1];
       newSortOrder = (lastRootItem?.properties.sortOrder || 0) + 1;
     }
@@ -212,12 +212,13 @@ export function Dashboard({
     }
 
     return (
-      <div ref={mainRef} onDrop={handleDrop} className="relative">
+      <div ref={mainRef} onDrop={handleDrop} className="relative" data-testid="dashboard-main-content">
         <div className="flex items-center justify-center space-x-1 mb-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setCurrentDate(subDays(currentDate, 1))}
+            aria-label="Previous Day"
           >
             <ChevronsLeft className="w-4 h-4" />
           </Button>
@@ -228,6 +229,7 @@ export function Dashboard({
             variant="ghost"
             size="icon"
             onClick={() => setCurrentDate(addDays(currentDate, 1))}
+            aria-label="Next Day"
           >
             <ChevronsRight className="w-4 h-4" />
           </Button>
@@ -240,7 +242,7 @@ export function Dashboard({
   }
 
   return (
-    <div ref={mainRef} className="space-y-6 relative" onDrop={handleDrop}>
+    <div ref={mainRef} className="space-y-6 relative" onDrop={handleDrop} data-testid="dashboard-main-content">
       <div className="flex items-center justify-center text-gray-500">
         <button
           onClick={() => showFutureDays()}
