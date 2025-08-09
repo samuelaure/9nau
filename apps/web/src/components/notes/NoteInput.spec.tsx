@@ -66,7 +66,7 @@ describe('NoteInput', () => {
   it('should not call createBlock on blur if text is empty', () => {
     render(<NoteInput />, { wrapper });
     fireEvent.click(screen.getByText('Take a note...'));
-    const textarea = screen.getByPlaceholderText('Take a note...') as HTMLTextAreaElement;
+    // const textarea = screen.getByPlaceholderText('Take a note...') as HTMLTextAreaElement;
 
     act(() => {
       fireEvent.mouseDown(document.body);

@@ -41,6 +41,7 @@ describe('DailyPeriod', () => {
       },
     };
     useDashboardStoreMock.mockImplementation((selector) => selector(mockState));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (useDashboardStore as any).getState = () => mockState; // Mock getState
     (isDateToday as jest.Mock).mockReturnValue(false);
     (formatDisplayDate as jest.Mock).mockReturnValue('05/08/2025, Tuesday');

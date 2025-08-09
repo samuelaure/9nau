@@ -17,6 +17,18 @@ const mockNote: Block = {
   updatedAt: new Date(),
 };
 
+class MockDataTransfer {
+  data: Record<string, string> = {};
+  effectAllowed = 'none';
+  dropEffect = 'none';
+  setData(format: string, data: string) {
+    this.data[format] = data;
+  }
+  getData(format: string) {
+    return this.data[format];
+  }
+}
+
 describe('NoteCard', () => {
   const setDraggedItem = jest.fn();
   const setEditingNoteId = jest.fn();
@@ -47,9 +59,11 @@ describe('NoteCard', () => {
   });
 
   it('should call setDraggedItem on drag start', () => {
+    const mockDataTransfer = new MockDataTransfer();
     render(<NoteCard note={mockNote} />);
-    fireEvent.dragStart(screen.getByText('This is a test note.'));
+    fireEvent.dragStart(screen.getByText('This is a test note.'), { dataTransfer: mockDataTransfer as unknown as DataTransfer });
     expect(setDraggedItem).toHaveBeenCalledWith(mockNote);
+    expect(mockDataTransfer.data['text/plain']).toBe(mockNote.id);
   });
 
   it('should call setDraggedItem with null on drag end', () => {
