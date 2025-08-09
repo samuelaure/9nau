@@ -6,7 +6,7 @@ import { jsx as _jsx } from 'react/jsx-runtime';
 
 describe('Input', () => {
   it('renders correctly with default type "text"', () => {
-    render(_jsx(Input, { placeholder: 'Enter text' }));
+    render(_jsx(Input, { placeholder: 'Enter text', type: 'text' }));
     const inputElement = screen.getByPlaceholderText('Enter text');
     expect(inputElement).toBeInTheDocument();
     expect(inputElement).toHaveAttribute('type', 'text');
