@@ -114,7 +114,8 @@ export function HierarchicalSection({
     e.preventDefault()
     e.stopPropagation()
     const currentDraggedItem = useDashboardStore.getState().draggedItem;
-    if (!currentDraggedItem || currentDraggedItem.type !== sectionType) {
+    // Allow dropping notes onto action/experience sections
+    if (!currentDraggedItem || (currentDraggedItem.type !== sectionType && currentDraggedItem.type !== 'note')) {
       setDropTarget(null)
       return
     }

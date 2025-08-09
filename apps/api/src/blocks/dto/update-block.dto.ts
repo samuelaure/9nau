@@ -6,6 +6,10 @@ import { UpdateBlockDto as IUpdateBlockDto } from '@9nau/types';
  * Implements the shared interface from @9nau/types for consistency.
  */
 export class UpdateBlockDto implements IUpdateBlockDto {
+  @IsString()
+  @IsOptional()
+  type?: string;
+
   @IsObject()
   @IsOptional()
   properties?: Record<string, unknown>;

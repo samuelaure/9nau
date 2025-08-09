@@ -115,6 +115,25 @@ export function Dashboard({
     if (!draggedItem || !dropTarget) {
       return
     }
+    
+    // Handle converting a note to an action or experience
+    if (draggedItem.type === 'note' && (dropTarget.section === 'action' || dropTarget.section === 'experience')) {
+      updateBlock.mutate({
+        id: draggedItem.id,
+        updateDto: {
+          type: dropTarget.section,
+          properties: {
+            ...draggedItem.properties,
+            text: draggedItem.properties.text || '',
+            status: 'inbox',
+            date: dropTarget.date,
+          },
+        },
+      });
+      setDraggedItem(null);
+      setDropTarget(null);
+      return;
+    }
 
     // Prevent dropping an item onto itself
     if (draggedItem.id === dropTarget.id) {

@@ -38,6 +38,7 @@ export interface CreateBlockDto {
  * The Data Transfer Object interface for updating an existing Block.
  */
 export interface UpdateBlockDto {
+  type?: string
   properties?: Record<string, unknown>
   parentId?: string | null
 }

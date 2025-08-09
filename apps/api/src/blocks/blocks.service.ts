@@ -98,7 +98,7 @@ export class BlocksService {
   }
 
   async update(id: string, updateBlockDto: UpdateBlockDto) {
-    const { properties, parentId } = updateBlockDto;
+    const { type, properties, parentId } = updateBlockDto;
 
     const block = await this.prisma.block.findUnique({ where: { id } });
     if (!block) {
@@ -106,6 +106,10 @@ export class BlocksService {
     }
 
     const data: Prisma.BlockUpdateInput = {};
+
+    if (type) {
+      data.type = type;
+    }
 
     if (properties) {
       const currentProperties = (block.properties as Prisma.JsonObject) || {};
