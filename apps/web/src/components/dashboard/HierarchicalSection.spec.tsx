@@ -1,11 +1,12 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { act } from 'react';
+import '@testing-library/jest-dom';
 import { HierarchicalSection } from './HierarchicalSection';
 import { useDashboardStore } from '@/lib/state/dashboard-store';
 import { useCreateBlock, useUpdateBlock, useDeleteBlock } from '@/hooks/use-blocks-api';
 import { HierarchicalBlock } from '@9nau/core';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 jest.mock('@/lib/state/dashboard-store');
 jest.mock('@/hooks/use-blocks-api');

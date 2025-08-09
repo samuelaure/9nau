@@ -4,7 +4,7 @@ import { NoteInput } from './note-input';
 import { useCreateBlock } from '@/hooks/use-blocks-api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 
 jest.mock('@/hooks/use-blocks-api');
 
@@ -49,7 +49,7 @@ describe('NoteInput', () => {
     fireEvent.change(textarea, { target: { value: 'This is a new note' } });
 
     act(() => {
-      fireEvent.blur(textarea);
+      fireEvent.mouseDown(document.body);
       jest.runAllTimers();
     });
 
@@ -69,7 +69,7 @@ describe('NoteInput', () => {
     const textarea = screen.getByPlaceholderText('Take a note...') as HTMLTextAreaElement;
 
     act(() => {
-      fireEvent.blur(textarea);
+      fireEvent.mouseDown(document.body);
       jest.runAllTimers();
     });
 
