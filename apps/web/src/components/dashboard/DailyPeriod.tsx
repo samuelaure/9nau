@@ -46,6 +46,7 @@ export function DailyPeriod({
 
   const content = (
     <div
+      data-testid={`daily-period-content-${dateStr}`}
       className={cn(showHeader && 'pt-4 pl-4 border-l-2 ml-2')}
       onDragOver={handleDragOver}
     >
