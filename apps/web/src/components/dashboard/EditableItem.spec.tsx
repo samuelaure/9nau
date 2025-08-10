@@ -161,4 +161,25 @@ describe('EditableItem', () => {
     fireEvent.keyDown(textarea, { key: 'Enter' });
     expect(mockOnAddItem).toHaveBeenCalledWith('item-1', null);
   });
+
+  it('calls onDelete when the delete button is clicked', () => {
+    render(
+      <EditableItem
+        item={mockItem}
+        onUpdate={mockOnUpdate}
+        onToggle={mockOnToggle}
+        onAddItem={mockOnAddItem}
+        onIndent={mockOnIndent}
+        onOutdent={mockOnOutdent}
+        onDelete={mockOnDelete}
+        onDragStart={mockOnDragStart}
+        onDragEnd={mockOnDragEnd}
+        parentList={mockParentList}
+        index={0}
+      />
+    );
+    const deleteButton = screen.getByRole('button');
+    fireEvent.click(deleteButton);
+    expect(mockOnDelete).toHaveBeenCalledWith('item-1');
+  });
 });

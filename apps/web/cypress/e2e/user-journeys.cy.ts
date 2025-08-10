@@ -60,5 +60,16 @@ describe('User Journeys', () => {
       .find('span')
       .contains(noteText)
       .should('have.class', 'line-through')
+
+    // 7. Delete the item
+    cy.get('h3')
+      .contains('Actions')
+      .closest('.mb-4')
+      .find('span')
+      .contains(noteText)
+      .closest('.relative.group')
+      .find('button')
+      .click({ force: true })
+    cy.get('h3').contains('Actions').closest('.mb-4').contains(noteText).should('not.exist')
   })
 })

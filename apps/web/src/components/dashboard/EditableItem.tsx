@@ -3,6 +3,8 @@ import { Block } from '@9nau/types'
 import { cn } from '@9nau/ui/lib/utils'
 import { useDashboardStore } from '@/lib/state/dashboard-store'
 import { HierarchicalBlock } from '@9nau/core'
+import { X } from 'lucide-react'
+import { Button } from '@9nau/ui/components/button'
 
 interface EditableItemProps {
   item: Block
@@ -179,6 +181,14 @@ export function EditableItem({
             )}
           </span>
         )}
+         <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={() => onDelete(item.id)}
+        >
+          <X className="w-4 h-4 text-gray-500" />
+        </Button>
       </div>
       {dropTarget?.id === item.id && dropTarget.position === 'below' && (
         <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-500 rounded-full z-10" />
