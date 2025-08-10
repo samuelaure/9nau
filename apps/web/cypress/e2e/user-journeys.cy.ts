@@ -31,15 +31,17 @@ describe('User Journeys', () => {
 
     // 4. Drag the note to the daily actions section
     cy.get('p').contains(noteText).as('draggedNote')
-    // Target the content area of the section, which has the dragOver handler
-    cy.get('h3').contains('Actions').closest('.mb-4').find('.pl-2.mt-2').as('dropTarget')
+    // Target the content area of the section to trigger onDragOver
+    cy.get('h3').contains('Actions').closest('.mb-4').find('.pl-2.mt-2').as('dropZone')
     cy.get('@draggedNote').trigger('dragstart', { dataTransfer: new DataTransfer() })
-    cy.get('@dropTarget').trigger('dragover')
-    cy.get('@dropTarget').trigger('drop', { force: true })
+    cy.get('@dropZone').trigger('dragover')
+    // The drop event is on the main dashboard container which has the onDrop handler
+    cy.get('[data-testid="dashboard-main-content"]').trigger('drop', { force: true })
     cy.get('@draggedNote').trigger('dragend')
     cy.wait(500)
 
     // 5. Verify the item is now in the Actions section and no longer in the Notes Inbox
+    cy.get('h3').contains('Actions').scrollIntoView();
     cy.get('h3').contains('Actions').closest('.mb-4').contains(noteText).should('be.visible')
     cy.get('h3').contains('Notes Inbox').closest('.mb-4').contains(noteText).should('not.exist')
 

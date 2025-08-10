@@ -9,7 +9,6 @@ generated/
 
 # Other
 backups
-cypress
 
 # TypeScript build info
 *.tsbuildinfo
@@ -50,6 +49,9 @@ Thumbs.db
 
 # Test reports
 coverage/
+
+# Cypress artifacts
+/cypress/
 
 # Temporary files
 *.tmp
