@@ -7,6 +7,10 @@ dist/
 out/
 generated/
 
+# Other
+backups
+cypress
+
 # TypeScript build info
 *.tsbuildinfo
 
