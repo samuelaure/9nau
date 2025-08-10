@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { useUpdateBlock } from '@/hooks/use-blocks-api';
+import { useUpdateBlock, useDeleteBlock } from '@/hooks/use-blocks-api';
 import { Button } from '@9nau/ui/components/button';
 import { useDashboardStore } from '@/lib/state/dashboard-store';
+import { MoreVertical } from 'lucide-react';
 
 export function EditNoteModal() {
   const { editingNote, setEditingNoteId } = useDashboardStore(s => ({
@@ -10,10 +11,14 @@ export function EditNoteModal() {
   }));
 
   const [text, setText] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const updateBlock = useUpdateBlock();
+  const deleteBlock = useDeleteBlock();
 
   useEffect(() => {
     if (editingNote) {
@@ -45,17 +50,43 @@ export function EditNoteModal() {
     setEditingNoteId(null);
   };
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (editingNote) {
+      deleteBlock.mutate(editingNote.id);
+      setEditingNoteId(null);
+    }
+  };
+
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMenuOpen(prev => !prev);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      const targetNode = event.target as Node;
+      
+      if (modalRef.current && !modalRef.current.contains(targetNode)) {
         handleSaveAndClose();
+      }
+
+      if (
+        isMenuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(targetNode) &&
+        menuButtonRef.current &&
+        !menuButtonRef.current.contains(targetNode)
+      ) {
+        setIsMenuOpen(false);
       }
     };
     if (editingNote) {
       document.addEventListener('mousedown', handleClickOutside);
     }
+    
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [editingNote, text, handleSaveAndClose]);
+  }, [editingNote, text, isMenuOpen]);
 
   if (!editingNote) return null;
 
@@ -63,7 +94,7 @@ export function EditNoteModal() {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div
         ref={modalRef}
-        className="bg-white rounded-lg shadow-xl p-4 w-full max-w-xl flex flex-col"
+        className="bg-white rounded-lg shadow-xl p-4 pb-1 w-full max-w-xl flex flex-col"
         style={{ maxHeight: '85vh' }}
       >
         <textarea
@@ -76,7 +107,32 @@ export function EditNoteModal() {
           rows={1}
           autoFocus
         />
-        <div className="flex justify-end mt-2 flex-shrink-0">
+        <div className="flex justify-end items-center mt-2 flex-shrink-0">
+          <div className="relative">
+            <Button
+              ref={menuButtonRef}
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              onClick={handleMenuClick}
+            >
+              <MoreVertical className="w-4 h-4 text-gray-500" />
+            </Button>
+            {isMenuOpen && (
+              <div
+                ref={menuRef}
+                className="absolute bottom-full left-0 mb-1 w-32 bg-white rounded-md shadow-lg border z-10"
+              >
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-sm text-red-600 hover:text-red-600 hover:bg-red-50"
+                  onClick={handleDelete}
+                >
+                  Delete note
+                </Button>
+              </div>
+            )}
+          </div>
           <Button onClick={handleSaveAndClose} variant="ghost">
             Done
           </Button>

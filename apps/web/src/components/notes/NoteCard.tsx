@@ -3,7 +3,7 @@ import { cn } from '@9nau/ui/lib/utils';
 import { useDashboardStore } from '@/lib/state/dashboard-store';
 import { useDeleteBlock } from '@/hooks/use-blocks-api';
 import { Button } from '@9nau/ui/components/button';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreVertical } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 interface NoteCardProps {
@@ -78,7 +78,7 @@ export function NoteCard({ note }: NoteCardProps) {
             onClick={handleMenuClick}
             data-testid="note-card-menu-button"
           >
-            <MoreHorizontal className="w-4 h-4 text-gray-500" />
+            <MoreVertical className="w-4 h-4 text-gray-500" />
           </Button>
           {isMenuOpen && (
             <div
