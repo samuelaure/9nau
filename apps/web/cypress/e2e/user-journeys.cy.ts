@@ -7,8 +7,8 @@ describe('User Journeys', () => {
 
     cy.exec('pnpm --filter api run db:test:reset', {
       env: {
-        DATABASE_URL: databaseUrl
-      }
+        DATABASE_URL: databaseUrl,
+      },
     })
     cy.clearLocalStorage()
   })
@@ -41,12 +41,24 @@ describe('User Journeys', () => {
     cy.wait(500)
 
     // 5. Verify the item is now in the Actions section and no longer in the Notes Inbox
-    cy.get('h3').contains('Actions').scrollIntoView();
+    cy.get('h3').contains('Actions').scrollIntoView()
     cy.get('h3').contains('Actions').closest('.mb-4').contains(noteText).should('be.visible')
     cy.get('h3').contains('Notes Inbox').closest('.mb-4').contains(noteText).should('not.exist')
 
     // 6. Mark the item as complete
-    cy.get('h3').contains('Actions').closest('.mb-4').find('span').contains(noteText).closest('.relative.group').find('input[type="checkbox"]').check()
-    cy.get('h3').contains('Actions').closest('.mb-4').find('span').contains(noteText).should('have.class', 'line-through')
+    cy.get('h3')
+      .contains('Actions')
+      .closest('.mb-4')
+      .find('span')
+      .contains(noteText)
+      .closest('.relative.group')
+      .find('input[type="checkbox"]')
+      .check()
+    cy.get('h3')
+      .contains('Actions')
+      .closest('.mb-4')
+      .find('span')
+      .contains(noteText)
+      .should('have.class', 'line-through')
   })
 })
