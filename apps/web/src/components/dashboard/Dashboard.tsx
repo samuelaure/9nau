@@ -35,7 +35,7 @@ export function Dashboard({
     loadMorePastDays,
     showFutureDays,
     hideFutureDays,
-    setMainContentRef,
+    mainContentRef,
     setTodayRef,
     draggedItem,
     dropTarget,
@@ -50,7 +50,7 @@ export function Dashboard({
     loadMorePastDays: s.actions.loadMorePastDays,
     showFutureDays: s.actions.showFutureDays,
     hideFutureDays: s.actions.hideFutureDays,
-    setMainContentRef: s.actions.setMainContentRef,
+    mainContentRef: s.mainContentRef,
     setTodayRef: s.actions.setTodayRef,
     draggedItem: s.draggedItem,
     dropTarget: s.dropTarget,
@@ -59,28 +59,26 @@ export function Dashboard({
   }))
 
   const updateBlock = useUpdateBlock()
-  const mainRef = useRef<HTMLDivElement>(null)
   const todayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setMainContentRef(mainRef);
     setTodayRef(todayRef);
-  }, [mainRef, todayRef, setMainContentRef, setTodayRef]);
+  }, [todayRef, setTodayRef]);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (viewMode === 'list' && mainRef?.current) {
-        const { scrollTop, scrollHeight, clientHeight } = mainRef.current
+      if (viewMode === 'list' && mainContentRef?.current) {
+        const { scrollTop, scrollHeight, clientHeight } = mainContentRef.current
         // Load more when user is near the bottom
         if (scrollHeight - scrollTop - clientHeight < 200) {
           loadMorePastDays()
         }
       }
     }
-    const mainEl = mainRef?.current
+    const mainEl = mainContentRef?.current
     mainEl?.addEventListener('scroll', handleScroll)
     return () => mainEl?.removeEventListener('scroll', handleScroll)
-  }, [viewMode, mainRef, loadMorePastDays])
+  }, [viewMode, mainContentRef, loadMorePastDays])
 
   const allGroupedData = useMemo(() => {
     const today = new Date(getTodayDateString() + 'T00:00:00')
@@ -220,6 +218,12 @@ export function Dashboard({
     setDropTarget(null)
   }
   
+  const containerProps = {
+    onDrop: handleDrop,
+    "data-testid": "dashboard-main-content",
+    className: "relative"
+  };
+
   if (viewMode === 'horizontal') {
     const dateStr = format(currentDate, 'yyyy-MM-dd')
     const dataForDay = {
@@ -231,7 +235,7 @@ export function Dashboard({
     }
 
     return (
-      <div ref={mainRef} onDrop={handleDrop} className="relative" data-testid="dashboard-main-content">
+      <div {...containerProps}>
         <div className="flex items-center justify-center space-x-1 mb-2">
           <Button
             variant="ghost"
@@ -261,7 +265,7 @@ export function Dashboard({
   }
 
   return (
-    <div ref={mainRef} className="space-y-6 relative" onDrop={handleDrop} data-testid="dashboard-main-content">
+    <div {...containerProps} className="space-y-6 relative">
       <div className="flex items-center justify-center text-gray-500">
         <button
           onClick={() => showFutureDays()}

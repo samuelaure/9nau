@@ -18,16 +18,21 @@ export default function MainLayout({
 }) {
   const isSidebarOpen = useUiStore((s) => s.isSidebarOpen);
   const [isScrolled, setIsScrolled] = useState(false);
-  const mainRef = useRef<HTMLElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
 
-  const { todayRef, viewMode, currentDate, actions } = useDashboardStore(s => ({
+  const { todayRef, viewMode, currentDate, actions, setMainContentRef } = useDashboardStore(s => ({
     todayRef: s.todayRef,
     viewMode: s.viewMode,
     currentDate: s.currentDate,
     actions: s.actions,
+    setMainContentRef: s.actions.setMainContentRef,
   }));
   const [showGoToToday, setShowGoToToday] = useState(false);
   const [showGoToTop, setShowGoToTop] = useState(false);
+
+  useEffect(() => {
+    setMainContentRef(mainRef);
+  }, [mainRef, setMainContentRef]);
 
   useEffect(() => {
     const mainEl = mainRef.current;

@@ -49,6 +49,7 @@ describe('Dashboard', () => {
     visibleFutureDays: 0,
     draggedItem: null,
     dropTarget: null,
+    mainContentRef: { current: null },
     actions: {
       setViewMode,
       setCurrentDate,
@@ -118,6 +119,39 @@ describe('Dashboard', () => {
     );
     fireEvent.click(screen.getByLabelText('Next Day'));
     expect(setCurrentDate).toHaveBeenCalledWith(addDays(new Date('2025-08-05'), 1));
+  });
+
+  it('should call loadMorePastDays on scroll in list view', () => {
+    const mockAddEventListener = jest.fn();
+    const mockMainContentRef = {
+      current: {
+        scrollTop: 801,
+        scrollHeight: 1000,
+        clientHeight: 200,
+        addEventListener: mockAddEventListener,
+        removeEventListener: jest.fn(),
+      } as unknown as HTMLDivElement,
+    };
+    
+    useDashboardStoreMock.mockImplementation((selector) => selector({
+      ...mockState,
+      mainContentRef: mockMainContentRef,
+    }));
+  
+    render(
+      <Dashboard notesByDate={mockNotesByDate} actions={[]} experiences={mockExperiences} />,
+      { wrapper }
+    );
+  
+    const handleScroll = mockAddEventListener.mock.calls.find(
+      (call: [string, EventListener]) => call[0] === 'scroll'
+    )?.[1];
+  
+    if (handleScroll) {
+      handleScroll({} as Event);
+    }
+  
+    expect(loadMorePastDays).toHaveBeenCalled();
   });
 
   it('should handle drop event and update the block', () => {
