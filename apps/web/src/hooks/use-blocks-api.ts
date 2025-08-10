@@ -56,6 +56,10 @@ export const useUpdateBlock = () => {
             properties: { ...block.properties, ...updateDto.properties },
           }
 
+          if (updateDto.type) {
+            newBlock.type = updateDto.type
+          }
+
           if ('parentId' in updateDto) {
             newBlock.parentId = updateDto.parentId ?? null
           }

@@ -31,7 +31,8 @@ describe('User Journeys', () => {
 
     // 4. Drag the note to the daily actions section
     cy.get('p').contains(noteText).as('draggedNote')
-    cy.get('h3').contains('Actions').parent().parent().as('dropTarget')
+    // Target the content area of the section, which has the dragOver handler
+    cy.get('h3').contains('Actions').closest('.mb-4').find('.pl-2.mt-2').as('dropTarget')
     cy.get('@draggedNote').trigger('dragstart', { dataTransfer: new DataTransfer() })
     cy.get('@dropTarget').trigger('dragover')
     cy.get('@dropTarget').trigger('drop', { force: true })
@@ -39,11 +40,11 @@ describe('User Journeys', () => {
     cy.wait(500)
 
     // 5. Verify the item is now in the Actions section and no longer in the Notes Inbox
-    cy.get('div.space-y-6').contains(noteText).should('be.visible')
-    cy.contains('Notes Inbox').parent().parent().contains(noteText).should('not.exist')
+    cy.get('h3').contains('Actions').closest('.mb-4').contains(noteText).should('be.visible')
+    cy.get('h3').contains('Notes Inbox').closest('.mb-4').contains(noteText).should('not.exist')
 
     // 6. Mark the item as complete
-    cy.get('div.space-y-6').contains(noteText).parent().find('input[type="checkbox"]').check()
-    cy.get('div.space-y-6').contains(noteText).should('have.class', 'line-through')
+    cy.get('h3').contains('Actions').closest('.mb-4').find('span').contains(noteText).closest('.relative.group').find('input[type="checkbox"]').check()
+    cy.get('h3').contains('Actions').closest('.mb-4').find('span').contains(noteText).should('have.class', 'line-through')
   })
 })
