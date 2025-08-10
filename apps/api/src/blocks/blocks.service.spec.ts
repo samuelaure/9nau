@@ -231,6 +231,23 @@ describe('BlocksService', () => {
         service.update('non-existent-id', updateBlockDto),
       ).rejects.toThrow(NotFoundException);
     });
+
+    it('should update a block type', async () => {
+      const dto: UpdateBlockDto = { type: 'action' };
+      prisma.block.findUnique.mockResolvedValueOnce(mockBlock);
+      prisma.block.update.mockResolvedValueOnce({
+        ...mockBlock,
+        type: 'action',
+      });
+
+      const result = await service.update('block-1', dto);
+
+      expect(prisma.block.update).toHaveBeenCalledWith({
+        where: { id: 'block-1' },
+        data: { type: 'action' },
+      });
+      expect(result.type).toBe('action');
+    });
   });
 
   describe('remove', () => {
