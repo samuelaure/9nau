@@ -12,11 +12,6 @@ describe('BlocksController (e2e)', () => {
   let prismaService: PrismaService;
 
   beforeAll(async () => {
-    // Use the test database
-    process.env.DATABASE_URL =
-      process.env.DATABASE_URL_TEST ||
-      'postgresql://testuser:testpass@localhost:5433/testdb?schema=public';
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();

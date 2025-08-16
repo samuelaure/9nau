@@ -9,11 +9,6 @@ describe('AppController (e2e)', () => {
   let prismaService: PrismaService;
 
   beforeAll(async () => {
-    // We explicitly use the test database for e2e tests
-    process.env.DATABASE_URL =
-      process.env.DATABASE_URL_TEST ||
-      'postgresql://testuser:testpass@localhost:5433/testdb?schema=public';
-
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
