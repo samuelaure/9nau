@@ -38,7 +38,7 @@ export function EditableItem({
   const [isEditing, setIsEditing] = useState(false)
   const [text, setText] = useState((item.properties.text as string) || '')
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
-  
+
   const { setDropTarget, dropTarget, focusedItemId, setFocusedItemId } = useDashboardStore((s) => ({
     setDropTarget: s.actions.setDropTarget,
     dropTarget: s.dropTarget,
@@ -56,17 +56,17 @@ export function EditableItem({
   // Auto-resize textarea
   useEffect(() => {
     if (textAreaRef.current) {
-        textAreaRef.current.style.height = 'auto';
-        textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
+      textAreaRef.current.style.height = 'auto'
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`
     }
-  }, [text, isEditing]);
+  }, [text, isEditing])
 
   useEffect(() => {
     if (isEditing) {
       textAreaRef.current?.focus()
       // Move cursor to the end
-      const len = textAreaRef.current?.value.length ?? 0;
-      textAreaRef.current?.setSelectionRange(len, len);
+      const len = textAreaRef.current?.value.length ?? 0
+      textAreaRef.current?.setSelectionRange(len, len)
     }
   }, [isEditing])
 
@@ -93,25 +93,25 @@ export function EditableItem({
       onDelete(item.id)
     } else if (e.key === 'Tab') {
       e.preventDefault()
-      handleSave() 
+      handleSave()
       if (e.shiftKey) {
         onOutdent(item.id)
       } else {
         onIndent(item.id)
       }
     } else if (e.key === 'ArrowUp' && (e.target as HTMLTextAreaElement).selectionStart === 0) {
-      e.preventDefault();
-      setFocusedItemId(parentList[index - 1]?.id ?? null);
+      e.preventDefault()
+      setFocusedItemId(parentList[index - 1]?.id ?? null)
     } else if (e.key === 'ArrowDown' && (e.target as HTMLTextAreaElement).selectionStart === text.length) {
-      e.preventDefault();
-      setFocusedItemId(parentList[index + 1]?.id ?? null);
+      e.preventDefault()
+      setFocusedItemId(parentList[index + 1]?.id ?? null)
     }
   }
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    const currentDraggedItem = useDashboardStore.getState().draggedItem;
+    const currentDraggedItem = useDashboardStore.getState().draggedItem
     if (!currentDraggedItem || currentDraggedItem.id === item.id) {
       setDropTarget(null)
       return
@@ -123,7 +123,7 @@ export function EditableItem({
     let position: 'above' | 'below' | 'on' = 'on'
     if (y < height * 0.25) position = 'above'
     else if (y > height * 0.75) position = 'below'
-    
+
     setDropTarget({
       id: item.id,
       position,
@@ -158,9 +158,7 @@ export function EditableItem({
             className="w-4 h-4 mt-1 mr-3 bg-gray-100 border-gray-300 rounded text-yellow-500 focus:ring-yellow-600 cursor-pointer flex-shrink-0"
           />
         )}
-        {item.type === 'experience' && (
-          <span className="mr-3 mt-1.5 text-gray-400 flex-shrink-0">•</span>
-        )}
+        {item.type === 'experience' && <span className="mr-3 mt-1.5 text-gray-400 flex-shrink-0">•</span>}
         {isEditing ? (
           <textarea
             ref={textAreaRef}
@@ -172,16 +170,11 @@ export function EditableItem({
             rows={1}
           />
         ) : (
-          <span
-            className={cn(sharedClasses, 'cursor-text')}
-            onClick={() => setIsEditing(true)}
-          >
-            {text || (
-              <span className="text-transparent select-none">Empty</span>
-            )}
+          <span className={cn(sharedClasses, 'cursor-text')} onClick={() => setIsEditing(true)}>
+            {text || <span className="text-transparent select-none">Empty</span>}
           </span>
         )}
-         <Button
+        <Button
           variant="ghost"
           size="icon"
           className="absolute right-0 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"

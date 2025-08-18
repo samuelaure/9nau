@@ -6,19 +6,12 @@ const globals = require('globals')
 
 module.exports = tseslint.config(
   {
-    ignores: [
-      '**/node_modules/',
-      '**/dist/',
-      '**/out/',
-      '**/.next/',
-      '**/coverage/',
-      '**/generated/',
-    ],
+    ignores: ['**/node_modules/', '**/dist/', '**/out/', '**/.next/', '**/coverage/', '**/generated/'],
   },
 
   eslintJs.configs.recommended,
   ...tseslint.configs.recommended,
-  
+
   {
     files: ['**/*.tsx'],
     plugins: {
@@ -49,7 +42,7 @@ module.exports = tseslint.config(
         ...globals.jest,
       },
     },
-    rules: {}
+    rules: {},
   },
   prettierConfig
-);
+)

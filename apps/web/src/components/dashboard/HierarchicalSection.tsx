@@ -3,11 +3,7 @@ import { Block } from '@9nau/types'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { EditableItem } from './EditableItem'
 import { useDashboardStore } from '@/lib/state/dashboard-store'
-import {
-  useCreateBlock,
-  useUpdateBlock,
-  useDeleteBlock,
-} from '@/hooks/use-blocks-api'
+import { useCreateBlock, useUpdateBlock, useDeleteBlock } from '@/hooks/use-blocks-api'
 import { findItemAndParent, HierarchicalBlock } from '@9nau/core'
 
 interface HierarchicalSectionProps {
@@ -17,19 +13,9 @@ interface HierarchicalSectionProps {
   items: HierarchicalBlock[]
 }
 
-export function HierarchicalSection({
-  dateStr,
-  sectionType,
-  title,
-  items,
-}: HierarchicalSectionProps) {
+export function HierarchicalSection({ dateStr, sectionType, title, items }: HierarchicalSectionProps) {
   const [isOpen, setIsOpen] = useState(true)
-  const {
-    setDraggedItem,
-    setDropTarget,
-    dropTarget,
-    setFocusedItemId,
-  } = useDashboardStore((s) => ({
+  const { setDraggedItem, setDropTarget, dropTarget, setFocusedItemId } = useDashboardStore((s) => ({
     setDraggedItem: s.actions.setDraggedItem,
     setDropTarget: s.actions.setDropTarget,
     draggedItem: s.draggedItem,
@@ -80,10 +66,7 @@ export function HierarchicalSection({
     if (found && found.index > 0) {
       const newParent = found.parentList[found.index - 1]
       if (newParent) {
-        updateBlock.mutate(
-          { id, updateDto: { parentId: newParent.id } },
-          { onSuccess: () => setFocusedItemId(id) }
-        )
+        updateBlock.mutate({ id, updateDto: { parentId: newParent.id } }, { onSuccess: () => setFocusedItemId(id) })
       }
     }
   }
@@ -93,10 +76,7 @@ export function HierarchicalSection({
     if (found && found.parent) {
       const grandParentInfo = findItemAndParent(items, found.parent.id)
       const newParentId = grandParentInfo?.parent?.id || null
-      updateBlock.mutate(
-        { id, updateDto: { parentId: newParentId } },
-        { onSuccess: () => setFocusedItemId(id) }
-      )
+      updateBlock.mutate({ id, updateDto: { parentId: newParentId } }, { onSuccess: () => setFocusedItemId(id) })
     }
   }
 
@@ -109,11 +89,11 @@ export function HierarchicalSection({
     setDraggedItem(null)
     setDropTarget(null)
   }
-  
+
   const handleSectionDragOver = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    const currentDraggedItem = useDashboardStore.getState().draggedItem;
+    const currentDraggedItem = useDashboardStore.getState().draggedItem
     // Allow dropping notes onto action/experience sections
     if (!currentDraggedItem || (currentDraggedItem.type !== sectionType && currentDraggedItem.type !== 'note')) {
       setDropTarget(null)
@@ -136,10 +116,7 @@ export function HierarchicalSection({
   ): JSX.Element => (
     <>
       {itemList.map((item, index) => (
-        <div
-          key={item.id}
-          style={{ marginLeft: `${level > 0 ? 1.5 : 0}rem` }}
-        >
+        <div key={item.id} style={{ marginLeft: `${level > 0 ? 1.5 : 0}rem` }}>
           <EditableItem
             item={item}
             onUpdate={handleUpdate}
@@ -166,18 +143,11 @@ export function HierarchicalSection({
         onClick={() => setIsOpen(!isOpen)}
         onDragOver={handleSectionDragOver}
       >
-        {isOpen ? (
-          <ChevronDown className="w-4 h-4 mr-2" />
-        ) : (
-          <ChevronRight className="w-4 h-4 mr-2" />
-        )}
+        {isOpen ? <ChevronDown className="w-4 h-4 mr-2" /> : <ChevronRight className="w-4 h-4 mr-2" />}
         <h3 className="text-sm font-semibold text-gray-800">{title}</h3>
       </button>
       {isOpen && (
-        <div
-          className="pl-2 mt-2"
-          onDragOver={handleSectionDragOver}
-        >
+        <div className="pl-2 mt-2" onDragOver={handleSectionDragOver}>
           {items.length > 0 ? (
             renderList(items, items)
           ) : (
@@ -190,7 +160,7 @@ export function HierarchicalSection({
           )}
           {dropTarget?.section === sectionType && dropTarget.position === 'end' && dropTarget.id === null && (
             <div className="relative h-1">
-                <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-500 rounded-full z-10" />
+              <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-500 rounded-full z-10" />
             </div>
           )}
         </div>

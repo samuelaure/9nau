@@ -4,15 +4,7 @@ import * as React from 'react'
 import { useUiStore, useUiActions, View } from '@/lib/state/ui-store'
 import { cn } from '@9nau/ui/lib/utils'
 import { Button } from '@9nau/ui/components/button'
-import {
-  Home,
-  Inbox,
-  Zap,
-  Coffee,
-  Trash2,
-  Archive,
-  Calendar,
-} from 'lucide-react'
+import { Home, Inbox, Zap, Coffee, Trash2, Archive, Calendar } from 'lucide-react'
 import { useUpdateBlock } from '@/hooks/use-blocks-api'
 
 const viewConfig: Record<View, { icon: React.ElementType; title: string }> = {
@@ -105,15 +97,7 @@ interface SidebarItemProps {
   viewKey: View
 }
 
-function SidebarItem({
-  icon: Icon,
-  title,
-  isActive,
-  isExpanded,
-  onClick,
-  onDrop,
-  viewKey,
-}: SidebarItemProps) {
+function SidebarItem({ icon: Icon, title, isActive, isExpanded, onClick, onDrop, viewKey }: SidebarItemProps) {
   const [isDragOver, setIsDragOver] = React.useState(false)
 
   const handleDragOver = (e: React.DragEvent) => {

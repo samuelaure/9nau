@@ -22,13 +22,13 @@ export default function HomePage() {
   }, [activeView])
 
   const { data: blocks, isLoading, isError } = useGetBlocks(queryParams)
-  
+
   useMemo(() => {
     if (blocks) {
       setAllBlocks(blocks)
     }
   }, [blocks, setAllBlocks])
-  
+
   const processedData = useMemo(() => {
     if (!blocks) {
       return {
@@ -45,18 +45,13 @@ export default function HomePage() {
     const notesByDate = groupBlocksByDate(notes)
     const actionsHierarchy = buildHierarchy(actions)
     const experiencesHierarchy = buildHierarchy(experiences)
-    
+
     const groupedNotes = notes
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .reduce(
         (acc, note) => {
           const dateProp = note.properties.date as string | undefined
-          const dateKey = formatDisplayDate(
-            dateProp || new Date(note.createdAt).toISOString().split('T')[0]
-          )
+          const dateKey = formatDisplayDate(dateProp || new Date(note.createdAt).toISOString().split('T')[0])
           if (!acc[dateKey]) {
             acc[dateKey] = []
           }
@@ -70,17 +65,11 @@ export default function HomePage() {
   }, [blocks])
 
   if (isLoading) {
-    return (
-      <div className="text-center text-gray-500 mt-10">Loading data...</div>
-    )
+    return <div className="text-center text-gray-500 mt-10">Loading data...</div>
   }
 
   if (isError) {
-    return (
-      <div className="text-center text-red-500 mt-10">
-        Failed to load data. Please try again later.
-      </div>
-    )
+    return <div className="text-center text-red-500 mt-10">Failed to load data. Please try again later.</div>
   }
 
   return (
@@ -95,23 +84,19 @@ export default function HomePage() {
       ) : (
         <div className="space-y-8">
           {Object.keys(processedData.groupedNotes).length === 0 ? (
-            <div className="text-center text-gray-500 mt-20">
-              This section is empty.
-            </div>
+            <div className="text-center text-gray-500 mt-20">This section is empty.</div>
           ) : (
-            Object.entries(processedData.groupedNotes).map(
-              ([date, notesForDate]) => (
-                <div key={date}>
-                  <div className="flex items-center mb-4">
-                    <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider pr-3 whitespace-nowrap">
-                      {date}
-                    </div>
-                    <div className="flex-grow h-px bg-gray-200"></div>
+            Object.entries(processedData.groupedNotes).map(([date, notesForDate]) => (
+              <div key={date}>
+                <div className="flex items-center mb-4">
+                  <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider pr-3 whitespace-nowrap">
+                    {date}
                   </div>
-                  <NoteGrid notes={notesForDate} />
+                  <div className="flex-grow h-px bg-gray-200"></div>
                 </div>
-              )
-            )
+                <NoteGrid notes={notesForDate} />
+              </div>
+            ))
           )}
         </div>
       )}

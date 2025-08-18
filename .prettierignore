@@ -7,3 +7,7 @@ dist/
 
 # Lockfiles
 pnpm-lock.yaml
+
+# Other potential ignores
+coverage/
+.turbo/

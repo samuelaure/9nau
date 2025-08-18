@@ -12,4 +12,4 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/../jest.setup.ts'],
   collectCoverageFrom: ['**/*.(t|j)s?(x)'],
   coverageDirectory: '../coverage',
-};
+}

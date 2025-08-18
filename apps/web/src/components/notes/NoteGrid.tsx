@@ -1,8 +1,8 @@
-import { Block } from '@9nau/types';
-import { NoteCard } from './NoteCard';
+import { Block } from '@9nau/types'
+import { NoteCard } from './NoteCard'
 
 interface NoteGridProps {
-  notes: Block[];
+  notes: Block[]
 }
 
 export function NoteGrid({ notes }: NoteGridProps) {
@@ -14,11 +14,11 @@ export function NoteGrid({ notes }: NoteGridProps) {
         columnGap: '1rem',
       }}
     >
-      {notes.map(note => (
+      {notes.map((note) => (
         <div key={note.id} className="mb-4 break-inside-avoid">
           <NoteCard note={note} />
         </div>
       ))}
     </div>
-  );
+  )
 }

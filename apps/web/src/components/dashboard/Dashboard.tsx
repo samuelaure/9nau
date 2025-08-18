@@ -21,11 +21,7 @@ interface DashboardProps {
   experiences: HierarchicalBlock[]
 }
 
-export function Dashboard({
-  notesByDate,
-  actions,
-  experiences,
-}: DashboardProps) {
+export function Dashboard({ notesByDate, actions, experiences }: DashboardProps) {
   const {
     viewMode,
     currentDate,
@@ -62,8 +58,8 @@ export function Dashboard({
   const todayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setTodayRef(todayRef);
-  }, [todayRef, setTodayRef]);
+    setTodayRef(todayRef)
+  }, [todayRef, setTodayRef])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -93,27 +89,17 @@ export function Dashboard({
     return dateArray.map((date) => {
       const dateStr = format(date, 'yyyy-MM-dd')
       const dailyNotes = notesByDate.get(dateStr) || []
-      const dailyActions = actions.filter(
-        (a) => (a.properties.date as string) === dateStr
-      )
-      const dailyExperiences = experiences.filter(
-        (e) => (e.properties.date as string) === dateStr
-      )
+      const dailyActions = actions.filter((a) => (a.properties.date as string) === dateStr)
+      const dailyExperiences = experiences.filter((e) => (e.properties.date as string) === dateStr)
       return { dateStr, dailyActions, dailyExperiences, dailyNotes }
     })
-  }, [
-    notesByDate,
-    actions,
-    experiences,
-    visiblePastDays,
-    visibleFutureDays,
-  ])
+  }, [notesByDate, actions, experiences, visiblePastDays, visibleFutureDays])
 
   const handleDrop = () => {
     if (!draggedItem || !dropTarget) {
       return
     }
-    
+
     // Handle converting a note to an action or experience
     if (draggedItem.type === 'note' && (dropTarget.section === 'action' || dropTarget.section === 'experience')) {
       updateBlock.mutate({
@@ -127,10 +113,10 @@ export function Dashboard({
             date: dropTarget.date,
           },
         },
-      });
-      setDraggedItem(null);
-      setDropTarget(null);
-      return;
+      })
+      setDraggedItem(null)
+      setDropTarget(null)
+      return
     }
 
     // Prevent dropping an item onto itself
@@ -139,7 +125,7 @@ export function Dashboard({
       setDropTarget(null)
       return
     }
-    
+
     // Prevent dropping a note in the hierarchical sections via this handler
     if (draggedItem.type === 'note') {
       setDraggedItem(null)
@@ -148,7 +134,7 @@ export function Dashboard({
     }
 
     const allItems = draggedItem.type === 'action' ? actions : experiences
-    
+
     // Prevent dropping a parent onto one of its own children
     const isDroppingOnChild = (item: Block, parentId: string | null): boolean => {
       if (!parentId) return false
@@ -169,11 +155,12 @@ export function Dashboard({
     let newSortOrder: number | undefined = undefined
     const newProperties: Record<string, unknown> = {}
 
-    if (dropTarget.id) { // Dropping on or near another item
+    if (dropTarget.id) {
+      // Dropping on or near another item
       const targetItemInfo = findItemAndParent(allItems, dropTarget.id)
       if (!targetItemInfo) {
-        console.error("Could not find target item info for drop.")
-        return;
+        console.error('Could not find target item info for drop.')
+        return
       }
 
       if (dropTarget.position === 'on') {
@@ -184,11 +171,14 @@ export function Dashboard({
         newParentId = targetItemInfo.parent?.id ?? null
         newSortOrder = calculateSortOrder(targetItemInfo.parentList, targetItemInfo.index, dropTarget.position)
       }
-    } else { // Dropping at the end of a section
+    } else {
+      // Dropping at the end of a section
       newParentId = null // Root level for the day
-      const rootItems = allItems.filter(i => i.id !== draggedItem.id && !i.parentId && i.properties.date === dropTarget.date);
-      const lastRootItem = rootItems[rootItems.length - 1];
-      newSortOrder = (lastRootItem?.properties.sortOrder || 0) + 1;
+      const rootItems = allItems.filter(
+        (i) => i.id !== draggedItem.id && !i.parentId && i.properties.date === dropTarget.date
+      )
+      const lastRootItem = rootItems[rootItems.length - 1]
+      newSortOrder = (lastRootItem?.properties.sortOrder || 0) + 1
     }
 
     if ((draggedItem.properties.date as string) !== dropTarget.date) {
@@ -217,20 +207,18 @@ export function Dashboard({
     setDraggedItem(null)
     setDropTarget(null)
   }
-  
+
   const containerProps = {
     onDrop: handleDrop,
-    "data-testid": "dashboard-main-content",
-    className: "relative"
-  };
+    'data-testid': 'dashboard-main-content',
+    className: 'relative',
+  }
 
   if (viewMode === 'horizontal') {
     const dateStr = format(currentDate, 'yyyy-MM-dd')
     const dataForDay = {
       dailyActions: actions.filter((a) => (a.properties.date as string) === dateStr),
-      dailyExperiences: experiences.filter(
-        (e) => (e.properties.date as string) === dateStr
-      ),
+      dailyExperiences: experiences.filter((e) => (e.properties.date as string) === dateStr),
       dailyNotes: notesByDate.get(dateStr) || [],
     }
 
@@ -272,9 +260,7 @@ export function Dashboard({
           className="flex-grow flex items-center justify-center hover:text-gray-700 transition-colors p-1.5 rounded-lg hover:bg-gray-100"
         >
           <ArrowUp className="w-4 h-4" />
-          <span className="ml-2 text-[10px] font-semibold tracking-wider uppercase">
-            Future
-          </span>
+          <span className="ml-2 text-[10px] font-semibold tracking-wider uppercase">Future</span>
         </button>
         {visibleFutureDays > 0 && (
           <button
@@ -286,18 +272,16 @@ export function Dashboard({
           </button>
         )}
       </div>
-      {allGroupedData.map(
-        ({ dateStr, dailyActions, dailyExperiences, dailyNotes }) => (
-          <div key={dateStr} ref={isDateToday(dateStr) ? todayRef : null}>
-            <DailyPeriod
-              dateStr={dateStr}
-              dailyActions={dailyActions}
-              dailyExperiences={dailyExperiences}
-              dailyNotes={dailyNotes}
-            />
-          </div>
-        )
-      )}
+      {allGroupedData.map(({ dateStr, dailyActions, dailyExperiences, dailyNotes }) => (
+        <div key={dateStr} ref={isDateToday(dateStr) ? todayRef : null}>
+          <DailyPeriod
+            dateStr={dateStr}
+            dailyActions={dailyActions}
+            dailyExperiences={dailyExperiences}
+            dailyNotes={dailyNotes}
+          />
+        </div>
+      ))}
     </div>
   )
 }

@@ -1,58 +1,58 @@
-import { Block } from '@9nau/types';
-import { cn } from '@9nau/ui/lib/utils';
-import { useDashboardStore } from '@/lib/state/dashboard-store';
-import { useDeleteBlock } from '@/hooks/use-blocks-api';
-import { Button } from '@9nau/ui/components/button';
-import { MoreVertical } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { Block } from '@9nau/types'
+import { cn } from '@9nau/ui/lib/utils'
+import { useDashboardStore } from '@/lib/state/dashboard-store'
+import { useDeleteBlock } from '@/hooks/use-blocks-api'
+import { Button } from '@9nau/ui/components/button'
+import { MoreVertical } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
 
 interface NoteCardProps {
-  note: Block;
+  note: Block
 }
 
 export function NoteCard({ note }: NoteCardProps) {
-  const { setDraggedItem, draggedItem, setEditingNoteId } = useDashboardStore(s => ({
+  const { setDraggedItem, draggedItem, setEditingNoteId } = useDashboardStore((s) => ({
     setDraggedItem: s.actions.setDraggedItem,
     draggedItem: s.draggedItem,
     setEditingNoteId: s.actions.setEditingNoteId,
-  }));
-  const deleteBlock = useDeleteBlock();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  }))
+  const deleteBlock = useDeleteBlock()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('text/plain', note.id);
-    e.dataTransfer.effectAllowed = 'move';
-    setDraggedItem(note);
-  };
+    e.dataTransfer.setData('text/plain', note.id)
+    e.dataTransfer.effectAllowed = 'move'
+    setDraggedItem(note)
+  }
 
   const handleDragEnd = () => {
-    setDraggedItem(null);
-  };
+    setDraggedItem(null)
+  }
 
   const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    deleteBlock.mutate(note.id);
-  };
+    e.stopPropagation()
+    deleteBlock.mutate(note.id)
+  }
 
   const handleMenuClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsMenuOpen(prev => !prev);
-  };
+    e.stopPropagation()
+    setIsMenuOpen((prev) => !prev)
+  }
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
+        setIsMenuOpen(false)
       }
-    };
+    }
     if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside)
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isMenuOpen]);
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isMenuOpen])
 
   return (
     <div
@@ -97,5 +97,5 @@ export function NoteCard({ note }: NoteCardProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

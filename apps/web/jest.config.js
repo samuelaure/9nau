@@ -1,8 +1,8 @@
-const nextJest = require('next/jest');
+const nextJest = require('next/jest')
 
 const createJestConfig = nextJest({
   dir: './apps/web',
-});
+})
 
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
@@ -14,11 +14,9 @@ const customJestConfig = {
     '^@9nau/core/(.*)$': '<rootDir>/../../packages/core/src/$1',
     '^@9nau/types/(.*)$': '<rootDir>/../../packages/types/src/$1',
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(.*-fns|@9nau|lucide-react)/)',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(.*-fns|@9nau|lucide-react)/)'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
   testRegex: 'apps/web/src/.*\\.spec\\.(t|j)sx?$',
-};
+}
 
-module.exports = createJestConfig(customJestConfig);
+module.exports = createJestConfig(customJestConfig)
