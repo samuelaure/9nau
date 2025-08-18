@@ -10,6 +10,7 @@ export interface Block {
   parentId: string | null
   createdAt: Date
   updatedAt: Date
+  schedule?: Schedule
 }
 
 /**
@@ -41,4 +42,26 @@ export interface UpdateBlockDto {
   type?: string
   properties?: Record<string, unknown>
   parentId?: string | null
+}
+
+/**
+ * The conceptual representation of a Schedule for a Block.
+ */
+export interface Schedule {
+  id: string
+  blockId: string
+  startDate: string
+  endDate?: string | null
+  rrule?: string | null
+  completedAt?: string | null
+}
+
+/**
+ * The Data Transfer Object interface for creating or updating a Schedule.
+ */
+export interface UpsertScheduleDto {
+  blockId: string
+  startDate: string
+  endDate?: string | null
+  rrule?: string | null
 }

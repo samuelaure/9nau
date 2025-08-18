@@ -78,6 +78,7 @@ export class BlocksService {
 
     const blocks = await this.prisma.block.findMany({
       where,
+      include: { schedule: true },
     });
 
     return blocks.sort((a, b) => {

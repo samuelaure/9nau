@@ -20,6 +20,20 @@ model Block {
 
   relationsFrom Relation[] @relation("FromBlock")
   relationsTo   Relation[] @relation("ToBlock")
+
+  schedule Schedule?
+}
+
+model Schedule {
+  id          String    @id @default(cuid())
+  blockId     String    @unique
+  block       Block     @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  startDate   DateTime
+  endDate     DateTime?
+  rrule       String?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Relation {
@@ -30,7 +44,7 @@ model Relation {
   fromBlockId String
   fromBlock   Block  @relation("FromBlock", fields: [fromBlockId], references: [id], onDelete: Cascade)
   toBlockId   String
-  toBlock     Block  @relation("ToBlock",fields: [toBlockId],references: [id], onDelete: Cascade)
+  toBlock     Block  @relation("ToBlock", fields: [toBlockId], references: [id], onDelete: Cascade)
 
   @@unique([fromBlockId, toBlockId, type])
 }

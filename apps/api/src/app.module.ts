@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { BlocksModule } from './blocks/blocks.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { BlocksModule } from './blocks/blocks.module';
     }),
     PrismaModule,
     BlocksModule,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [

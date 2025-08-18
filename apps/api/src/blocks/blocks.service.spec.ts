@@ -128,6 +128,7 @@ describe('BlocksService', () => {
           type: 'action',
           properties: { path: ['status'], not: 'trash' },
         },
+        include: { schedule: true },
       });
       expect(result).toEqual([
         {
@@ -168,6 +169,7 @@ describe('BlocksService', () => {
         where: {
           properties: { path: ['status'], equals: 'completed' },
         },
+        include: { schedule: true },
       });
       expect(result).toEqual([
         {
