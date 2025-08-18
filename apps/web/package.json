@@ -7,9 +7,11 @@
   "author": "Samuel Aure",
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev:on": "dotenv -e ../../.env.development -e .env.development next dev",
     "lint": "next lint",
-    "start": "next start"
+    "prod:on": "dotenv -e ../../.env -e .env next dev",
+    "start": "next start",
+    "test:on": "dotenv -e ../../.env.test -e .env.test next dev"
   },
   "dependencies": {
     "@9nau/types": "workspace:^",
@@ -17,6 +19,7 @@
     "@tanstack/react-query": "^5.51.1",
     "@tanstack/react-query-devtools": "^5.51.1",
     "date-fns": "^3.6.0",
+    "dotenv": "^17.2.1",
     "lucide-react": "^0.408.0",
     "next": "14.2.5",
     "react": "^18",

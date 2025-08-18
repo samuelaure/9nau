@@ -7,12 +7,16 @@
   "author": "Samuel Aure",
   "scripts": {
     "build": "pnpm --stream -r build",
-    "dev:api": "pnpm --filter api run start:dev",
-    "dev:web": "pnpm --filter web run dev",
-    "format": "prettier --write \"**/*.ts\"",
+    "dev:off": "docker compose --env-file .env.development down postgres_development",
+    "dev:on": "docker compose --env-file .env.development up postgres_development -d --build && concurrently \"pnpm --filter api run dev:on\" \"pnpm --filter web run dev:on\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yaml}\"",
     "lint": "eslint \"{apps,packages}/**/*.{ts,tsx}\" --fix",
+    "prod:off": "docker compose down postgres",
+    "prod:on": "docker compose --env-file .env up postgres -d --build && concurrently \"pnpm --filter api run prod:on\" \"pnpm --filter web run prod:on\"",
     "test:all": "jest --projects apps/api apps/web packages/core packages/ui --runInBand",
-    "test:e2e": "cypress run",
+    "test:e2e": "dotenv -e .env.test cypress run",
+    "test:off": "docker compose --env-file .env.test down postgres_test",
+    "test:on": "docker compose --env-file .env.test up postgres_test -d --build && concurrently \"pnpm --filter api run test:on\" \"pnpm --filter web run test:on\"",
     "test:unit": "jest --projects apps/web packages/core packages/ui --runInBand",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch"
@@ -21,6 +25,7 @@
     "@eslint/js": "^9.8.0",
     "@nestjs/cli": "^11.0.7",
     "@types/node": "^24.1.0",
+    "concurrently": "^9.2.0",
     "cypress": "^13.13.1",
     "dotenv-cli": "^7.4.4",
     "eslint": "^9.8.0",
@@ -32,5 +37,5 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.0.0-alpha.44"
   },
-  "packageManager": "pnpm@10.13.1"
+  "packageManager": "pnpm@10.14.0"
 }
