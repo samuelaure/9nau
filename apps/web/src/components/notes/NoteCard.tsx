@@ -5,6 +5,7 @@ import { useDeleteBlock } from '@/hooks/use-blocks-api'
 import { Button } from '@9nau/ui/components/button'
 import { MoreVertical } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
+import { SchedulePopover } from '../dashboard/SchedulePopover'
 
 interface NoteCardProps {
   note: Block
@@ -70,6 +71,7 @@ export function NoteCard({ note }: NoteCardProps) {
         </p>
       </div>
       <div className="h-10 flex items-center justify-end px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <SchedulePopover block={note} />
         <div className="relative">
           <Button
             variant="ghost"
