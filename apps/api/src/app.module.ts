@@ -5,6 +5,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { BlocksModule } from './blocks/blocks.module';
+import { HealthModule } from './health/health.module';
+import { RelationsModule } from './relations/relations.module';
+import { ScheduleModule } from './schedule/schedule.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -13,6 +17,10 @@ import { BlocksModule } from './blocks/blocks.module';
     }),
     PrismaModule,
     BlocksModule,
+    HealthModule,
+    RelationsModule,
+    ScheduleModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [
