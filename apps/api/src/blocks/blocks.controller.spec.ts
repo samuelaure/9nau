@@ -30,6 +30,8 @@ describe('BlocksController', () => {
             findAll: jest.fn(),
             update: jest.fn(),
             remove: jest.fn(),
+            findOne: jest.fn(),
+            getRemindableBlocks: jest.fn(),
           },
         },
       ],
@@ -75,6 +77,22 @@ describe('BlocksController', () => {
       jest.spyOn(service, 'remove').mockResolvedValue(mockBlock);
       await controller.remove('block-1');
       expect(service.remove).toHaveBeenCalledWith('block-1');
+    });
+  });
+
+  describe('findOne', () => {
+    it('should call blocksService.findOne with the correct ID', async () => {
+      jest.spyOn(service, 'findOne').mockResolvedValue(mockBlock);
+      await controller.findOne('block-1');
+      expect(service.findOne).toHaveBeenCalledWith('block-1');
+    });
+  });
+
+  describe('getRemindableBlocks', () => {
+    it('should call blocksService.getRemindableBlocks', async () => {
+      jest.spyOn(service, 'getRemindableBlocks').mockResolvedValue([mockBlock]);
+      await controller.getRemindableBlocks();
+      expect(service.getRemindableBlocks).toHaveBeenCalled();
     });
   });
 });

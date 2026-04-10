@@ -58,7 +58,9 @@ export class BlocksService {
 
   async findAll(query: FindBlocksQueryDto) {
     const { type, status } = query;
-    const where: Prisma.BlockWhereInput = {};
+    const where: Prisma.BlockWhereInput = {
+      deletedAt: null,
+    };
 
     if (type) {
       where.type = type;
@@ -132,11 +134,42 @@ export class BlocksService {
     });
   }
 
+  async findOne(id: string) {
+    const block = await this.prisma.block.findUnique({
+      where: { id },
+      include: {
+        children: true,
+        relationsFrom: true,
+        relationsTo: true,
+        schedule: true,
+      },
+    });
+    if (!block || block.deletedAt) {
+      throw new NotFoundException(`Block with ID ${id} not found`);
+    }
+    return block;
+  }
+
+  async getRemindableBlocks() {
+    return this.prisma.block.findMany({
+      where: {
+        deletedAt: null,
+        schedule: {
+          isNot: null,
+        },
+      },
+      include: { schedule: true },
+    });
+  }
+
   async remove(id: string) {
     const block = await this.prisma.block.findUnique({ where: { id } });
     if (!block) {
       throw new NotFoundException(`Block with ID ${id} not found`);
     }
-    return this.prisma.block.delete({ where: { id } });
+    return this.prisma.block.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
   }
 }

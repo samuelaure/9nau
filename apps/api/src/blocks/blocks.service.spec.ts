@@ -17,8 +17,12 @@ describe('BlocksService', () => {
     type: 'note',
     properties: { text: 'Test note' } as Prisma.JsonObject,
     parentId: null,
+    uuid: 'uuid-1',
     createdAt: new Date(),
     updatedAt: new Date(),
+    deletedAt: null,
+    source: null,
+    sourceRef: null,
   };
 
   beforeEach(async () => {
@@ -125,6 +129,7 @@ describe('BlocksService', () => {
 
       expect(prisma.block.findMany).toHaveBeenCalledWith({
         where: {
+          deletedAt: null,
           type: 'action',
           properties: { path: ['status'], not: 'trash' },
         },
@@ -166,6 +171,7 @@ describe('BlocksService', () => {
       const result = await service.findAll(query);
       expect(prisma.block.findMany).toHaveBeenCalledWith({
         where: {
+          deletedAt: null,
           properties: { path: ['status'], equals: 'completed' },
         },
       });
@@ -251,13 +257,14 @@ describe('BlocksService', () => {
   });
 
   describe('remove', () => {
-    it('should remove a block successfully', async () => {
+    it('should soft delete a block successfully', async () => {
       prisma.block.findUnique.mockResolvedValueOnce(mockBlock);
-      prisma.block.delete.mockResolvedValueOnce(mockBlock);
+      prisma.block.update.mockResolvedValueOnce(mockBlock);
       const result = await service.remove('block-1');
 
-      expect(prisma.block.delete).toHaveBeenCalledWith({
+      expect(prisma.block.update).toHaveBeenCalledWith({
         where: { id: 'block-1' },
+        data: { deletedAt: expect.any(Date) },
       });
       expect(result.id).toBe('block-1');
     });
@@ -267,6 +274,48 @@ describe('BlocksService', () => {
       await expect(service.remove('non-existent-id')).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  describe('findOne', () => {
+    it('should find a block by id', async () => {
+      prisma.block.findUnique.mockResolvedValueOnce(mockBlock);
+      const result = await service.findOne('block-1');
+      expect(prisma.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'block-1' },
+        include: {
+          children: true,
+          relationsFrom: true,
+          relationsTo: true,
+          schedule: true,
+        },
+      });
+      expect(result.id).toBe('block-1');
+    });
+
+    it('should throw NotFoundException if block is soft deleted', async () => {
+      prisma.block.findUnique.mockResolvedValueOnce({
+        ...mockBlock,
+        deletedAt: new Date(),
+      });
+      await expect(service.findOne('block-1')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('getRemindableBlocks', () => {
+    it('should return blocks with schedules', async () => {
+      prisma.block.findMany.mockResolvedValueOnce([mockBlock]);
+      const result = await service.getRemindableBlocks();
+      expect(prisma.block.findMany).toHaveBeenCalledWith({
+        where: {
+          deletedAt: null,
+          schedule: { isNot: null },
+        },
+        include: { schedule: true },
+      });
+      expect(result).toHaveLength(1);
     });
   });
 });

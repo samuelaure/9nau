@@ -45,6 +45,16 @@ export class BlocksController {
     return this.blocksService.findAll(query);
   }
 
+  @Get('remindable')
+  getRemindableBlocks() {
+    return this.blocksService.getRemindableBlocks();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.blocksService.findOne(id);
+  }
+
   /**
    * Endpoint to update an existing block.
    * @param id The ID of the block to update.
