@@ -1,36 +1,84 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 model Block {
-  id         String   @id @default(cuid())
-  type       String
-  properties Json     @default("{}")
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  parentId   String?
-  parent     Block?   @relation("BlockChildren", fields: [parentId], references: [id], onDelete: Cascade)
-  children   Block[]  @relation("BlockChildren")
-
-  relationsFrom Relation[] @relation("FromBlock")
-  relationsTo   Relation[] @relation("ToBlock")
+  id          String   @id @default(cuid())
+  type        String
+  properties  Json     @default("{}")
+  
+  // Hierarchy
+  parentId    String?
+  parent      Block?   @relation("BlockChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children    Block[]  @relation("BlockChildren")
+  
+  // Relations graph
+  relationsFrom  Relation[]  @relation("FromBlock")
+  relationsTo    Relation[]  @relation("ToBlock")
+  
+  // Scheduling
+  schedule    Schedule?
+  
+  // Event history
+  events      Event[]
+  
+  // Sync metadata
+  uuid        String   @unique @default(uuid())
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  deletedAt   DateTime?
+  
+  // Origin tracking
+  source      String?
+  sourceRef   String?
 }
 
 model Relation {
-  id         String @id @default(cuid())
-  type       String
-  properties Json   @default("{}")
-
+  id          String  @id @default(cuid())
+  type        String
+  properties  Json    @default("{}")
+  
   fromBlockId String
-  fromBlock   Block  @relation("FromBlock", fields: [fromBlockId], references: [id], onDelete: Cascade)
+  fromBlock   Block   @relation("FromBlock", fields: [fromBlockId], references: [id], onDelete: Cascade)
   toBlockId   String
-  toBlock     Block  @relation("ToBlock",fields: [toBlockId],references: [id], onDelete: Cascade)
-
+  toBlock     Block   @relation("ToBlock", fields: [toBlockId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  
   @@unique([fromBlockId, toBlockId, type])
+}
+
+model Schedule {
+  id          String    @id @default(cuid())
+  blockId     String    @unique
+  block       Block     @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  startDate   DateTime
+  endDate     DateTime?
+  rrule       String?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Event {
+  id        String    @id @default(cuid())
+  type      String
+  metadata  Json      @default("{}")
+  
+  blockId   String
+  block     Block     @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime  @default(now())
+}
+
+model SyncCursor {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  lastSyncedAt  DateTime
+  updatedAt     DateTime @updatedAt
 }
