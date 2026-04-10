@@ -52,3 +52,9 @@ coverage/
 
 # Temporary files
 *.tmp
+
+# Turborepo
+.turbo/
+
+# naŭ Agent (strictly local)
+.agent/
