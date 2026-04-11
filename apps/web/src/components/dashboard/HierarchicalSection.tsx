@@ -109,6 +109,13 @@ export function HierarchicalSection({ dateStr, sectionType, title, items }: Hier
     }
   }
 
+  const handleFullUpdate = (id: string, dto: { type?: string; properties?: Record<string, unknown> }) => {
+    updateBlock.mutate({
+      id,
+      updateDto: dto,
+    })
+  }
+
   const renderList = (
     itemList: HierarchicalBlock[],
     parentListForContext: HierarchicalBlock[],
@@ -120,6 +127,7 @@ export function HierarchicalSection({ dateStr, sectionType, title, items }: Hier
           <EditableItem
             item={item}
             onUpdate={handleUpdate}
+            onFullUpdate={handleFullUpdate}
             onToggle={handleToggle}
             onAddItem={handleAdd}
             onIndent={handleIndent}
