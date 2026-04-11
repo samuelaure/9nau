@@ -1,20 +1,24 @@
-import { getSetting } from '@/repositories/SettingsRepository';
 import {
   getPendingPosts,
+  incrementSyncAttempts,
+  updateSyncStatus,
 } from '@/repositories/PostRepository';
 import { runSql, executeSql } from '../db';
 import { syncService } from './SyncService';
 import { MediaCacheService } from './MediaCacheService';
+import { vaultMigrationService } from './VaultMigrationService';
 
 /**
  * SyncManager handles the background synchronization of captures.
  * Transitioned to Standalone Mode: Now uses Apify directly and downloads media locally.
+ * Also triggers Vault backup for newly cached media.
  */
 class SyncManager {
   private isSyncing = false;
   private intervalId: NodeJS.Timeout | null = null;
   private subscribers: (() => void)[] = [];
   private pollingInterval = 15000;
+  private vaultMigrationStarted = false;
 
   async triggerSync(pollingIntervalMs = 15000) {
     this.pollingInterval = pollingIntervalMs;
@@ -77,14 +81,14 @@ class SyncManager {
       }
 
       // 3. Post-Sync processing: Ensure all processed posts have media cached locally
-      const processed = await executeSql<any>(
+      const processed = await executeSql<Record<string, unknown>>(
         "SELECT * FROM posts WHERE sync_status = 'processed' AND isProcessed = 1"
       );
       
       for (const post of processed) {
         if (post.mediaData) {
           try {
-            const media = JSON.parse(post.mediaData);
+            const media = JSON.parse(post.mediaData as string);
             let changed = false;
             
             for (const item of media) {
@@ -104,6 +108,16 @@ class SyncManager {
         }
       }
 
+      // 4. Trigger Vault migration for newly cached media (runs in background)
+      if (!this.vaultMigrationStarted) {
+        this.vaultMigrationStarted = true;
+        // Fire-and-forget: vault migration runs independently
+        vaultMigrationService.startMigration().catch((error) => {
+          console.error('[SyncManager] Vault migration error:', error);
+          this.vaultMigrationStarted = false;
+        });
+      }
+
       // Return true if we still have pending work (though PUSH/PULL is mostly atomic)
       const pending = await getPendingPosts(10);
       return pending.length > 0;
@@ -115,14 +129,15 @@ class SyncManager {
     }
   }
 
-  private async handleFailure(post: any, maxAttempts: number) {
-    await incrementSyncAttempts(post.id);
-    if (post.sync_attempts + 1 >= maxAttempts) {
+  private async handleFailure(post: Record<string, unknown>, maxAttempts: number) {
+    await incrementSyncAttempts(post.id as number);
+    if ((post.sync_attempts as number) + 1 >= maxAttempts) {
       console.log(`[SyncManager] Item ${post.id} hit retry limit -> STANDBY.`);
-      await updateSyncStatus(post.id, 'standby');
+      await updateSyncStatus(post.id as number, 'standby');
       this.notify();
     }
   }
 }
 
 export const syncManager = new SyncManager();
+
