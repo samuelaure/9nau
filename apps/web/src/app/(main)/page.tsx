@@ -3,6 +3,8 @@
 import { useMemo } from 'react'
 import { NoteInput } from '@/components/notes/note-input'
 import { Dashboard } from '@/components/dashboard/Dashboard'
+import { JournalView } from '@/components/journal/JournalView'
+import { SearchView } from '@/components/search/SearchView'
 import { useGetBlocks } from '@/hooks/use-blocks-api'
 import { groupBlocksByDate, buildHierarchy, formatDisplayDate } from '@9nau/core'
 import { Block } from '@9nau/types'
@@ -65,11 +67,20 @@ export default function HomePage() {
   }, [blocks])
 
   if (isLoading) {
-    return <div className="text-center text-gray-500 mt-10">Loading data...</div>
+    return <div className="text-center text-gray-500 dark:text-gray-400 mt-10">Loading data...</div>
   }
 
   if (isError) {
     return <div className="text-center text-red-500 mt-10">Failed to load data. Please try again later.</div>
+  }
+
+  // Route to special views
+  if (activeView === 'journal') {
+    return <JournalView />
+  }
+
+  if (activeView === 'search') {
+    return <SearchView />
   }
 
   return (
@@ -84,7 +95,7 @@ export default function HomePage() {
       ) : (
         <div className="space-y-8">
           {Object.keys(processedData.groupedNotes).length === 0 ? (
-            <div className="text-center text-gray-500 mt-20">This section is empty.</div>
+            <div className="text-center text-gray-500 dark:text-gray-400 mt-20">This section is empty.</div>
           ) : (
             Object.entries(processedData.groupedNotes).map(([date, notesForDate]) => (
               <div key={date}>
@@ -92,7 +103,7 @@ export default function HomePage() {
                   <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider pr-3 whitespace-nowrap">
                     {date}
                   </div>
-                  <div className="flex-grow h-px bg-gray-200"></div>
+                  <div className="flex-grow h-px bg-gray-200 dark:bg-gray-700"></div>
                 </div>
                 <NoteGrid notes={notesForDate} />
               </div>
@@ -103,3 +114,4 @@ export default function HomePage() {
     </>
   )
 }
+

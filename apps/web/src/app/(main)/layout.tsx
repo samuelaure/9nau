@@ -79,13 +79,13 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="h-screen flex flex-col bg-white font-sans">
+    <div className="h-screen flex flex-col bg-white dark:bg-gray-950 font-sans text-gray-900 dark:text-gray-100">
       <Header isScrolled={isScrolled} />
       <div className="flex-1 flex pt-16 overflow-hidden">
         <Sidebar />
         <main
           ref={mainRef}
-          className={cn('flex-1 p-4 md:p-8 bg-white transition-all duration-300 overflow-y-auto')}
+          className={cn('flex-1 p-4 md:p-8 bg-white dark:bg-gray-950 transition-all duration-300 overflow-y-auto')}
           style={{ marginLeft: isSidebarOpen ? '288px' : '80px' }}
         >
           {children}
