@@ -18,10 +18,30 @@ services:
         limits:
           cpus: '0.35'
           memory: 192M
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - NAU_SERVICE_KEY=${NAU_SERVICE_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - NAUTHENTICITY_URL=${NAUTHENTICITY_URL}
+      - WHATSNAU_URL=${WHATSNAU_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - PORT=3000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.9nau-api.rule=Host(`api.9nau.com`)"
+      - "traefik.http.routers.9nau-api.entrypoints=websecure"
+      - "traefik.http.routers.9nau-api.tls=true"
+      - "traefik.http.routers.9nau-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.9nau-api.loadbalancer.server.port=3000"
+      - "traefik.docker.network=nau-network"
 
   9nau_postgres:
     image: postgres:16
     container_name: 9nau-postgres
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     networks:
       - nau-network
     volumes:
