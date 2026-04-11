@@ -6,7 +6,14 @@ export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
   @Post()
-  create(@Body() dto: { blockId: string; type: string; metadata?: Record<string, unknown> }) {
+  create(
+    @Body()
+    dto: {
+      blockId: string;
+      type: string;
+      metadata?: Record<string, unknown>;
+    },
+  ) {
     return this.eventsService.create(dto.blockId, dto.type, dto.metadata);
   }
 

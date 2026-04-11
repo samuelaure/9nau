@@ -9,7 +9,7 @@ export class ScheduleService {
     return this.prisma.schedule.upsert({
       where: { blockId },
       create: { blockId, startDate, endDate, rrule },
-      update: { startDate, endDate, rrule }
+      update: { startDate, endDate, rrule },
     });
   }
 

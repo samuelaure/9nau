@@ -28,11 +28,18 @@ describe('RelationsService', () => {
   });
 
   it('should create a relation', async () => {
-    const mockRelation = { id: 'rel-1', fromBlockId: 'b1', toBlockId: 'b2', type: 'link', properties: {}, createdAt: new Date() };
+    const mockRelation = {
+      id: 'rel-1',
+      fromBlockId: 'b1',
+      toBlockId: 'b2',
+      type: 'link',
+      properties: {},
+      createdAt: new Date(),
+    };
     prisma.relation.create.mockResolvedValueOnce(mockRelation as Relation);
-    
+
     const result = await service.create('b1', 'b2', 'link');
-    
+
     expect(prisma.relation.create).toHaveBeenCalledWith({
       data: {
         fromBlockId: 'b1',
@@ -45,8 +52,12 @@ describe('RelationsService', () => {
   });
 
   it('should remove a relation', async () => {
-    prisma.relation.delete.mockResolvedValueOnce({ id: 'rel-1' } as unknown as Relation);
+    prisma.relation.delete.mockResolvedValueOnce({
+      id: 'rel-1',
+    } as unknown as Relation);
     await service.remove('rel-1');
-    expect(prisma.relation.delete).toHaveBeenCalledWith({ where: { id: 'rel-1' } });
+    expect(prisma.relation.delete).toHaveBeenCalledWith({
+      where: { id: 'rel-1' },
+    });
   });
 });

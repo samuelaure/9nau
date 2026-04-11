@@ -4,6 +4,6 @@ import { RelationsService } from './relations.service';
 
 @Module({
   controllers: [RelationsController],
-  providers: [RelationsService]
+  providers: [RelationsService],
 })
 export class RelationsModule {}

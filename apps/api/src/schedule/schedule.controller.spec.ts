@@ -33,7 +33,12 @@ describe('ScheduleController', () => {
     const date = new Date().toISOString();
     const dto = { blockId: 'b1', startDate: date as unknown as Date };
     await controller.upsert(dto);
-    expect(service.upsert).toHaveBeenCalledWith('b1', expect.any(Date), undefined, undefined);
+    expect(service.upsert).toHaveBeenCalledWith(
+      'b1',
+      expect.any(Date),
+      undefined,
+      undefined,
+    );
   });
 
   it('should call service.findOne', async () => {

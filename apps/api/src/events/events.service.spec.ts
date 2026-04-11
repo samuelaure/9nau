@@ -28,7 +28,13 @@ describe('EventsService', () => {
   });
 
   it('should create an event', async () => {
-    prisma.event.create.mockResolvedValueOnce({ id: 'e1', blockId: 'b1', type: 'done', metadata: {}, createdAt: new Date() } as Event);
+    prisma.event.create.mockResolvedValueOnce({
+      id: 'e1',
+      blockId: 'b1',
+      type: 'done',
+      metadata: {},
+      createdAt: new Date(),
+    } as Event);
     await service.create('b1', 'done');
     expect(prisma.event.create).toHaveBeenCalledWith({
       data: { blockId: 'b1', type: 'done', metadata: {} },

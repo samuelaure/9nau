@@ -6,14 +6,19 @@ import { Prisma } from '@prisma/client';
 export class RelationsService {
   constructor(private prisma: PrismaService) {}
 
-  create(fromBlockId: string, toBlockId: string, type: string, properties: Record<string, unknown> = {}) {
+  create(
+    fromBlockId: string,
+    toBlockId: string,
+    type: string,
+    properties: Record<string, unknown> = {},
+  ) {
     return this.prisma.relation.create({
       data: {
         fromBlockId,
         toBlockId,
         type,
-        properties: properties as Prisma.InputJsonValue
-      }
+        properties: properties as Prisma.InputJsonValue,
+      },
     });
   }
 

@@ -6,8 +6,21 @@ export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Post()
-  upsert(@Body() dto: { blockId: string; startDate: Date; endDate?: Date; rrule?: string }) {
-    return this.scheduleService.upsert(dto.blockId, new Date(dto.startDate), dto.endDate ? new Date(dto.endDate) : undefined, dto.rrule);
+  upsert(
+    @Body()
+    dto: {
+      blockId: string;
+      startDate: Date;
+      endDate?: Date;
+      rrule?: string;
+    },
+  ) {
+    return this.scheduleService.upsert(
+      dto.blockId,
+      new Date(dto.startDate),
+      dto.endDate ? new Date(dto.endDate) : undefined,
+      dto.rrule,
+    );
   }
 
   @Get(':blockId')
