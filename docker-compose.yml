@@ -22,6 +22,11 @@ services:
     volumes:
       - 9nau-postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   9nau_redis:
     image: redis:7-alpine
@@ -30,6 +35,11 @@ services:
     networks:
       - nau-network
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   nau-network:
