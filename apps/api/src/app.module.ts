@@ -13,6 +13,8 @@ import { IntegrationsModule } from './integrations/integrations.module';
 import { SyncModule } from './sync/sync.module';
 import { MediaModule } from './media/media.module';
 
+import { TriageModule } from './triage/triage.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +29,7 @@ import { MediaModule } from './media/media.module';
     IntegrationsModule,
     SyncModule,
     MediaModule,
+    TriageModule,
   ],
   controllers: [AppController],
   providers: [
