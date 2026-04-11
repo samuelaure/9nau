@@ -9,6 +9,8 @@ import { HealthModule } from './health/health.module';
 import { RelationsModule } from './relations/relations.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { EventsModule } from './events/events.module';
+import { IntegrationsModule } from './integrations/integrations.module';
+import { SyncModule } from './sync/sync.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { EventsModule } from './events/events.module';
     RelationsModule,
     ScheduleModule,
     EventsModule,
+    IntegrationsModule,
+    SyncModule,
   ],
   controllers: [AppController],
   providers: [
