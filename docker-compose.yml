@@ -5,8 +5,8 @@ services:
     networks:
       - nau-network
     depends_on:
-      - postgres
-      - redis
+      - 9nau_postgres
+      - 9nau_redis
     restart: unless-stopped
     logging:
       driver: json-file
@@ -14,7 +14,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  postgres:
+  9nau_postgres:
     image: postgres:16
     container_name: 9nau-postgres
     networks:
@@ -23,7 +23,7 @@ services:
       - 9nau-postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
 
-  redis:
+  9nau_redis:
     image: redis:7-alpine
     container_name: 9nau-redis
     command: redis-server --requirepass ${REDIS_PASSWORD}
