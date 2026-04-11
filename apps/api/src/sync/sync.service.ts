@@ -53,8 +53,9 @@ export class SyncService {
         });
         results.push({ uuid: upserted.uuid, status: 'synced' });
       } catch (error) {
-        this.logger.error(`Failed to upsert block ${uuid}: ${error.message}`);
-        results.push({ uuid, status: 'error', message: error.message });
+        const message = error instanceof Error ? error.message : String(error);
+        this.logger.error(`Failed to upsert block ${uuid}: ${message}`);
+        results.push({ uuid, status: 'error', message });
       }
     }
 

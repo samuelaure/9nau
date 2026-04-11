@@ -13,7 +13,7 @@ export class NauthenticityService {
       'NAUTHENTICITY_URL',
       'http://nauthenticity:4000',
     );
-    this.serviceKey = this.configService.get<string>('NAU_SERVICE_KEY');
+    this.serviceKey = this.configService.get<string>('NAU_SERVICE_KEY') || '';
   }
 
   private get headers() {
@@ -34,7 +34,8 @@ export class NauthenticityService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to add targets: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to add targets: ${message}`);
       throw error;
     }
   }
@@ -51,7 +52,8 @@ export class NauthenticityService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error(`Failed to generate comment: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to generate comment: ${message}`);
       throw error;
     }
   }

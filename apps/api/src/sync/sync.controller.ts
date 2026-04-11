@@ -8,7 +8,7 @@ export class SyncController {
   constructor(private readonly syncService: SyncService) {}
 
   @Post('push')
-  async push(@Body() body: { blocks: any[] }) {
+  async push(@Body() body: { blocks: Record<string, unknown>[] }) {
     return this.syncService.push(body.blocks);
   }
 
