@@ -56,6 +56,50 @@ class NauthenticityService {
           results.push({ brandId, action: 'REACTIVE_COMMENT', status: 'error' });
         }
       }
+
+      // Action C: Save to Inspo Base
+      if (actions.includes('INSPO_BASE')) {
+        try {
+          await this.client.post('/integrations/nauthenticity/inspo', {
+            brandId,
+            postUrl: url,
+            type: 'inspo',
+          });
+          results.push({ brandId, action: 'INSPO_BASE', status: 'success' });
+        } catch (error) {
+          console.error('[NauthenticityService] Action C (InspoBase) failed:', error);
+          results.push({ brandId, action: 'INSPO_BASE', status: 'error' });
+        }
+      }
+
+      // Action D: Content to Replicate
+      if (actions.includes('REPLICATE')) {
+        try {
+          await this.client.post('/integrations/nauthenticity/inspo', {
+            brandId,
+            postUrl: url,
+            type: 'replicate',
+          });
+          results.push({ brandId, action: 'REPLICATE', status: 'success' });
+        } catch (error) {
+          console.error('[NauthenticityService] Action D (Replicate) failed:', error);
+          results.push({ brandId, action: 'REPLICATE', status: 'error' });
+        }
+      }
+
+      // Action E: Repost
+      if (actions.includes('REPOST')) {
+        try {
+          await this.client.post('/integrations/nauthenticity/repost', {
+            brandId,
+            postUrl: url,
+          });
+          results.push({ brandId, action: 'REPOST', status: 'success' });
+        } catch (error) {
+          console.error('[NauthenticityService] Action E (Repost) failed:', error);
+          results.push({ brandId, action: 'REPOST', status: 'error' });
+        }
+      }
     }
     
     return results;

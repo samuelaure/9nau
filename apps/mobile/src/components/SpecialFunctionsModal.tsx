@@ -123,11 +123,6 @@ export const SpecialFunctionsModal: React.FC<SpecialFunctionsModalProps> = ({
                         <View style={styles.actionInfo}>
                           <Text style={styles.actionName}>{action.name}</Text>
                           <Text style={styles.actionDesc}>{action.description}</Text>
-                          {action.phase > 3 && (
-                            <View style={styles.comingSoon}>
-                              <Text style={styles.comingSoonText}>COMING SOON</Text>
-                            </View>
-                          )}
                         </View>
                         <Switch
                           value={isActionSelected(brand.id, action.id)}

@@ -272,6 +272,38 @@ LENGTH: ${periodType === 'daily' ? 'Brief (1-2 paragraphs)' : periodType === 'ye
     };
   }
 
+  async saveDirectSummary(
+    periodType: string,
+    type: string,
+    synthesis: string,
+    summary: string,
+    startDateStr: string,
+    endDateStr: string
+  ) {
+    const startDate = dayjs(startDateStr).startOf('day').toDate();
+    const endDate = dayjs(endDateStr).endOf('day').toDate();
+
+    this.logger.log(`Saving direct summary of type ${type} for period ${periodType}`);
+
+    const newSummaryBlock = await this.blocksService.create({
+      type, // 'journal_summary' or 'content_brief'
+      properties: {
+        periodType,
+        periodStart: startDate.toISOString(),
+        periodEnd: endDate.toISOString(),
+        synthesis,
+        summary,
+        highlights: [],
+      }
+    });
+
+    return {
+      success: true,
+      blockId: newSummaryBlock.id,
+      data: newSummaryBlock,
+    };
+  }
+
   // --- REFACTORED TRIGGERS ---
 
   @Cron('0 23 * * *')

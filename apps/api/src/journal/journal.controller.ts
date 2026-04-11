@@ -9,6 +9,15 @@ export class GenerateSummaryDto {
   endDate!: string;
 }
 
+export class DirectSummaryDto {
+  periodType!: 'daily' | 'weekly' | 'monthly' | 'trimester' | 'yearly';
+  type!: string; // e.g. 'content_brief'
+  synthesis!: string;
+  summary!: string;
+  startDate!: string;
+  endDate!: string;
+}
+
 @Controller('api/journal')
 @UseGuards(ServiceAuthGuard)
 export class JournalController {
@@ -20,5 +29,20 @@ export class JournalController {
       return { success: false, error: 'Missing required fields: periodType, startDate, endDate' };
     }
     return this.journalService.generateSummary(request.periodType, request.startDate, request.endDate);
+  }
+
+  @Post('summary/direct')
+  async saveDirectSummary(@Body() request: DirectSummaryDto) {
+    if (!request.periodType || !request.synthesis || !request.summary || !request.startDate || !request.endDate) {
+      return { success: false, error: 'Missing required fields for direct summary' };
+    }
+    return this.journalService.saveDirectSummary(
+      request.periodType,
+      request.type || 'journal_summary',
+      request.synthesis,
+      request.summary,
+      request.startDate,
+      request.endDate
+    );
   }
 }
