@@ -11,6 +11,7 @@ import { ScheduleModule } from './schedule/schedule.module';
 import { EventsModule } from './events/events.module';
 import { IntegrationsModule } from './integrations/integrations.module';
 import { SyncModule } from './sync/sync.module';
+import { MediaModule } from './media/media.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SyncModule } from './sync/sync.module';
     EventsModule,
     IntegrationsModule,
     SyncModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [
