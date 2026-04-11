@@ -1,0 +1,16 @@
+# Build artifacts
+node_modules/
+dist/
+web-build/
+package-lock.json
+
+# Expo
+.expo/
+.expo-shared/
+
+# Android & iOS
+android/
+ios/
+
+# Assets
+assets/
