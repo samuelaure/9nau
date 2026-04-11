@@ -33,6 +33,8 @@ export interface Post {
   uuid: string;
   local_updated_at: string;
   api_updated_at?: string;
+  vault_file_id?: string;
+  vault_migration_status?: 'pending' | 'uploading' | 'done' | 'error' | null;
 }
 
 export const getDuePosts = async (tagFilter?: string | null, limit = 20, offset = 0): Promise<Post[]> => {

@@ -112,6 +112,24 @@ const migrations: Migration[] = [
       }
     },
   },
+  {
+    version: 4,
+    up: async () => {
+      const tableInfo = await executeSql<{ name: string }>('PRAGMA table_info(posts)');
+      const existingColumns = tableInfo.map((col) => col.name);
+
+      // Track which media items have been backed up to the Telegram Vault
+      if (!existingColumns.includes('vault_file_id')) {
+        await runSql('ALTER TABLE posts ADD COLUMN vault_file_id TEXT');
+      }
+
+      // Migration status: null = not started, "pending" = queued, "uploading" = in progress,
+      // "done" = uploaded, "error" = failed
+      if (!existingColumns.includes('vault_migration_status')) {
+        await runSql("ALTER TABLE posts ADD COLUMN vault_migration_status TEXT");
+      }
+    },
+  },
 ];
 
 export const applyMigrations = async () => {
