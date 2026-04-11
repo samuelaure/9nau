@@ -57,4 +57,23 @@ export class NauthenticityService {
       throw error;
     }
   }
+
+  async getBrands(userId: string) {
+    this.logger.log(`Fetching brands for user: ${userId}`);
+    try {
+      const response = await axios.get(
+        `${this.baseUrl}/api/v1/brands`,
+        { 
+          params: { userId },
+          headers: this.headers 
+        },
+      );
+      return response.data;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to fetch brands: ${message}`);
+      // Fallback: return empty array if unreachable so triage doesn't fail
+      return [];
+    }
+  }
 }
