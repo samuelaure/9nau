@@ -13,6 +13,11 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.35'
+          memory: 192M
 
   9nau_postgres:
     image: postgres:16
@@ -27,6 +32,11 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.35'
+          memory: 192M
 
   9nau_redis:
     image: redis:7-alpine
@@ -40,6 +50,11 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.35'
+          memory: 192M
 
 networks:
   nau-network:
