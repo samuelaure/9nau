@@ -5,6 +5,7 @@ import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 import { BlocksService } from '../blocks/blocks.service';
 import { NauthenticityService } from '../integrations/nauthenticity.service';
+import { FlownauIntegrationService } from '../integrations/flownau.service';
 
 const TriageResultSchema = z.object({
   segments: z.array(z.object({
@@ -38,6 +39,7 @@ export class TriageService {
     private readonly configService: ConfigService,
     private readonly blocksService: BlocksService,
     private readonly nauthenticityService: NauthenticityService,
+    private readonly flownauService: FlownauIntegrationService,
   ) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (apiKey) {
@@ -157,12 +159,34 @@ OUTPUT: Return valid JSON matching the schema.`
       if (segment.category === 'content_idea' && segment.metadata) {
         properties.brandId = segment.metadata.brandId;
         properties.brandName = segment.metadata.brandName;
+        properties.flownauSyncStatus = 'pending';
       }
 
       const block = await this.blocksService.create({
         type,
         properties
       });
+
+      // Forward content_idea blocks with a mapped brand to Flownau
+      if (segment.category === 'content_idea' && properties.brandId) {
+        try {
+          await this.flownauService.ingestIdeas(properties.brandId, [
+            { text: segment.text, sourceRef: block.id },
+          ]);
+          await this.blocksService.update(block.id, {
+            properties: { flownauSyncStatus: 'success' },
+          });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          this.logger.error(
+            `[Flownau-Integration-Error] Failed to ingest idea block ${block.id}: ${msg}`,
+          );
+          await this.blocksService.update(block.id, {
+            properties: { flownauSyncStatus: 'error' },
+          });
+        }
+      }
+
       createdBlocks.push(block);
     }
 

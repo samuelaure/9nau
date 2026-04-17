@@ -1,12 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { FlownauIntegrationService } from '../integrations/flownau.service';
 
 @Injectable()
 export class SyncService {
   private readonly logger = new Logger(SyncService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly flownauService: FlownauIntegrationService,
+  ) {}
 
   async push(blocks: Record<string, unknown>[]) {
     this.logger.log(`Sync PUSH: processing ${blocks.length} blocks`);
@@ -52,6 +56,42 @@ export class SyncService {
           },
         });
         results.push({ uuid: upserted.uuid, status: 'synced' });
+
+        // Forward manually-synced content_idea blocks to Flownau
+        if (type === 'content_idea') {
+          const brandId = (properties as Record<string, unknown>).brandId as string | undefined;
+          const text = (properties as Record<string, unknown>).text as string | undefined;
+          if (brandId && text) {
+            try {
+              await this.flownauService.ingestIdeas(brandId, [
+                { text, sourceRef: upserted.id },
+              ]);
+              await this.prisma.block.update({
+                where: { id: upserted.id },
+                data: {
+                  properties: {
+                    ...(upserted.properties as Record<string, unknown>),
+                    flownauSyncStatus: 'success',
+                  } as Prisma.InputJsonValue,
+                },
+              });
+            } catch (err) {
+              const msg = err instanceof Error ? err.message : String(err);
+              this.logger.error(
+                `[Flownau-Integration-Error] Failed to forward synced block ${upserted.id}: ${msg}`,
+              );
+              await this.prisma.block.update({
+                where: { id: upserted.id },
+                data: {
+                  properties: {
+                    ...(upserted.properties as Record<string, unknown>),
+                    flownauSyncStatus: 'error',
+                  } as Prisma.InputJsonValue,
+                },
+              });
+            }
+          }
+        }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         this.logger.error(`Failed to upsert block ${uuid}: ${message}`);
