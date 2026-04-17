@@ -1,6 +1,6 @@
 {
   "name": "9naŭ",
-  "version": "1.0.3",
+  "version": "1.2.0",
   "private": true,
   "description": "The 9naŭ platform for life and business growth.",
   "license": "UNLICENSED",
@@ -13,7 +13,8 @@
     "type-check": "turbo run type-check",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yaml}\"",
     "dev:infra": "docker compose --env-file .env.development up -d",
-    "prod:infra": "docker compose --env-file .env up -d"
+    "prod:infra": "docker compose --env-file .env up -d",
+    "release": "standard-version"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
@@ -28,6 +29,7 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.6.2",
+    "standard-version": "^9.5.0",
     "turbo": "^2.9.6",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.0.0-alpha.44"
