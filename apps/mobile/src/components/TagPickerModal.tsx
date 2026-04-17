@@ -13,8 +13,7 @@ import {
     Square,
     CheckSquare,
 } from 'lucide-react-native';
-import { getAllLabels, createLabel } from '@/repositories/LabelRepository';
-import { getRecentTags } from '@/repositories/PostRepository';
+import { getAllTags, getRecentTags } from '@/repositories/PostRepository';
 import { COLORS } from '@/constants';
 
 interface TagPickerModalProps {
@@ -41,13 +40,14 @@ export const TagPickerModal: React.FC<TagPickerModalProps> = ({
     }, [visible]);
 
     const loadData = async () => {
-        const [labels, recents] = await Promise.all([
-            getAllLabels(),
+        const [allTags, recents] = await Promise.all([
+            getAllTags(),
             getRecentTags(6)
         ]);
-        setExistingTags(labels.map((l) => l.name));
+        setExistingTags(allTags);
         setRecentTags(recents);
     };
+
 
     const toggleTag = (tag: string) => {
         if (selectedTags.includes(tag)) {
@@ -63,8 +63,9 @@ export const TagPickerModal: React.FC<TagPickerModalProps> = ({
             const existing = existingTags.find((t) => t.toLowerCase() === tag.toLowerCase());
             const tagToUse = existing || tag;
 
+            // We no longer trigger createLabel for DB since getAllTags parses from posts directly,
+            // but we add it to the local session state
             if (!existing) {
-                await createLabel(tagToUse);
                 setExistingTags([tagToUse, ...existingTags]);
             }
 

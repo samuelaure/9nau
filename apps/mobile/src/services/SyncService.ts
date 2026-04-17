@@ -16,6 +16,7 @@ export interface SyncBlock {
 class SyncService {
   private readonly client = axios.create({
     baseURL: API_CONFIG.baseUrl,
+    timeout: 3000,
     headers: {
       'x-nau-service-key': API_CONFIG.serviceKey,
     },
@@ -74,8 +75,8 @@ class SyncService {
       
       return results.filter((r: any) => r.status === 'synced').length;
     } catch (error) {
-      console.error('[SyncService] Push failed:', error);
-      throw error;
+      console.warn('[SyncService] Push failed (Offline Mode Active):', error.message);
+      return 0; // Return gracefully instead of throwing
     }
   }
 
@@ -191,8 +192,8 @@ class SyncService {
 
       return blocks.length;
     } catch (error) {
-      console.error('[SyncService] Pull failed:', error);
-      throw error;
+      console.warn('[SyncService] Pull failed (Offline Mode Active):', error.message);
+      return 0; // Return gracefully instead of throwing
     }
   }
 }

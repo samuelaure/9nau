@@ -19,6 +19,6 @@ export const GRADIENTS = {
 };
 
 export const API_CONFIG = {
-  baseUrl: 'http://9nau.localhost/api', // Default for local dev proxy
+  baseUrl: 'https://api.9nau.com/api', // Updated from 9nau.localhost
   serviceKey: 'secret_key_for_dev',
 };
