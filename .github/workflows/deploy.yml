@@ -62,8 +62,18 @@ jobs:
             tr -d '\r' < /root/9nau/.env.tmp > /root/9nau/.env
 
             cd /root/9nau
-            # Prevent disk space issues by cleaning up unused docker objects
-            docker system prune -f
+            echo "--- Server Disk Space [BEFORE SWAP] ---"
+            df -h /
+            
+            # Prune previous dangling images (older than 2h) to clear runway for pull
+            docker image prune -a -f --filter "until=2h" || true
 
-            docker compose pull
-            docker compose up -d --remove-orphans
+            # Pull and deploy
+            TAG=latest docker compose pull
+            TAG=latest docker compose up -d --remove-orphans
+            
+            # Prune old images
+            docker image prune -a -f --filter "until=2h" || true
+
+            echo "--- Server Disk Space [AFTER SWAP] ---"
+            df -h /
