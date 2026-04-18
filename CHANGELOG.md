@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.3](https://github.com/samuelaure/9nau/compare/v1.4.2...v1.4.3) (2026-04-18)
+
+
+### Bug Fixes
+
+* **api:** fix ts type error in cors origins filter ([db59734](https://github.com/samuelaure/9nau/commit/db59734566072c99e09df38139a2f6a2d22d61e5))
+
 ### [1.4.2](https://github.com/samuelaure/9nau/compare/v1.4.1...v1.4.2) (2026-04-18)
 
 
