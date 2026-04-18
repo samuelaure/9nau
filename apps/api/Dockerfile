@@ -8,6 +8,7 @@ COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY package.json ./
 COPY turbo.json ./
+COPY tsconfig.base.json ./
 
 # Copy packages and apps (we need the entire workspace structure for pnpm to resolve local dependencies)
 COPY packages ./packages
