@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/samuelaure/9nau/compare/v1.2.14...v1.3.0) (2026-04-18)
+
+
+### Features
+
+* **9nau:** scaffold apps/accounts sso hub ([dba53d9](https://github.com/samuelaure/9nau/commit/dba53d9ab30dbc7fe4993e4392579ad17e5be5fd))
+
 ### [1.2.8](https://github.com/samuelaure/9nau/compare/v1.2.7...v1.2.8) (2026-04-18)
 
 ### [1.2.7](https://github.com/samuelaure/9nau/compare/v1.2.6...v1.2.7) (2026-04-18)
