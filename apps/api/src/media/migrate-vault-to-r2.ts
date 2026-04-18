@@ -14,7 +14,7 @@
 import 'dotenv/config';
 import axios from 'axios';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -84,7 +84,7 @@ async function run() {
   const blocks = await prisma.block.findMany({
     where: {
       deletedAt: null,
-      properties: { path: ['vault_file_id'], not: PrismaClient.Prisma.JsonNull },
+      properties: { path: ['vault_file_id'], not: Prisma.JsonNull },
     },
     select: { id: true, properties: true },
   });
