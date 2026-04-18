@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/samuelaure/9nau/compare/v1.4.0...v1.4.1) (2026-04-18)
+
+
+### Bug Fixes
+
+* **docker:** ensure public and static folders exist during build ([ff30e68](https://github.com/samuelaure/9nau/commit/ff30e68ac7fd0663d56becf3efbf6a916ff07812))
+
 ## [1.4.0](https://github.com/samuelaure/9nau/compare/v1.3.0...v1.4.0) (2026-04-18)
 
 
