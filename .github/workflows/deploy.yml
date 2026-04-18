@@ -34,6 +34,15 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/api:latest,ghcr.io/${{ github.repository }}/api:${{ github.ref_name }}
 
+      - name: Copy docker-compose.yml to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: 'docker-compose.yml'
+          target: '/root/9nau/'
+
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
