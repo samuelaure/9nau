@@ -49,9 +49,9 @@ jobs:
 
             # Write production .env from secrets
             cat > /root/9nau/.env.tmp << 'ENVEOF'
-            DATABASE_URL=postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@9nau-postgres:5432/9nau?schema=public
+            DATABASE_URL=postgresql://postgres:${{ secrets.DATABASE_PASSWORD }}@9nau-postgres:5432/9nau?schema=public
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
             NAU_SERVICE_KEY=${{ secrets.NAU_SERVICE_KEY }}
             TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
             NAUTHENTICITY_URL=http://nauthenticity:3000
