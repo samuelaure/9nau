@@ -14,8 +14,16 @@ async function bootstrap() {
   const httpAdapter = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
+  const origins = [
+    process.env.FRONTEND_URL,
+    process.env.NEXT_PUBLIC_APP_URL,
+    process.env.NEXT_PUBLIC_ACCOUNTS_URL,
+    'http://localhost:3001',
+    'http://localhost:3002',
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: [process.env.FRONTEND_URL ?? 'http://localhost:3001'],
+    origin: origins,
     credentials: true,
   });
 
