@@ -35,4 +35,4 @@ COPY --from=builder /app ./
 EXPOSE 3000
 
 ENV NODE_ENV=production
-CMD ["node", "apps/api/dist/main"]
+CMD ["node", "apps/api/dist/src/main"]
