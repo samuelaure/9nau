@@ -6,19 +6,19 @@ import { z } from 'zod';
 import { BlocksService } from '../blocks/blocks.service';
 import { NauthenticityService } from '../integrations/nauthenticity.service';
 import { FlownauIntegrationService } from '../integrations/flownau.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 const TriageResultSchema = z.object({
   segments: z.array(z.object({
     category: z.enum([
-      'action', 'project', 'habit', 'appointment', 
+      'action', 'project', 'habit', 'appointment',
       'someday_maybe', 'reference', 'content_idea'
     ]),
     reasoning: z.string(),
     text: z.string(),
-    // Conditional extracted fields based on category
     metadata: z.object({
       priority: z.enum(['low', 'medium', 'high']).optional(),
-      deadline: z.string().optional(), // ISO date or descriptive
+      deadline: z.string().optional(),
       brandId: z.string().optional(),
       brandName: z.string().optional(),
       frequency: z.string().optional(),
@@ -40,6 +40,7 @@ export class TriageService {
     private readonly blocksService: BlocksService,
     private readonly nauthenticityService: NauthenticityService,
     private readonly flownauService: FlownauIntegrationService,
+    private readonly prisma: PrismaService,
   ) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (apiKey) {
@@ -49,17 +50,20 @@ export class TriageService {
     }
   }
 
-  async processRawText(text: string, userId: string, sourceBlockId?: string) {
+  async processRawText(
+    text: string,
+    userId: string,
+    sourceBlockId?: string,
+    brandId?: string | null,
+    workspaceId?: string,
+  ) {
     if (!this.openai) {
       throw new Error('AI Triage is disabled due to missing configuration.');
     }
 
     try {
-      // 1. Fetch Context (Active Projects, Brands)
-      const [brands, recentBlocks] = await Promise.all([
-        this.nauthenticityService.getBrands(userId),
-        this.blocksService.findAll({}), // Try to get recent blocks context
-      ]);
+      // 1. Fetch context — projects + brand DNA
+      const recentBlocks = await this.blocksService.findAll({});
 
       const activeProjects = recentBlocks
         .filter(b => b.type === 'project' && (b.properties as any)?.status !== 'done')
@@ -67,10 +71,48 @@ export class TriageService {
         .map(b => `- ${(b.properties as any)?.name || 'Untitled'} (ID: ${b.id})`)
         .join('\n');
 
-      const userBrands = brands.map((b: any) => `- ${b.brandName} (ID: ${b.id}) - Voice: ${b.voicePrompt}`).join('\n');
+      // 2. Resolve workspaceId from DB if not supplied
+      let resolvedWorkspaceId = workspaceId;
+      if (!resolvedWorkspaceId) {
+        const user = await this.prisma.user.findFirst({
+          where: {
+            OR: [
+              { id: userId },
+              { telegramId: userId },
+            ],
+          },
+          include: { workspaces: { take: 1 } },
+        });
+        resolvedWorkspaceId = user?.workspaces?.[0]?.workspaceId;
+      }
 
-      // 2. Call OpenAI using structured output
-      this.logger.log(`Calling OpenAI for triage... Context: ${brands.length} brands, active projects.`);
+      // 3. Determine brand context and whether AI routing is needed
+      let brandsForPrompt: Array<{ id: string; brandName: string; voicePrompt: string }> = [];
+      let aiRoutingEnabled = false;
+
+      if (brandId) {
+        // Explicit brand selected by user — fetch its dna-light for context, no AI routing needed
+        const dna = await this.nauthenticityService.getBrandDnaLight(brandId);
+        if (dna) brandsForPrompt = [dna];
+      } else if (resolvedWorkspaceId) {
+        // No brand selected → fetch all workspace brands for AI detection
+        brandsForPrompt = await this.nauthenticityService.getBrandsForWorkspace(resolvedWorkspaceId);
+        aiRoutingEnabled = brandsForPrompt.length > 0;
+      }
+
+      const brandsSection = brandsForPrompt.length > 0
+        ? brandsForPrompt.map(b => `- ${b.brandName} (ID: ${b.id})\n  Voice/DNA: ${b.voicePrompt}`).join('\n')
+        : 'No brands registered.';
+
+      // 4. Build system prompt
+      const aiRoutingNote = aiRoutingEnabled
+        ? `\nIMPORTANT — AI BRAND ROUTING: The user did NOT specify a brand. You MUST analyze each content_idea segment and match it to the most fitting brand using the Brand DNA above. Populate brandId and brandName based on which brand the idea best aligns with. If no brand fits, leave brandId empty.`
+        : brandId
+          ? `\nBrand context provided: all content_ideas should be linked to the brand with ID "${brandId}" unless clearly unrelated.`
+          : '';
+
+      // 5. Call OpenAI
+      this.logger.log(`Calling OpenAI for triage... Brands: ${brandsForPrompt.length}, AI routing: ${aiRoutingEnabled}`);
 
       const completion = await (this.openai.beta as any).chat.completions.parse({
         model: 'gpt-4o',
@@ -78,12 +120,12 @@ export class TriageService {
         messages: [
           {
             role: 'system',
-            content: `You are an expert AI productivity assistant. Your job is to listen to raw voice captures or scattered notes and triage them into structured segments. 
+            content: `You are an expert AI productivity assistant. Your job is to listen to raw voice captures or scattered notes and triage them into structured segments.
 You act as a Second Brain router.
 
 CATEGORIES ALLOWED:
 - action: A concrete, actionable task. Extract priority and deadline if mentioned.
-- project: A larger goal with multiple steps. 
+- project: A larger goal with multiple steps.
 - habit: A recurring behavior.
 - appointment: A scheduled event or meeting. Extract datetime.
 - someday_maybe: An idea to do someday but not actionable soon.
@@ -95,13 +137,14 @@ Active Projects:
 ${activeProjects || 'No active projects found.'}
 
 User Brands:
-${userBrands || 'No brands registered.'}
+${brandsSection}
+${aiRoutingNote}
 
 RULES:
 1. Break down the user's input into logical segments. Each segment should have exactly ONE category.
-2. If a segment is an idea for social media, map it to 'content_idea'. If it relates to a Brand from context, populate brandId and brandName.
+2. If a segment is an idea for social media, map it to 'content_idea'. Populate brandId and brandName if a matching brand is found.
 3. If an action could belong to a project, note the project topic.
-4. You MUST ALWAYS write a 'journalSummary'. This is a well-written, reflective summary of what the user talked about, synthesizing the entry as a whole. Keep it brief but descriptive, written in the third person or first person from the user's prompt point of view.
+4. You MUST ALWAYS write a 'journalSummary'. Keep it brief and reflective.
 
 OUTPUT: Return valid JSON matching the schema.`
           },
@@ -118,8 +161,8 @@ OUTPUT: Return valid JSON matching the schema.`
         throw new Error('Failed to parse AI response');
       }
 
-      // 3. Save Blocks based on triage extraction
-      const createdBlocks = await this.saveTriagedBlocks(parsed, sourceBlockId);
+      // 6. Save blocks — pass through explicit brandId and aiRouting flag
+      const createdBlocks = await this.saveTriagedBlocks(parsed, sourceBlockId, brandId, aiRoutingEnabled);
 
       return {
         success: true,
@@ -133,49 +176,68 @@ OUTPUT: Return valid JSON matching the schema.`
     }
   }
 
-  private async saveTriagedBlocks(result: TriageResult, sourceBlockId?: string) {
+  private async saveTriagedBlocks(
+    result: TriageResult,
+    sourceBlockId?: string,
+    explicitBrandId?: string | null,
+    aiRoutingEnabled = false,
+  ) {
     const createdBlocks = [];
 
-    // Save segments
     for (const segment of result.segments) {
       const type = segment.category;
-      
+
       const properties: any = {
         text: segment.text,
         reasoning: segment.reasoning,
         source: 'triage_engine',
-        status: 'todo' // Default status for actions/projects
+        status: 'todo',
       };
 
       if (segment.category === 'action' && segment.metadata) {
         properties.priority = segment.metadata.priority;
         properties.deadline = segment.metadata.deadline;
       }
-      
+
       if (segment.category === 'project') {
         properties.name = segment.text;
       }
 
-      if (segment.category === 'content_idea' && segment.metadata) {
-        properties.brandId = segment.metadata.brandId;
-        properties.brandName = segment.metadata.brandName;
+      if (segment.category === 'content_idea') {
+        // Prefer explicit brandId from user selection; fall back to AI-detected one
+        const resolvedBrandId = explicitBrandId ?? segment.metadata?.brandId ?? null;
+        const resolvedBrandName = segment.metadata?.brandName ?? null;
+
+        // aiLinked = true when brand was detected by AI (no explicit selection)
+        const aiLinked = resolvedBrandId !== null && !explicitBrandId && aiRoutingEnabled;
+
+        properties.brandId = resolvedBrandId;
+        properties.brandName = resolvedBrandName;
+        properties.aiLinked = aiLinked;
         properties.flownauSyncStatus = 'pending';
       }
 
-      const block = await this.blocksService.create({
-        type,
-        properties
-      });
+      const block = await this.blocksService.create({ type, properties });
 
-      // Forward content_idea blocks with a mapped brand to Flownau
+      // Forward content_idea blocks with a resolved brand to flownaŭ
       if (segment.category === 'content_idea' && properties.brandId) {
         try {
-          await this.flownauService.ingestIdeas(properties.brandId, [
-            { text: segment.text, sourceRef: block.id },
-          ]);
-          await this.blocksService.update(block.id, {
-            properties: { flownauSyncStatus: 'success' },
-          });
+          // Resolve brandId → flownaŭ accountId
+          const accountId = await this.flownauService.resolveAccountByBrandId(properties.brandId);
+
+          if (accountId) {
+            await this.flownauService.ingestIdeas(accountId, [
+              { text: segment.text, sourceRef: block.id, aiLinked: properties.aiLinked },
+            ]);
+            await this.blocksService.update(block.id, {
+              properties: { flownauSyncStatus: 'success' },
+            });
+          } else {
+            this.logger.warn(`[Flownau-Integration] No flownaŭ account found for brandId ${properties.brandId}. Idea not forwarded.`);
+            await this.blocksService.update(block.id, {
+              properties: { flownauSyncStatus: 'no_account' },
+            });
+          }
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
           this.logger.error(
@@ -204,6 +266,25 @@ OUTPUT: Return valid JSON matching the schema.`
     }
 
     return createdBlocks;
+  }
+
+  /**
+   * Returns ultra-light brand list for a user. Used by Zazŭ to populate the brand selection keyboard.
+   */
+  async getUserBrands(userId: string): Promise<Array<{ id: string; brandName: string }>> {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: { OR: [{ id: userId }, { telegramId: userId }] },
+        include: { workspaces: { take: 1 } },
+      });
+      const workspaceId = user?.workspaces?.[0]?.workspaceId;
+      if (!workspaceId) return [];
+
+      const brands = await this.nauthenticityService.getBrandsForWorkspace(workspaceId);
+      return brands.map(b => ({ id: b.id, brandName: b.brandName }));
+    } catch {
+      return [];
+    }
   }
 
   async retroprocess(userId: string) {

@@ -5,6 +5,7 @@ import axios from 'axios';
 export interface FlownauIdeaInput {
   text: string;
   sourceRef?: string;
+  aiLinked?: boolean;
 }
 
 @Injectable()
@@ -19,6 +20,22 @@ export class FlownauIntegrationService {
       'http://flownau:3000',
     );
     this.serviceKey = this.configService.get<string>('NAU_SERVICE_KEY') || '';
+  }
+
+  /**
+   * Resolves a nauthenticity brandId to a flownaŭ accountId.
+   * Returns null if no SocialAccount is linked to that brand.
+   */
+  async resolveAccountByBrandId(brandId: string): Promise<string | null> {
+    try {
+      const response = await axios.get(
+        `${this.baseUrl}/api/v1/accounts/by-nau-brand/${brandId}`,
+        { headers: { Authorization: `Bearer ${this.serviceKey}` } },
+      );
+      return response.data?.account?.id ?? null;
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -37,7 +54,12 @@ export class FlownauIntegrationService {
       {
         accountId,
         source: 'captured',
-        ideas,
+        ideas: ideas.map(idea => ({
+          text: idea.text,
+          source: 'captured',
+          sourceRef: idea.sourceRef,
+          aiLinked: idea.aiLinked ?? false,
+        })),
       },
       {
         headers: {

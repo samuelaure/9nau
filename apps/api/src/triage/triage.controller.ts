@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Query, Body, UseGuards } from '@nestjs/common';
 import { TriageService } from './triage.service';
 import { ServiceAuthGuard } from '../common/guards/service-auth.guard';
 
@@ -6,6 +6,8 @@ export class TriageDto {
   text!: string;
   userId?: string;
   sourceBlockId?: string;
+  brandId?: string | null;
+  workspaceId?: string;
 }
 
 @UseGuards(ServiceAuthGuard)
@@ -19,8 +21,16 @@ export class TriageController {
       body.text,
       body.userId || 'default_user',
       body.sourceBlockId,
+      body.brandId,
+      body.workspaceId,
     );
     return result;
+  }
+
+  @Get('brands')
+  async getUserBrandsForTriage(@Query('userId') userId: string) {
+    const brands = await this.triageService.getUserBrands(userId);
+    return { brands };
   }
 
   @Post('retroprocess')

@@ -3,9 +3,10 @@ import { TriageService } from './triage.service';
 import { TriageController } from './triage.controller';
 import { BlocksModule } from '../blocks/blocks.module';
 import { IntegrationsModule } from '../integrations/integrations.module';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [BlocksModule, IntegrationsModule],
+  imports: [BlocksModule, IntegrationsModule, PrismaModule],
   controllers: [TriageController],
   providers: [TriageService],
   exports: [TriageService],
