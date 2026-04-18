@@ -1,5 +1,11 @@
 module.exports = {
-  projects: ['<rootDir>/apps/api', '<rootDir>/apps/web', '<rootDir>/packages/core', '<rootDir>/packages/ui'],
+  projects: [
+    '<rootDir>/apps/api',
+    '<rootDir>/apps/app',
+    '<rootDir>/apps/accounts',
+    '<rootDir>/packages/core',
+    '<rootDir>/packages/ui',
+  ],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },

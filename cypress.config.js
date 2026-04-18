@@ -9,8 +9,8 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       // node event listeners here
     },
-    specPattern: 'apps/web/cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
-    supportFile: 'apps/web/cypress/support/e2e.ts',
+    specPattern: 'apps/app/cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
+    supportFile: 'apps/app/cypress/support/e2e.ts',
     baseUrl: process.env.CYPRESS_BASE_URL || 'http://localhost:3001',
     env: {
       DATABASE_URL: process.env.CYPRESS_DATABASE_URL,

@@ -13,7 +13,8 @@ COPY tsconfig.base.json ./
 # Copy packages and apps (we need the entire workspace structure for pnpm to resolve local dependencies)
 COPY packages ./packages
 COPY apps/api ./apps/api
-COPY apps/web ./apps/web
+COPY apps/app ./apps/app
+COPY apps/accounts ./apps/accounts
 # Skip mobile safely just in case it breaks missing SDKs
 # We don't copy apps/mobile
 

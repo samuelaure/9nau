@@ -1,7 +1,7 @@
 const nextJest = require('next/jest')
 
 const createJestConfig = nextJest({
-  dir: './apps/web',
+  dir: './apps/app',
 })
 
 const customJestConfig = {
@@ -16,7 +16,7 @@ const customJestConfig = {
   },
   transformIgnorePatterns: ['node_modules/(?!(.*-fns|@9nau|lucide-react)/)'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
-  testRegex: 'apps/web/src/.*\\.spec\\.(t|j)sx?$',
+  testRegex: 'apps/app/src/.*\\.spec\\.(t|j)sx?$',
 }
 
 module.exports = createJestConfig(customJestConfig)
