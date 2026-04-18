@@ -1,0 +1,37 @@
+FROM node:20-alpine AS builder
+
+RUN corepack enable && corepack prepare pnpm@10.14.0 --activate
+
+WORKDIR /app
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+COPY package.json ./
+COPY turbo.json ./
+COPY tsconfig.base.json ./
+
+COPY packages ./packages
+COPY apps/accounts ./apps/accounts
+COPY apps/app ./apps/app
+
+RUN pnpm install --frozen-lockfile
+
+RUN pnpm build --filter=@9nau/accounts
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/apps/accounts/.next/standalone ./
+COPY --from=builder /app/apps/accounts/.next/static ./apps/accounts/.next/static
+COPY --from=builder /app/apps/accounts/public ./apps/accounts/public 2>/dev/null || true
+
+USER nextjs
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "apps/accounts/server.js"]
