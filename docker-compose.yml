@@ -21,7 +21,7 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
+      - AUTH_SECRET=${AUTH_SECRET}
       - NAU_SERVICE_KEY=${NAU_SERVICE_KEY}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - NAUTHENTICITY_URL=${NAUTHENTICITY_URL}
@@ -41,7 +41,7 @@ services:
     image: postgres:16
     container_name: 9nau-postgres
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-postgres}
     networks:
       - nau-network
     volumes:
