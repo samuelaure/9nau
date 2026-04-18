@@ -130,6 +130,23 @@ const migrations: Migration[] = [
       }
     },
   },
+  {
+    version: 5,
+    up: async () => {
+      const tableInfo = await executeSql<{ name: string }>('PRAGMA table_info(posts)');
+      const existingColumns = tableInfo.map((col) => col.name);
+
+      // JSON map of { localUri -> storageKey } for R2-backed media
+      if (!existingColumns.includes('storage_key')) {
+        await runSql('ALTER TABLE posts ADD COLUMN storage_key TEXT');
+      }
+
+      // R2 migration status (replaces vault_migration_status semantics)
+      if (!existingColumns.includes('r2_migration_status')) {
+        await runSql('ALTER TABLE posts ADD COLUMN r2_migration_status TEXT');
+      }
+    },
+  },
 ];
 
 export const applyMigrations = async () => {

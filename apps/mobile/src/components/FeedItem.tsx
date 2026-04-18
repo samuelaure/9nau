@@ -43,6 +43,7 @@ import {
 } from 'lucide-react-native';
 import { TagPickerModal } from './TagPickerModal';
 import { MediaCacheService } from '@/services/MediaCacheService';
+import { R2UploadService } from '@/services/R2UploadService';
 import { syncManager } from '@/services/SyncManager';
 import { formatDaysToFrequency, getFrequencyChain, parseFrequencyToDays } from '@/services/FrequencyService';
 import {
@@ -162,12 +163,25 @@ export const FeedItem = React.memo(({ post, onProcessed, onUpdate, onRemove, isH
       }
       try {
         const data: MediaItem[] = JSON.parse(post.mediaData);
+
+        // Build R2 storageKey → CDN URL map for this post (overrides original Instagram URLs)
+        const storageKeyMap: Record<string, string> = post.storage_key
+          ? JSON.parse(post.storage_key)
+          : {};
+        const cdnMap: Record<string, string> = {};
+        for (const [localUri, storageKey] of Object.entries(storageKeyMap)) {
+          cdnMap[localUri] = R2UploadService.getCdnUrl(storageKey);
+        }
+
         // Pre-fetch all media to get dimensions or ensure local availability
         const cachedData = await Promise.all(
           data.map(async (item) => {
-            const localUri = await MediaCacheService.ensureMediaCached(item.url);
+            // Prefer R2 CDN URL if this item has been migrated, else fall back to original URL
+            const resolvedUrl = (item.localUri && cdnMap[item.localUri]) || cdnMap[item.url] || item.url;
+            const localUri = await MediaCacheService.ensureMediaCached(resolvedUrl);
             return {
               ...item,
+              url: resolvedUrl,
               localUri,
             };
           }),

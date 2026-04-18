@@ -1,106 +1,72 @@
 import {
+  Body,
   Controller,
-  Get,
-  Param,
   Post,
-  Res,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
   Logger,
   BadRequestException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
 import { ServiceAuthGuard } from '../common/guards/service-auth.guard';
-import { VaultService } from './vault.service';
+import { StorageService } from './storage.service';
+import { randomUUID } from 'crypto';
+
+interface UploadRequestDto {
+  mimeType: string;
+  /** Optional prefix, e.g. "users/abc123/captures" */
+  prefix?: string;
+}
 
 @Controller('media')
 @UseGuards(ServiceAuthGuard)
 export class MediaController {
   private readonly logger = new Logger(MediaController.name);
 
-  constructor(private readonly vaultService: VaultService) {}
+  constructor(private readonly storageService: StorageService) {}
 
   /**
-   * Upload a media file to the Telegram Vault.
-   * Accepts multipart/form-data with a single file field named "file".
+   * Request a pre-signed URL for direct client-to-R2 upload.
    *
-   * Returns: { fileId, fileUniqueId, fileSize, mimeType }
+   * Returns { uploadUrl, storageKey, cdnUrl } where:
+   *   - uploadUrl: HTTP PUT target (expires in 15 min)
+   *   - storageKey: the R2 object key to store in the DB
+   *   - cdnUrl: the public playback URL once upload completes
    */
-  @Post('upload')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      limits: {
-        fileSize: 50 * 1024 * 1024, // 50MB per upload via Telegram Bot API (standard limit)
-      },
-    }),
-  )
-  async upload(@UploadedFile() file: Express.Multer.File) {
-    if (!this.vaultService.isConfigured) {
-      throw new ServiceUnavailableException(
-        'Vault storage is not configured on this server',
-      );
+  @Post('upload-request')
+  async requestUploadUrl(@Body() dto: UploadRequestDto) {
+    if (!this.storageService.isConfigured) {
+      throw new ServiceUnavailableException('Storage service is not configured on this server');
     }
 
-    if (!file) {
-      throw new BadRequestException('No file provided');
+    if (!dto.mimeType) {
+      throw new BadRequestException('mimeType is required');
     }
 
-    this.logger.log(
-      `Received upload: ${file.originalname} (${file.mimetype}, ${(file.size / 1024 / 1024).toFixed(2)} MB)`,
-    );
+    const ext = this.extensionFromMime(dto.mimeType);
+    const id = randomUUID();
+    const prefix = dto.prefix ?? 'uploads';
+    const storageKey = `${prefix}/${id}.${ext}`;
 
-    const result = await this.vaultService.uploadMedia(
-      file.buffer,
-      file.originalname,
-      file.mimetype,
-    );
+    this.logger.log(`Issuing upload URL for key: ${storageKey} (${dto.mimeType})`);
 
-    return result;
+    const { uploadUrl } = await this.storageService.getUploadUrl(storageKey, dto.mimeType);
+    const cdnUrl = this.storageService.getDownloadUrl(storageKey);
+
+    return { uploadUrl, storageKey, cdnUrl };
   }
 
-  /**
-   * Stream a media file from the Telegram Vault.
-   * Acts as a transparent proxy: mobile app requests → API fetches from Telegram → streams back.
-   */
-  @Get(':fileId')
-  async stream(@Param('fileId') fileId: string, @Res() res: Response) {
-    if (!this.vaultService.isConfigured) {
-      throw new ServiceUnavailableException(
-        'Vault storage is not configured on this server',
-      );
-    }
-
-    if (!fileId) {
-      throw new BadRequestException('fileId parameter is required');
-    }
-
-    this.logger.log(`Streaming file from Vault: ${fileId}`);
-
-    try {
-      const { stream, contentType, fileSize } =
-        await this.vaultService.streamMedia(fileId);
-
-      res.set({
-        'Content-Type': contentType,
-        'Content-Disposition': 'inline',
-        'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
-      });
-
-      if (fileSize > 0) {
-        res.set('Content-Length', fileSize.toString());
-      }
-
-      stream.pipe(res);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to stream file ${fileId}: ${message}`);
-      res.status(502).json({
-        statusCode: 502,
-        message: 'Failed to stream file from Vault',
-      });
-    }
+  private extensionFromMime(mimeType: string): string {
+    const map: Record<string, string> = {
+      'video/mp4': 'mp4',
+      'video/quicktime': 'mov',
+      'video/webm': 'webm',
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/gif': 'gif',
+      'audio/mp4': 'm4a',
+      'audio/mpeg': 'mp3',
+    };
+    return map[mimeType] ?? 'bin';
   }
 }

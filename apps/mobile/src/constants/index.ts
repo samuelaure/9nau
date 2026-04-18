@@ -19,6 +19,10 @@ export const GRADIENTS = {
 };
 
 export const API_CONFIG = {
-  baseUrl: 'https://api.9nau.com/api', // Updated from 9nau.localhost
+  baseUrl: 'https://api.9nau.com/api',
   serviceKey: 'secret_key_for_dev',
+};
+
+export const R2_CONFIG = {
+  publicUrl: 'https://media.9nau.com',
 };

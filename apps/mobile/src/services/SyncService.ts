@@ -53,7 +53,7 @@ class SyncService {
         instagram_caption: post.instagram_caption,
         instagram_user_id: post.instagram_user_id,
         biography: post.biography,
-        vault_file_id: post.vault_file_id || null,
+        storageKey: post.storage_key || null,
       },
       updatedAt: post.local_updated_at,
       deletedAt: post.is_deleted ? post.deleted_at : null,
