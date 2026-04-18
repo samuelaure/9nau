@@ -20,7 +20,7 @@ async function bootstrap() {
     process.env.NEXT_PUBLIC_ACCOUNTS_URL,
     'http://localhost:3001',
     'http://localhost:3002',
-  ].filter(Boolean);
+  ].filter((origin): origin is string => !!origin);
 
   app.enableCors({
     origin: origins,
