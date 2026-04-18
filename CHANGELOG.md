@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.4](https://github.com/samuelaure/9nau/compare/v1.2.3...v1.2.4) (2026-04-18)
+
+
+### Bug Fixes
+
+* **docker:** copy tsconfig.base.json to docker build context ([84fe1c6](https://github.com/samuelaure/9nau/commit/84fe1c6c0895e235b3f13d2ab2c64133a82344a2))
+
 ### [1.2.3](https://github.com/samuelaure/9nau/compare/v1.2.2...v1.2.3) (2026-04-18)
 
 
