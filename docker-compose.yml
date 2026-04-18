@@ -41,7 +41,7 @@ services:
     image: postgres:16
     container_name: 9nau-postgres
     environment:
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
     networks:
       - nau-network
     volumes:
