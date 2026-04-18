@@ -58,3 +58,4 @@ coverage/
 
 # naŭ Agent (strictly local)
 .agent/
+*.tgz
