@@ -17,6 +17,9 @@ RUN pnpm install --frozen-lockfile
 
 RUN pnpm build --filter=@9nau/accounts
 
+# Ensure public/static folders exist before copying (Next.js may omit them if empty)
+RUN mkdir -p apps/accounts/public apps/accounts/.next/static
+
 FROM node:20-alpine AS runner
 WORKDIR /app
 
@@ -27,7 +30,7 @@ RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/apps/accounts/.next/standalone ./
 COPY --from=builder /app/apps/accounts/.next/static ./apps/accounts/.next/static
-COPY --from=builder /app/apps/accounts/public ./apps/accounts/public 2>/dev/null || true
+COPY --from=builder /app/apps/accounts/public ./apps/accounts/public
 
 USER nextjs
 EXPOSE 3000

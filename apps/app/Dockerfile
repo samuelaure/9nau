@@ -17,6 +17,9 @@ RUN pnpm install --frozen-lockfile
 
 RUN pnpm build --filter=@9nau/app
 
+# Ensure public/static folders exist before copying (Next.js may omit them if empty)
+RUN mkdir -p apps/app/public apps/app/.next/static
+
 FROM node:20-alpine AS runner
 WORKDIR /app
 
