@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black text-white antialiased;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 font-semibold text-white shadow-lg transition-all hover:bg-violet-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-white/30 outline-none transition focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease both;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
