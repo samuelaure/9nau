@@ -43,13 +43,16 @@ export function BlockEditorModal({ block, isOpen, onClose, onUpdate, onDelete }:
     }
     
     // Clean undefined
-    Object.keys(newProps).forEach(k => newProps[k] === undefined && delete newProps[k])
+    const cleanProps = { ...newProps } as Record<string, any>;
+    Object.keys(cleanProps).forEach((k) => {
+      if (cleanProps[k] === undefined) delete cleanProps[k];
+    });
 
     onUpdate(block.id, {
       type,
-      properties: newProps,
-    })
-    onClose()
+      properties: cleanProps,
+    });
+    onClose();
   }
 
   const handleDelete = () => {

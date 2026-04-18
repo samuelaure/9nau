@@ -12,6 +12,7 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "module": "commonjs",
+    "types": [],
     "baseUrl": ".",
     "paths": {
       "@9nau/types": ["packages/types/src/index.ts"],

@@ -10,7 +10,7 @@ import { cn } from '@9nau/ui/lib/utils'
 type PeriodType = 'day' | 'week' | 'month' | 'year'
 
 function formatDate(date: Date): string {
-  return date.toISOString().split('T')[0]
+  return date.toISOString().split('T')[0] as string
 }
 
 function getDateRange(date: Date, period: PeriodType): { start: Date; end: Date } {
@@ -163,7 +163,7 @@ export function JournalView() {
       {summaries.length > 0 && (
         <div className="mb-8 space-y-4">
           {summaries.map((summary: Block) => {
-            const props = summary.properties as Record<string, unknown>
+            const props = summary.properties as any
             return (
               <div
                 key={summary.id}
@@ -216,7 +216,7 @@ export function JournalView() {
             </span>
           </div>
           {entries.map((entry: Block) => {
-            const props = entry.properties as Record<string, unknown>
+            const props = entry.properties as any
             const text = (props.summary || props.text || props.name || '') as string
             const time = new Date(entry.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
             const source = (props.source as string) || entry.source || ''

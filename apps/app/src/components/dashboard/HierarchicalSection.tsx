@@ -45,7 +45,7 @@ export function HierarchicalSection({ dateStr, sectionType, title, items }: Hier
   }
 
   const handleAdd = (afterId: string | null, parentId: string | null) => {
-    const newBlock: Omit<Block, 'id' | 'createdAt' | 'updatedAt'> = {
+    const newBlock: Omit<Block, 'id' | 'createdAt' | 'updatedAt' | 'uuid'> = {
       type: sectionType,
       parentId,
       properties: { text: '', date: dateStr, status: 'inbox' },
