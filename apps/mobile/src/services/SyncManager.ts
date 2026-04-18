@@ -6,19 +6,19 @@ import {
 import { runSql, executeSql } from '../db';
 import { syncService } from './SyncService';
 import { MediaCacheService } from './MediaCacheService';
-import { vaultMigrationService } from './VaultMigrationService';
+import { r2UploadService } from './R2UploadService';
 
 /**
  * SyncManager handles the background synchronization of captures.
  * Transitioned to Standalone Mode: Now uses Apify directly and downloads media locally.
- * Also triggers Vault backup for newly cached media.
+ * Also triggers R2 backup for newly cached media.
  */
 class SyncManager {
   private isSyncing = false;
   private intervalId: NodeJS.Timeout | null = null;
   private subscribers: (() => void)[] = [];
   private pollingInterval = 15000;
-  private vaultMigrationStarted = false;
+  private r2MigrationStarted = false;
 
   async triggerSync(pollingIntervalMs = 15000) {
     this.pollingInterval = pollingIntervalMs;
@@ -108,13 +108,13 @@ class SyncManager {
         }
       }
 
-      // 4. Trigger Vault migration for newly cached media (runs in background)
-      if (!this.vaultMigrationStarted) {
-        this.vaultMigrationStarted = true;
-        // Fire-and-forget: vault migration runs independently
-        vaultMigrationService.startMigration().catch((error) => {
-          console.error('[SyncManager] Vault migration error:', error);
-          this.vaultMigrationStarted = false;
+      // 4. Trigger R2 migration for newly cached media (runs in background)
+      if (!this.r2MigrationStarted) {
+        this.r2MigrationStarted = true;
+        // Fire-and-forget: R2 migration runs independently
+        r2UploadService.startMigration().catch((error) => {
+          console.error('[SyncManager] R2 migration error:', error);
+          this.r2MigrationStarted = false;
         });
       }
 
