@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.2](https://github.com/samuelaure/9nau/compare/v1.4.1...v1.4.2) (2026-04-18)
+
+
+### Bug Fixes
+
+* **api:** whitelist app and accounts origins for CORS ([47ce09b](https://github.com/samuelaure/9nau/commit/47ce09bbb1003593083cb5003e256b6f0ca4d5f0))
+
 ### [1.4.1](https://github.com/samuelaure/9nau/compare/v1.4.0...v1.4.1) (2026-04-18)
 
 
