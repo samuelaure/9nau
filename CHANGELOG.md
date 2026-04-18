@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/samuelaure/9nau/compare/v1.3.0...v1.4.0) (2026-04-18)
+
+
+### Features
+
+* **docker:** add standalone Dockerfiles for app and accounts ([9e23f95](https://github.com/samuelaure/9nau/commit/9e23f9594a187045c88bfd23d954615e0d5911ec))
+* **infra:** add app and accounts services to deployment pipeline ([3bcc5d9](https://github.com/samuelaure/9nau/commit/3bcc5d9afea9a4ae7771c400ae13b1e71fd781d5))
+
+
+### Bug Fixes
+
+* **accounts:** standardize api url environment variable name ([14ea255](https://github.com/samuelaure/9nau/commit/14ea2557a4c9fe3c7ed17e154fc102275de61fc6))
+
 ## [1.3.0](https://github.com/samuelaure/9nau/compare/v1.2.14...v1.3.0) (2026-04-18)
 
 
