@@ -30,6 +30,7 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 
 const mockBlock: Block = {
   id: 'block-1',
+  uuid: 'uuid-1',
   type: 'note',
   properties: { text: 'Test note' },
   parentId: null,
