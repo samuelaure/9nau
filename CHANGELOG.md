@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.3](https://github.com/samuelaure/9nau/compare/v1.2.2...v1.2.3) (2026-04-18)
+
+
+### Bug Fixes
+
+* **infra:** add default redis password to prevent fatal crash if env is missing ([c0a8e0d](https://github.com/samuelaure/9nau/commit/c0a8e0d5629b37a26724faf12eb19567900a3245))
+
 ### [1.2.2](https://github.com/samuelaure/9nau/compare/v1.2.1...v1.2.2) (2026-04-18)
 
 
