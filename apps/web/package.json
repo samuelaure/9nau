@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "@9nau/web",
   "version": "0.1.0",
   "private": true,
   "description": "The front-end application for the 9naŭ platform.",

@@ -22,8 +22,7 @@ RUN pnpm install --frozen-lockfile
 RUN cd apps/api && npx prisma generate
 
 # Build the API (this will use turbo)
-RUN pnpm --filter @9nau/api build
-RUN pnpm --filter @9nau/web build
+RUN pnpm build --filter=@9nau/api
 
 FROM node:20-alpine AS runner
 RUN apk add --no-cache openssl

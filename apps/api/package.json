@@ -1,5 +1,5 @@
 {
-  "name": "api",
+  "name": "@9nau/api",
   "version": "0.1.0",
   "private": true,
   "description": "The back-end API for the 9naŭ platform.",
