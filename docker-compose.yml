@@ -61,7 +61,7 @@ services:
   9nau_redis:
     image: redis:7-alpine
     container_name: 9nau-redis
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+    command: redis-server --requirepass ${REDIS_PASSWORD:-nauthenticity_redis_pass}
     networks:
       - nau-network
     restart: unless-stopped
