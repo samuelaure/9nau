@@ -22,7 +22,7 @@ function LoginForm() {
     setLoading(true)
 
     try {
-      const nauApiUrl = process.env.NEXT_PUBLIC_NAU_API_URL ?? 'https://api.9nau.com'
+      const nauApiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.9nau.com'
       const res = await fetch(`${nauApiUrl}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
