@@ -37,6 +37,64 @@ services:
       - "traefik.http.services.9nau-api.loadbalancer.server.port=3000"
       - "traefik.docker.network=nau-network"
 
+  9nau_app:
+    image: ghcr.io/samuelaure/9nau/app:${TAG:-latest}
+    container_name: 9nau-app
+    networks:
+      - nau-network
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 192M
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_ACCOUNTS_URL=${NEXT_PUBLIC_ACCOUNTS_URL}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.9nau-app.rule=Host(`app.9nau.com`)"
+      - "traefik.http.routers.9nau-app.entrypoints=websecure"
+      - "traefik.http.routers.9nau-app.tls=true"
+      - "traefik.http.routers.9nau-app.tls.certresolver=letsencrypt"
+      - "traefik.http.services.9nau-app.loadbalancer.server.port=3000"
+      - "traefik.docker.network=nau-network"
+
+  9nau_accounts:
+    image: ghcr.io/samuelaure/9nau/accounts:${TAG:-latest}
+    container_name: 9nau-accounts
+    networks:
+      - nau-network
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 192M
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_ACCOUNTS_URL=${NEXT_PUBLIC_ACCOUNTS_URL}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.9nau-accounts.rule=Host(`accounts.9nau.com`)"
+      - "traefik.http.routers.9nau-accounts.entrypoints=websecure"
+      - "traefik.http.routers.9nau-accounts.tls=true"
+      - "traefik.http.routers.9nau-accounts.tls.certresolver=letsencrypt"
+      - "traefik.http.services.9nau-accounts.loadbalancer.server.port=3000"
+      - "traefik.docker.network=nau-network"
+
   9nau_postgres:
     image: postgres:16
     container_name: 9nau-postgres
