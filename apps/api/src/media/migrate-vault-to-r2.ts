@@ -84,7 +84,7 @@ async function run() {
   const blocks = await prisma.block.findMany({
     where: {
       deletedAt: null,
-      properties: { path: ['vault_file_id'], not: null },
+      properties: { path: ['vault_file_id'], not: PrismaClient.Prisma.JsonNull },
     },
     select: { id: true, properties: true },
   });
@@ -99,7 +99,7 @@ async function run() {
 
     await Promise.allSettled(
       batch.map(async (block) => {
-        const props = block.properties as Record<string, any>;
+        const props = block.properties as any;
         const vaultFileId: string = props.vault_file_id;
 
         try {
@@ -114,7 +114,7 @@ async function run() {
 
           // Update Block: replace vault_file_id with storageKey
           const updatedProps = { ...props, storageKey };
-          delete updatedProps.vault_file_id;
+          delete (updatedProps as any).vault_file_id;
 
           await prisma.block.update({
             where: { id: block.id },
