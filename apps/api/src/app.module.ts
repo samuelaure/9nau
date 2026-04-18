@@ -14,6 +14,7 @@ import { SyncModule } from './sync/sync.module';
 import { MediaModule } from './media/media.module';
 import { TriageModule } from './triage/triage.module';
 import { JournalModule } from './journal/journal.module';
+import { AuthModule } from './auth/auth.module';
 import { ScheduleModule as NestScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -34,6 +35,7 @@ import { ScheduleModule as NestScheduleModule } from '@nestjs/schedule';
     MediaModule,
     TriageModule,
     JournalModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
