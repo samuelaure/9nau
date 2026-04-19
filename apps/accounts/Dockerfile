@@ -15,6 +15,14 @@ COPY apps/app ./apps/app
 
 RUN pnpm install --frozen-lockfile
 
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_ACCOUNTS_URL
+ARG NEXT_PUBLIC_APP_URL
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_ACCOUNTS_URL=$NEXT_PUBLIC_ACCOUNTS_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+
 RUN pnpm build --filter=@9nau/accounts
 
 # Ensure public/static folders exist before copying (Next.js may omit them if empty)

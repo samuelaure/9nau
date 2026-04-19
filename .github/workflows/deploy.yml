@@ -41,6 +41,10 @@ jobs:
           file: apps/app/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/app:latest,ghcr.io/${{ github.repository }}/app:${{ github.ref_name }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://api.9nau.com
+            NEXT_PUBLIC_ACCOUNTS_URL=https://accounts.9nau.com
+            NEXT_PUBLIC_APP_URL=https://app.9nau.com
 
       - name: Build and Push Accounts
         uses: docker/build-push-action@v5
@@ -49,6 +53,10 @@ jobs:
           file: apps/accounts/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/accounts:latest,ghcr.io/${{ github.repository }}/accounts:${{ github.ref_name }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://api.9nau.com
+            NEXT_PUBLIC_ACCOUNTS_URL=https://accounts.9nau.com
+            NEXT_PUBLIC_APP_URL=https://app.9nau.com
 
       - name: Copy docker-compose.yml to server
         uses: appleboy/scp-action@master
