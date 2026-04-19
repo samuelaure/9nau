@@ -18,7 +18,7 @@ export class DirectSummaryDto {
   endDate!: string;
 }
 
-@Controller('api/journal')
+@Controller('journal')
 @UseGuards(ServiceAuthGuard)
 export class JournalController {
   constructor(private readonly journalService: JournalService) {}

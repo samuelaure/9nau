@@ -17,13 +17,13 @@ const TriageResultSchema = z.object({
     reasoning: z.string(),
     text: z.string(),
     metadata: z.object({
-      priority: z.enum(['low', 'medium', 'high']).optional(),
-      deadline: z.string().optional(),
-      brandId: z.string().optional(),
-      brandName: z.string().optional(),
-      frequency: z.string().optional(),
-      topic: z.string().optional(),
-    }).optional()
+      priority: z.enum(['low', 'medium', 'high']).nullable().optional(),
+      deadline: z.string().nullable().optional(),
+      brandId: z.string().nullable().optional(),
+      brandName: z.string().nullable().optional(),
+      frequency: z.string().nullable().optional(),
+      topic: z.string().nullable().optional(),
+    }).nullable().optional()
   })),
   journalSummary: z.string()
 });
@@ -114,7 +114,7 @@ export class TriageService {
       // 5. Call OpenAI
       this.logger.log(`Calling OpenAI for triage... Brands: ${brandsForPrompt.length}, AI routing: ${aiRoutingEnabled}`);
 
-      const completion = await (this.openai.beta as any).chat.completions.parse({
+      const completion = await this.openai.chat.completions.parse({
         model: 'gpt-4o',
         temperature: 0.1,
         messages: [

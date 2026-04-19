@@ -11,7 +11,7 @@ export class TriageDto {
 }
 
 @UseGuards(ServiceAuthGuard)
-@Controller('api/triage')
+@Controller('triage')
 export class TriageController {
   constructor(private readonly triageService: TriageService) {}
 
