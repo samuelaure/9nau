@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.1](https://github.com/samuelaure/9nau/compare/v1.7.0...v1.7.1) (2026-04-19)
+
+
+### Bug Fixes
+
+* **triage:** handle potential undefined choices in openai response ([cc66345](https://github.com/samuelaure/9nau/commit/cc663455b5f964af08b752a59211cc646c49700b))
+
 ## [1.7.0](https://github.com/samuelaure/9nau/compare/v1.6.0...v1.7.0) (2026-04-19)
 
 
