@@ -12,7 +12,7 @@ import { LoginDto, RegisterDto } from './auth.dto';
 
 const LINK_TOKEN_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-const ACCESS_TOKEN_EXPIRES = '15m';
+const ACCESS_TOKEN_EXPIRES = '30d';
 const REFRESH_TOKEN_EXPIRES_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 @Injectable()

@@ -2,10 +2,21 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+
+function setSharedCookie(name: string, value: string, days: number) {
+  const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString()
+  const isProduction = window.location.hostname.endsWith('.9nau.com')
+  const domainPart = isProduction ? '; domain=.9nau.com' : ''
+  document.cookie = `${name}=${value}; expires=${expires}; path=/${domainPart}; SameSite=Lax`
+}
+
+function getSharedCookie(name: string): string | undefined {
+  return document.cookie.split('; ').find((row) => row.startsWith(`${name}=`))?.split('=')[1]
+}
 
 function LoginForm() {
   const [email, setEmail] = useState('')
@@ -15,6 +26,13 @@ function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const continueUrl = searchParams.get('continue') ?? ''
+
+  useEffect(() => {
+    const token = getSharedCookie('nau_token')
+    if (token) {
+      window.location.href = continueUrl || 'https://app.9nau.com'
+    }
+  }, [continueUrl])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,13 +55,9 @@ function LoginForm() {
 
       const { accessToken } = (await res.json()) as { accessToken: string }
 
-      if (continueUrl) {
-        const callbackUrl = new URL(continueUrl)
-        callbackUrl.searchParams.set('token', accessToken)
-        window.location.href = callbackUrl.toString()
-      } else {
-        window.location.href = 'https://app.9nau.com'
-      }
+      setSharedCookie('nau_token', accessToken, 30)
+
+      window.location.href = continueUrl || 'https://app.9nau.com'
     } catch {
       setError('Network error. Please try again.')
     } finally {
