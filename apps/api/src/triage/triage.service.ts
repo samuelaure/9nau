@@ -156,10 +156,12 @@ OUTPUT: Return valid JSON matching the schema.`
         response_format: zodResponseFormat(TriageResultSchema, 'TriageResult'),
       });
 
-      const parsed = completion.choices[0].message.parsed;
-      if (!parsed) {
-        throw new Error('Failed to parse AI response');
+      const choice = completion.choices[0];
+      if (!choice || !choice.message.parsed) {
+        throw new Error('Failed to parse AI response or no choices returned');
       }
+
+      const parsed = choice.message.parsed;
 
       // 6. Save blocks — pass through explicit brandId and aiRouting flag
       const createdBlocks = await this.saveTriagedBlocks(parsed, sourceBlockId, brandId, aiRoutingEnabled);
