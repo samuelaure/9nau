@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/samuelaure/9nau/compare/v1.4.4...v1.5.0) (2026-04-19)
+
+
+### Features
+
+* **api:** implement AuthLinkToken model and endpoints for Telegram linking ([49956da](https://github.com/samuelaure/9nau/commit/49956dad2e45e7eb4c9f5c28a5f36f7ed3362ae1))
+* **ui:** add TelegramLinkBanner and integrate into 9nau apps ([0fb6e1a](https://github.com/samuelaure/9nau/commit/0fb6e1ae9f92c5f10a059103c740e20652c7bdda))
+
+
+### Bug Fixes
+
+* **ui:** resolve component path aliases for Next.js builds ([4754b9a](https://github.com/samuelaure/9nau/commit/4754b9a48c0e116d58567e56520bdd83ac779997))
+
 ### [1.4.4](https://github.com/samuelaure/9nau/compare/v1.4.3...v1.4.4) (2026-04-19)
 
 
