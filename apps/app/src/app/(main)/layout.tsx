@@ -7,9 +7,13 @@ import React, { useState, useEffect, useRef } from 'react'
 import { cn } from '@9nau/ui/lib/utils'
 import { useDashboardStore } from '@/lib/state/dashboard-store'
 import { Button } from '@9nau/ui/components/button'
+import { TelegramLinkBanner } from '@9nau/ui/components/TelegramLinkBanner'
 import { ArrowUp } from 'lucide-react'
 import { isDateToday } from '@9nau/core'
 import { format } from 'date-fns'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.9nau.com'
+const BOT_USERNAME = process.env.NEXT_PUBLIC_BOT_USERNAME ?? 'zazu_bot'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const isSidebarOpen = useUiStore((s) => s.isSidebarOpen)
@@ -80,6 +84,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="h-screen flex flex-col bg-white dark:bg-gray-950 font-sans text-gray-900 dark:text-gray-100">
+      <TelegramLinkBanner apiUrl={API_URL} botUsername={BOT_USERNAME} />
       <Header isScrolled={isScrolled} />
       <div className="flex-1 flex pt-16 overflow-hidden">
         <Sidebar />
