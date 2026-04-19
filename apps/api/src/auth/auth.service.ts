@@ -6,8 +6,11 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto, RegisterDto } from './auth.dto';
+
+const LINK_TOKEN_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 const ACCESS_TOKEN_EXPIRES = '15m';
 const REFRESH_TOKEN_EXPIRES_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -83,6 +86,24 @@ export class AuthService {
     if (!user) return { found: false };
     const { passwordHash: _, ...safe } = user;
     return { found: true, user: safe };
+  }
+
+  async generateLinkToken(userId: string): Promise<{ token: string }> {
+    await this.prisma.authLinkToken.deleteMany({ where: { userId } });
+    const token = crypto.randomBytes(32).toString('hex');
+    await this.prisma.authLinkToken.create({
+      data: { token, userId, expiresAt: new Date(Date.now() + LINK_TOKEN_TTL_MS) },
+    });
+    return { token };
+  }
+
+  async verifyLinkToken(token: string, telegramId: string): Promise<{ ok: boolean }> {
+    const record = await this.prisma.authLinkToken.findUnique({ where: { token } });
+    if (!record || record.expiresAt < new Date()) {
+      throw new UnauthorizedException('Invalid or expired link token');
+    }
+    await this.prisma.authLinkToken.delete({ where: { token } });
+    return this.linkTelegram(record.userId, telegramId);
   }
 
   async linkTelegram(userId: string, telegramId: string) {

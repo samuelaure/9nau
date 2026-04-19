@@ -96,6 +96,16 @@ model User {
 
   workspaces   WorkspaceMember[]
   sessions     Session[]
+  linkTokens   AuthLinkToken[]
+}
+
+model AuthLinkToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model Workspace {

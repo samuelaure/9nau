@@ -34,3 +34,11 @@ export class LinkTelegramDto {
   @IsString()
   telegramId!: string;
 }
+
+export class VerifyLinkTokenDto {
+  @IsString()
+  token!: string;
+
+  @IsString()
+  telegramId!: string;
+}
