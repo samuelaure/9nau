@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/samuelaure/9nau/compare/v1.6.0...v1.7.0) (2026-04-19)
+
+
+### Features
+
+* **infra:** add flownau integration and standardize r2 env keys ([c7ffd63](https://github.com/samuelaure/9nau/commit/c7ffd63f7bc9cf9fc49bb96b478dc66513a52073))
+
+
+### Bug Fixes
+
+* **api:** correct controller prefixes and update openai sdk syntax ([1b69ccd](https://github.com/samuelaure/9nau/commit/1b69ccd79334c0191840c9c37358b3e42fcd1857))
+
 ## [1.6.0](https://github.com/samuelaure/9nau/compare/v1.5.0...v1.6.0) (2026-04-19)
 
 
