@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.4](https://github.com/samuelaure/9nau/compare/v1.4.3...v1.4.4) (2026-04-19)
+
+
+### Bug Fixes
+
+* **deploy:** bake NEXT_PUBLIC variables into frontend builds ([228021a](https://github.com/samuelaure/9nau/commit/228021ac2192215300373b011c8d6fb768707bff))
+
 ### [1.4.3](https://github.com/samuelaure/9nau/compare/v1.4.2...v1.4.3) (2026-04-18)
 
 
