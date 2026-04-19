@@ -18,7 +18,7 @@ export class NauthenticityService {
 
   private get headers() {
     return {
-      Authorization: `Bearer ${this.serviceKey}`,
+      'x-nau-service-key': this.serviceKey,
     };
   }
 

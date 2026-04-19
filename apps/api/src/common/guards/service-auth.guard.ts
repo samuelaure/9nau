@@ -9,9 +9,7 @@ import {
 export class ServiceAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    const serviceKey =
-      request.headers['x-nau-service-key'] ||
-      request.headers['authorization']?.replace('Bearer ', '');
+    const serviceKey = request.headers['x-nau-service-key'];
 
     if (!serviceKey || serviceKey !== process.env.NAU_SERVICE_KEY) {
       throw new UnauthorizedException('Invalid service key');

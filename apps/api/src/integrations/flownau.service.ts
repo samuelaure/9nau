@@ -30,7 +30,7 @@ export class FlownauIntegrationService {
     try {
       const response = await axios.get(
         `${this.baseUrl}/api/v1/accounts/by-nau-brand/${brandId}`,
-        { headers: { Authorization: `Bearer ${this.serviceKey}` } },
+        { headers: { 'x-nau-service-key': this.serviceKey } },
       );
       return response.data?.account?.id ?? null;
     } catch {
@@ -63,7 +63,7 @@ export class FlownauIntegrationService {
       },
       {
         headers: {
-          Authorization: `Bearer ${this.serviceKey}`,
+          'x-nau-service-key': this.serviceKey,
           'Content-Type': 'application/json',
         },
       },
