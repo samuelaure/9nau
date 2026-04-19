@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/samuelaure/9nau/compare/v1.5.0...v1.6.0) (2026-04-19)
+
+
+### Features
+
+* **auth:** implement centralized SSO via shared domain cookie ([d472ae7](https://github.com/samuelaure/9nau/commit/d472ae78bb97c39831d9fd4f6de3105c8d5cb01b))
+
 ## [1.5.0](https://github.com/samuelaure/9nau/compare/v1.4.4...v1.5.0) (2026-04-19)
 
 
