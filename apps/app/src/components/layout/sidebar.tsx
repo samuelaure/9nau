@@ -4,7 +4,8 @@ import * as React from 'react'
 import { useUiStore, useUiActions, View } from '@/lib/state/ui-store'
 import { cn } from '@9nau/ui/lib/utils'
 import { Button } from '@9nau/ui/components/button'
-import { Home, Inbox, Zap, Coffee, Trash2, Archive, Calendar, BookOpen, Search, Moon, Sun } from 'lucide-react'
+import { Home, Inbox, Zap, Coffee, Trash2, Archive, Calendar, BookOpen, Search, Moon, Sun, Settings } from 'lucide-react'
+import Link from 'next/link'
 import { useUpdateBlock } from '@/hooks/use-blocks-api'
 
 const viewConfig: Record<View, { icon: React.ElementType; title: string }> = {
@@ -101,6 +102,20 @@ export function Sidebar() {
             onClick={() => setView('trash')}
             onDrop={handleNoteDrop}
           />
+          <li>
+            <Link href="/settings" passHref legacyBehavior>
+              <Button
+                variant="ghost"
+                className={cn(
+                  'w-full flex items-center h-12 text-sm font-medium transition-colors',
+                  isExpanded ? 'justify-start px-4' : 'justify-center'
+                )}
+              >
+                <Settings className={cn('h-5 w-5', isExpanded && 'mr-4')} />
+                {isExpanded && <span>Settings</span>}
+              </Button>
+            </Link>
+          </li>
         </ul>
       </nav>
     </aside>
