@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/samuelaure/9nau/compare/v1.7.1...v1.8.0) (2026-04-20)
+
+
+### Features
+
+* **api:** add brand model to prisma schema ([1802c39](https://github.com/samuelaure/9nau/commit/1802c39293bf28dcb4cf85a67fba87bac38df1bb))
+* **api:** implement workspaces and brands management module ([09d2e88](https://github.com/samuelaure/9nau/commit/09d2e886ba1f9711db8f3aeeb31dd9b444bcc77d))
+* **auth:** embed activeworkspaceid in jwt and add user lookup endpoint ([c0d9532](https://github.com/samuelaure/9nau/commit/c0d953255cd99849214bedd78bc264a6ef6b1891))
+* **db:** fresh init migration for workspace architecture ([4f44d84](https://github.com/samuelaure/9nau/commit/4f44d841f4a126bae99aef7632401ab53ccfdd41))
+* **ui:** implement platform settings and workspace management ([f99755e](https://github.com/samuelaure/9nau/commit/f99755e7931cf7308b9c9b21d46601cf2091e617))
+
 ### [1.7.1](https://github.com/samuelaure/9nau/compare/v1.7.0...v1.7.1) (2026-04-19)
 
 
