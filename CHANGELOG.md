@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/samuelaure/9nau/compare/v1.8.0...v1.9.0) (2026-04-20)
+
+
+### Features
+
+* **api:** standardize AUTH_SECRET and add service workspace endpoint ([e8c5dd0](https://github.com/samuelaure/9nau/commit/e8c5dd014dce73e029afbe65015ef5970e6539a8))
+
 ## [1.8.0](https://github.com/samuelaure/9nau/compare/v1.7.1...v1.8.0) (2026-04-20)
 
 
