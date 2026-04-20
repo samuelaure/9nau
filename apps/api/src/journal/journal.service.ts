@@ -244,7 +244,7 @@ LENGTH: ${periodType === 'daily' ? 'Brief (1-2 paragraphs)' : periodType === 'ye
     const zazuUrl = process.env.ZAZU_INTERNAL_URL || 'http://zazu:3000';
     const nauKey = process.env.NAU_SERVICE_KEY;
 
-    let periodTitle = `${periodType === 'daily' ? 'Diario' : periodType === 'weekly' ? 'Semanal' : periodType === 'monthly' ? 'Mensual' : periodType === 'trimester' ? 'Trimestral' : periodType === 'yearly' ? 'Anual' : 'Personalizado'}`;
+    const periodTitle = `${periodType === 'daily' ? 'Diario' : periodType === 'weekly' ? 'Semanal' : periodType === 'monthly' ? 'Mensual' : periodType === 'trimester' ? 'Trimestral' : periodType === 'yearly' ? 'Anual' : 'Personalizado'}`;
     const displayDate = dayjs(startDate).format('DD MMM YYYY');
 
     if (periodType !== 'custom' && nauKey) {

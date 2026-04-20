@@ -6,6 +6,15 @@ import { CreateWorkspaceDto, CreateBrandDto } from './workspaces.dto';
 export class WorkspacesService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getWorkspaceById(workspaceId: string) {
+    const workspace = await this.prisma.workspace.findUnique({
+      where: { id: workspaceId },
+      include: { brands: true },
+    });
+    if (!workspace) throw new NotFoundException('Workspace not found');
+    return { workspace };
+  }
+
   async getWorkspacesForUser(userId: string) {
     const memberships = await this.prisma.workspaceMember.findMany({
       where: { userId },

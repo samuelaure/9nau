@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
 import { CreateBrandDto, CreateWorkspaceDto } from './workspaces.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -25,6 +25,13 @@ export class WorkspacesController {
   @UseGuards(JwtAuthGuard)
   createWorkspace(@CurrentUser() user: { sub: string }, @Body() dto: CreateWorkspaceDto) {
     return this.svc.createWorkspace(user.sub, dto);
+  }
+
+  /** Service-to-service: fetch a workspace by ID without user JWT */
+  @Get(':workspaceId/service')
+  @UseGuards(ServiceAuthGuard)
+  getWorkspaceService(@Param('workspaceId') workspaceId: string) {
+    return this.svc.getWorkspaceById(workspaceId);
   }
 
   @Get(':workspaceId/brands')
