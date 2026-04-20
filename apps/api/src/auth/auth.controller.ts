@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards, NotFoundException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { ServiceAuthGuard } from '../common/guards/service-auth.guard';
@@ -55,5 +55,14 @@ export class AuthController {
   @UseGuards(ServiceAuthGuard)
   byTelegram(@Param('telegramId') telegramId: string) {
     return this.auth.findByTelegramId(telegramId);
+  }
+
+  /** Service-to-service: look up a User by email (used by flownau for workspace invites) */
+  @Get('lookup')
+  @UseGuards(ServiceAuthGuard)
+  async lookupByEmail(@Query('email') email: string) {
+    const user = await this.auth.findByEmail(email);
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 }

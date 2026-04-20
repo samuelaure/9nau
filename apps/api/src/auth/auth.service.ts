@@ -115,8 +115,22 @@ export class AuthService {
     return { ok: true };
   }
 
+  async findByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) return null;
+    const { passwordHash: _, ...safe } = user;
+    return safe;
+  }
+
   private async issueTokens(userId: string, email: string) {
-    const payload = { sub: userId, email };
+    // Embed the user's primary workspace so consumers can bootstrap context
+    const primaryMembership = await this.prisma.workspaceMember.findFirst({
+      where: { userId, role: 'owner' },
+      orderBy: { createdAt: 'asc' },
+    });
+    const activeWorkspaceId = primaryMembership?.workspaceId ?? null;
+
+    const payload = { sub: userId, email, activeWorkspaceId };
     const accessToken = this.jwt.sign(payload, { expiresIn: ACCESS_TOKEN_EXPIRES });
 
     const rawRefresh = this.jwt.sign(payload, { expiresIn: '7d' });
