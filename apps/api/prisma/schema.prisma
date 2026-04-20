@@ -115,6 +115,19 @@ model Workspace {
   updatedAt DateTime          @updatedAt
 
   members   WorkspaceMember[]
+  brands    Brand[]
+}
+
+model Brand {
+  id          String    @id @default(cuid())
+  workspaceId String
+  name        String
+  timezone    String    @default("UTC")
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }
 
 model WorkspaceMember {
