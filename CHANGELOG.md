@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/samuelaure/9nau/compare/v1.9.2...v1.10.0) (2026-04-21)
+
+
+### Features
+
+* **workspaces:** implement rename and member listing endpoints ([05a13e4](https://github.com/samuelaure/9nau/commit/05a13e4653ca3b55e68eb46b3f7e5d1415fd4956))
+
 ### [1.9.2](https://github.com/samuelaure/9nau/compare/v1.9.1...v1.9.2) (2026-04-21)
 
 
