@@ -15,3 +15,12 @@ export class CreateBrandDto {
   @IsString()
   timezone?: string;
 }
+
+export class AddMemberDto {
+  @IsString()
+  email!: string;
+
+  @IsString()
+  @IsOptional()
+  role?: string;
+}

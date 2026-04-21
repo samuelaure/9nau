@@ -85,4 +85,44 @@ export class WorkspacesService {
       data: { role },
     });
   }
+
+  async addMemberByEmail(actorId: string, workspaceId: string, dto: AddMemberDto) {
+    const actor = await this.assertMembership(actorId, workspaceId);
+    if (actor.role !== 'owner') throw new ForbiddenException('Only owners can add members');
+
+    const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    if (!user) throw new NotFoundException('User with that email not found');
+
+    const existing = await this.prisma.workspaceMember.findUnique({
+      where: { userId_workspaceId: { userId: user.id, workspaceId } },
+    });
+    if (existing) throw new ConflictException('User is already a member');
+
+    return this.prisma.workspaceMember.create({
+      data: { userId: user.id, workspaceId, role: dto.role ?? 'member' },
+      include: { user: { select: { id: true, email: true, name: true } } },
+    });
+  }
+
+  async removeMember(actorId: string, workspaceId: string, targetUserId: string) {
+    const actor = await this.assertMembership(actorId, workspaceId);
+    if (actor.role !== 'owner' && actorId !== targetUserId) {
+      throw new ForbiddenException('Only owners can remove members (or yourself)');
+    }
+
+    const member = await this.prisma.workspaceMember.findUnique({
+      where: { userId_workspaceId: { userId: targetUserId, workspaceId } },
+    });
+    if (!member) throw new NotFoundException('Member not found');
+    if (member.role === 'owner') {
+      const ownersCount = await this.prisma.workspaceMember.count({
+        where: { workspaceId, role: 'owner' },
+      });
+      if (ownersCount <= 1) throw new ForbiddenException('Cannot remove the last owner');
+    }
+
+    return this.prisma.workspaceMember.delete({
+      where: { id: member.id },
+    });
+  }
 }

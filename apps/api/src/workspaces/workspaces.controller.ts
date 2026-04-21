@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
-import { CreateBrandDto, CreateWorkspaceDto } from './workspaces.dto';
+import { CreateBrandDto, CreateWorkspaceDto, AddMemberDto } from './workspaces.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ServiceAuthGuard } from '../common/guards/service-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
@@ -87,12 +87,32 @@ export class WorkspacesController {
 
   @Put(':workspaceId/members/:targetUserId')
   @UseGuards(JwtAuthGuard)
-  updateMemberRole(
+  async updateMemberRole(
     @CurrentUser() user: { sub: string },
     @Param('workspaceId') workspaceId: string,
     @Param('targetUserId') targetUserId: string,
-    @Body() dto: UpdateRoleDto,
+    @Body('role') role: string,
   ) {
-    return this.svc.updateMemberRole(user.sub, workspaceId, targetUserId, dto.role);
+    return this.svc.updateMemberRole(user.sub, workspaceId, targetUserId, role);
+  }
+
+  @Post(':workspaceId/members')
+  @UseGuards(JwtAuthGuard)
+  async addMember(
+    @CurrentUser() user: { sub: string },
+    @Param('workspaceId') workspaceId: string,
+    @Body() dto: AddMemberDto,
+  ) {
+    return this.svc.addMemberByEmail(user.sub, workspaceId, dto);
+  }
+
+  @Delete(':workspaceId/members/:targetUserId')
+  @UseGuards(JwtAuthGuard)
+  async removeMember(
+    @CurrentUser() user: { sub: string },
+    @Param('workspaceId') workspaceId: string,
+    @Param('targetUserId') targetUserId: string,
+  ) {
+    return this.svc.removeMember(user.sub, workspaceId, targetUserId);
   }
 }
