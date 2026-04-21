@@ -323,6 +323,8 @@ export const getProfileByUsername = async (
 
 export const savePost = async (post: any): Promise<number> => {
   const uuid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  const initialInterval = post.sm2_interval || 0;
+  const isProcessed = post.isProcessed || 0;
 
   return runSql(
     `INSERT INTO posts (uuid, instagramUrl, title, content, tags, frequency, sm2_interval, isProcessed, next_review_at, sync_status, local_updated_at) 

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   Switch,
+  Platform,
 } from 'react-native';
 import { X, Zap, ChevronRight, ChevronDown } from 'lucide-react-native';
 import { COLORS } from '@/constants';

@@ -69,7 +69,9 @@ export const CaptureModal: React.FC<CaptureModalProps> = ({
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [showFreqPicker, setShowFreqPicker] = useState(false);
   const [showUnitDropdown, setShowUnitDropdown] = useState(false);
-  const [freqChain, setFreqChain] = useState<string[]>([]);
+   const [freqChain, setFreqChain] = useState<string[]>([]);
+   const [showDatePicker, setShowDatePicker] = useState(false);
+   const [isFreqCustomized, setIsFreqCustomized] = useState(false);
 
   // Special Functions State
   const [showSpecialFunctions, setShowSpecialFunctions] = useState(false);

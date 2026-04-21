@@ -74,8 +74,9 @@ class SyncService {
       }
       
       return results.filter((r: any) => r.status === 'synced').length;
-    } catch (error) {
-      console.warn('[SyncService] Push failed (Offline Mode Active):', error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn('[SyncService] Push failed (Offline Mode Active):', message);
       return 0; // Return gracefully instead of throwing
     }
   }
@@ -191,8 +192,9 @@ class SyncService {
       }
 
       return blocks.length;
-    } catch (error) {
-      console.warn('[SyncService] Pull failed (Offline Mode Active):', error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn('[SyncService] Pull failed (Offline Mode Active):', message);
       return 0; // Return gracefully instead of throwing
     }
   }
