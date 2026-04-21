@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.1](https://github.com/samuelaure/9nau/compare/v1.9.0...v1.9.1) (2026-04-21)
+
+
+### Features
+
+* update CORS origins to include nauthenticity and localhost ([ab78419](https://github.com/samuelaure/9nau/commit/ab784193305d26d05df7f04adea24e6a1fd0729c))
+
 ## [1.9.0](https://github.com/samuelaure/9nau/compare/v1.8.0...v1.9.0) (2026-04-20)
 
 
