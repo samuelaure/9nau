@@ -18,8 +18,10 @@ async function bootstrap() {
     process.env.FRONTEND_URL,
     process.env.NEXT_PUBLIC_APP_URL,
     process.env.NEXT_PUBLIC_ACCOUNTS_URL,
+    'https://nauthenticity.9nau.com',
     'http://localhost:3001',
     'http://localhost:3002',
+    'http://localhost:5173',
   ].filter((origin): origin is string => !!origin);
 
   app.enableCors({
