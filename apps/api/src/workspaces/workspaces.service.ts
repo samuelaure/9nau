@@ -64,6 +64,14 @@ export class WorkspacesService {
     });
   }
 
+  async renameWorkspace(userId: string, workspaceId: string, name: string) {
+    await this.assertMembership(userId, workspaceId);
+    return this.prisma.workspace.update({
+      where: { id: workspaceId },
+      data: { name },
+    });
+  }
+
   async updateMemberRole(
     actorId: string,
     workspaceId: string,

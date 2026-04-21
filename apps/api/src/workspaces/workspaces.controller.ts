@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
 import { CreateBrandDto, CreateWorkspaceDto } from './workspaces.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -9,6 +9,11 @@ import { IsString } from 'class-validator';
 class UpdateRoleDto {
   @IsString()
   role!: string;
+}
+
+class RenameWorkspaceDto {
+  @IsString()
+  name!: string;
 }
 
 @Controller('workspaces')
@@ -32,6 +37,16 @@ export class WorkspacesController {
   @UseGuards(ServiceAuthGuard)
   getWorkspaceService(@Param('workspaceId') workspaceId: string) {
     return this.svc.getWorkspaceById(workspaceId);
+  }
+
+  @Patch(':workspaceId')
+  @UseGuards(JwtAuthGuard)
+  renameWorkspace(
+    @CurrentUser() user: { sub: string },
+    @Param('workspaceId') workspaceId: string,
+    @Body() dto: RenameWorkspaceDto,
+  ) {
+    return this.svc.renameWorkspace(user.sub, workspaceId, dto.name);
   }
 
   @Get(':workspaceId/brands')
