@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateWorkspaceDto, CreateBrandDto } from './workspaces.dto';
+import { CreateWorkspaceDto, CreateBrandDto, AddMemberDto } from './workspaces.dto';
 
 @Injectable()
 export class WorkspacesService {
