@@ -30,7 +30,10 @@ function LoginForm() {
   useEffect(() => {
     const token = getSharedCookie('nau_token')
     if (token) {
-      window.location.href = continueUrl || 'https://app.9nau.com'
+      const dest = continueUrl
+        ? `${continueUrl}${continueUrl.includes('?') ? '&' : '?'}token=${encodeURIComponent(token)}`
+        : 'https://app.9nau.com'
+      window.location.href = dest
     }
   }, [continueUrl])
 
@@ -57,7 +60,10 @@ function LoginForm() {
 
       setSharedCookie('nau_token', accessToken, 30)
 
-      window.location.href = continueUrl || 'https://app.9nau.com'
+      const dest = continueUrl
+        ? `${continueUrl}${continueUrl.includes('?') ? '&' : '?'}token=${encodeURIComponent(accessToken)}`
+        : 'https://app.9nau.com'
+      window.location.href = dest
     } catch {
       setError('Network error. Please try again.')
     } finally {
