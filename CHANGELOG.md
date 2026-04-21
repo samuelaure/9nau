@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.2](https://github.com/samuelaure/9nau/compare/v1.9.1...v1.9.2) (2026-04-21)
+
+
+### Features
+
+* **accounts:** pass token via query param on login redirect ([6d2e711](https://github.com/samuelaure/9nau/commit/6d2e711fefd6ec5684dc4586dfd58db2346e2c5a))
+
 ### [1.9.1](https://github.com/samuelaure/9nau/compare/v1.9.0...v1.9.1) (2026-04-21)
 
 
