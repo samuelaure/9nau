@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.1](https://github.com/samuelaure/9nau/compare/v1.11.0...v1.11.1) (2026-04-21)
+
+
+### Bug Fixes
+
+* **api:** add missing imports to workspaces service ([ef77f13](https://github.com/samuelaure/9nau/commit/ef77f133e564abf7f59670c29f17a509dbde6376))
+
 ## [1.10.0](https://github.com/samuelaure/9nau/compare/v1.9.2...v1.10.0) (2026-04-21)
 
 
