@@ -28,7 +28,7 @@ export class NauthenticityService {
     );
     try {
       const response = await axios.post(
-        `${this.baseUrl}/api/v1/targets`,
+        `${this.baseUrl}/api/targets`,
         { brandId, usernames },
         { headers: this.headers },
       );
@@ -46,7 +46,7 @@ export class NauthenticityService {
     );
     try {
       const response = await axios.post(
-        `${this.baseUrl}/api/v1/generate-comment`,
+        `${this.baseUrl}/api/generate-comment`,
         { targetUrl, brandId },
         { headers: this.headers },
       );
@@ -62,7 +62,7 @@ export class NauthenticityService {
     this.logger.log(`Fetching brands for user: ${userId}`);
     try {
       const response = await axios.get(
-        `${this.baseUrl}/api/v1/brands`,
+        `${this.baseUrl}/api/brands`,
         {
           params: { userId },
           headers: this.headers
@@ -83,7 +83,7 @@ export class NauthenticityService {
   async getBrandsForWorkspace(workspaceId: string): Promise<Array<{ id: string; brandName: string; voicePrompt: string }>> {
     try {
       const response = await axios.get(
-        `${this.baseUrl}/api/v1/service/brands`,
+        `${this.baseUrl}/api/service/brands`,
         {
           params: { workspaceId },
           headers: this.headers,
@@ -103,7 +103,7 @@ export class NauthenticityService {
   async getBrandDnaLight(brandId: string): Promise<{ id: string; brandName: string; voicePrompt: string; workspaceId: string } | null> {
     try {
       const response = await axios.get(
-        `${this.baseUrl}/api/v1/brands/${brandId}/dna-light`,
+        `${this.baseUrl}/api/brands/${brandId}/dna-light`,
         { headers: this.headers },
       );
       return response.data;
@@ -121,7 +121,7 @@ export class NauthenticityService {
     this.logger.log(`Syncing structural data for brand ${brandId} to Nauthenticity`);
     try {
       await axios.patch(
-        `${this.baseUrl}/api/v1/service/brands/${brandId}`,
+        `${this.baseUrl}/api/service/brands/${brandId}`,
         data,
         { headers: this.headers },
       );
