@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.2](https://github.com/samuelaure/9nau/compare/v1.12.1...v1.12.2) (2026-04-22)
+
 ## [1.12.0](https://github.com/samuelaure/9nau/compare/v1.11.2...v1.12.0) (2026-04-22)
 
 
