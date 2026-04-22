@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/samuelaure/9nau/compare/v1.12.5...v1.13.0) (2026-04-22)
+
+
+### Features
+
+* **api:** add migration for WorkspaceRole enum ([d490121](https://github.com/samuelaure/9nau/commit/d49012129712f15c2b4d6329efe1e9cfa18ae0a2))
+* **platform:** remove /api prefix, implement workspace/brand CRUD, and centralize types ([9e7092c](https://github.com/samuelaure/9nau/commit/9e7092ceb31d9cde42354bb7a01ad411e559f8fd))
+
+
+### Bug Fixes
+
+* **api:** align workspaces code with Prisma role enum ([717eb20](https://github.com/samuelaure/9nau/commit/717eb2081bfd29d11bfaf66bbb050b422a73f8eb))
+
 ### [1.12.2](https://github.com/samuelaure/9nau/compare/v1.12.1...v1.12.2) (2026-04-22)
 
 ## [1.12.0](https://github.com/samuelaure/9nau/compare/v1.11.2...v1.12.0) (2026-04-22)
