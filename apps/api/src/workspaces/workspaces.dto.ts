@@ -1,6 +1,5 @@
 import { IsString, MinLength, IsOptional, IsIn, IsBoolean } from 'class-validator';
-
-type WorkspaceRole = 'owner' | 'admin' | 'member';
+import { WorkspaceRole } from '@prisma/client';
 
 export class CreateWorkspaceDto {
   @IsString()

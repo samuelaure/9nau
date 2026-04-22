@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { WorkspaceRole } from '@prisma/client';
 import { WorkspacesService } from './workspaces.service';
 import { CreateBrandDto, CreateWorkspaceDto, AddMemberDto, UpdateBrandDto } from './workspaces.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -152,7 +153,7 @@ export class WorkspacesController {
     @CurrentUser() user: { sub: string },
     @Param('workspaceId') workspaceId: string,
     @Param('targetUserId') targetUserId: string,
-    @Body('role') role: string,
+    @Body('role') role: WorkspaceRole,
   ) {
     return this.svc.updateMemberRole(user.sub, workspaceId, targetUserId, role);
   }

@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
+import { WorkspaceRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateWorkspaceDto, CreateBrandDto, AddMemberDto, UpdateBrandDto } from './workspaces.dto';
 import { NauthenticityService } from '../integrations/nauthenticity.service';
@@ -31,7 +32,7 @@ export class WorkspacesService {
     return this.prisma.workspace.create({
       data: {
         name: dto.name,
-        members: { create: { userId, role: 'owner' } },
+        members: { create: { userId, role: WorkspaceRole.owner } },
       },
       include: { members: true, brands: true },
     });
@@ -141,13 +142,13 @@ export class WorkspacesService {
     actorId: string,
     workspaceId: string,
     targetUserId: string,
-    role: string,
+    role: WorkspaceRole,
   ) {
     const actor = await this.assertMembership(actorId, workspaceId);
     if (actor.role !== 'owner') throw new ForbiddenException('Only owners can change roles');
     return this.prisma.workspaceMember.update({
       where: { userId_workspaceId: { userId: targetUserId, workspaceId } },
-      data: { role },
+      data: { role: role as WorkspaceRole },
     });
   }
 
@@ -164,7 +165,7 @@ export class WorkspacesService {
     if (existing) throw new ConflictException('User is already a member');
 
     return this.prisma.workspaceMember.create({
-      data: { userId: user.id, workspaceId, role: dto.role ?? 'member' },
+      data: { userId: user.id, workspaceId, role: (dto.role as WorkspaceRole) ?? WorkspaceRole.member },
       include: { user: { select: { id: true, email: true, name: true } } },
     });
   }
