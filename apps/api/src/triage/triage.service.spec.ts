@@ -4,6 +4,8 @@ import { TriageService } from './triage.service';
 import { BlocksService } from '../blocks/blocks.service';
 import { NauthenticityService } from '../integrations/nauthenticity.service';
 import { FlownauIntegrationService } from '../integrations/flownau.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 // Minimal inline type to avoid a hard dependency on generated @prisma/client
 interface MockBlock {
@@ -30,7 +32,7 @@ jest.mock('@prisma/client', () => ({
 jest.mock('openai', () => {
   const parse = jest.fn();
   function MockOpenAI() {
-    return { beta: { chat: { completions: { parse } } } };
+    return { chat: { completions: { parse } } };
   }
   // Expose the mock fn so tests can retrieve it via jest.requireMock
   (MockOpenAI as unknown as Record<string, unknown>).__parse = parse;
@@ -114,13 +116,21 @@ describe('TriageService', () => {
         {
           provide: NauthenticityService,
           useValue: {
-            getBrands: jest.fn(),
+            getBrandsForWorkspace: jest.fn(),
+            getBrandDnaLight: jest.fn(),
           },
         },
         {
           provide: FlownauIntegrationService,
           useValue: {
             ingestIdeas: jest.fn(),
+            resolveAccountByBrandId: jest.fn(),
+          },
+        },
+        {
+          provide: PrismaService,
+          useValue: {
+            user: { findFirst: jest.fn() },
           },
         },
       ],
@@ -132,7 +142,8 @@ describe('TriageService', () => {
     flownauService = module.get(FlownauIntegrationService);
 
     // Default mocks
-    nauthenticityService.getBrands.mockResolvedValue([]);
+    nauthenticityService.getBrandsForWorkspace.mockResolvedValue([]);
+    flownauService.resolveAccountByBrandId.mockResolvedValue('acc-123');
     blocksService.findAll.mockResolvedValue([]);
     blocksService.create.mockResolvedValue(makeBlock());
     blocksService.update.mockResolvedValue(makeBlock());
@@ -162,8 +173,8 @@ describe('TriageService', () => {
       await service.processRawText('Create a reel about productivity hacks', 'user-123');
 
       expect(flownauService.ingestIdeas).toHaveBeenCalledTimes(1);
-      expect(flownauService.ingestIdeas).toHaveBeenCalledWith('brand-abc', [
-        { text: 'Create a reel about productivity hacks', sourceRef: 'idea-block-1' },
+      expect(flownauService.ingestIdeas).toHaveBeenCalledWith('acc-123', [
+        { text: 'Create a reel about productivity hacks', sourceRef: 'idea-block-1', aiLinked: false },
       ]);
     });
 
