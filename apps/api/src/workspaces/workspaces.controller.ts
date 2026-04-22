@@ -21,6 +21,12 @@ export class WorkspacesController {
     return this.svc.getWorkspacesForUser(user.sub);
   }
 
+  @Get('service/user/:userId')
+  @UseGuards(ServiceAuthGuard)
+  getWorkspacesServiceForUser(@Param('userId') userId: string) {
+    return this.svc.getWorkspacesForUser(userId);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   createWorkspace(@CurrentUser() user: { sub: string }, @Body() dto: CreateWorkspaceDto) {
@@ -71,6 +77,19 @@ export class WorkspacesController {
     return this.svc.createBrand(user.sub, workspaceId, dto);
   }
 
+  /** Service-to-service: create brand without user JWT */
+  @Post(':workspaceId/brands/service')
+  @UseGuards(ServiceAuthGuard)
+  createBrandService(
+    @Param('workspaceId') workspaceId: string,
+    @Body() dto: CreateBrandDto,
+  ) {
+    // Skip user membership check — trusted service
+    return this.svc['prisma'].brand.create({
+      data: { workspaceId, name: dto.name, timezone: dto.timezone ?? 'UTC' },
+    });
+  }
+
   @Patch(':workspaceId/brands/:brandId')
   @UseGuards(JwtAuthGuard)
   updateBrand(
@@ -80,6 +99,32 @@ export class WorkspacesController {
     @Body() dto: UpdateBrandDto,
   ) {
     return this.svc.updateBrand(user.sub, workspaceId, brandId, dto);
+  }
+
+  /** Service-to-service: update brand without user JWT */
+  @Patch(':workspaceId/brands/:brandId/service')
+  @UseGuards(ServiceAuthGuard)
+  async updateBrandService(
+    @Param('workspaceId') workspaceId: string,
+    @Param('brandId') brandId: string,
+    @Body() dto: UpdateBrandDto,
+  ) {
+    return this.svc['prisma'].brand.update({
+      where: { id: brandId, workspaceId }, // Ensure it belongs to the workspace
+      data: dto,
+    });
+  }
+
+  /** Service-to-service: delete brand without user JWT */
+  @Delete(':workspaceId/brands/:brandId/service')
+  @UseGuards(ServiceAuthGuard)
+  async deleteBrandService(
+    @Param('workspaceId') workspaceId: string,
+    @Param('brandId') brandId: string,
+  ) {
+    return this.svc['prisma'].brand.delete({
+      where: { id: brandId, workspaceId },
+    });
   }
 
   @Get(':workspaceId/members')
