@@ -130,12 +130,18 @@ model Brand {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }
 
+enum WorkspaceRole {
+  owner
+  admin
+  member
+}
+
 model WorkspaceMember {
-  id          String    @id @default(cuid())
+  id          String        @id @default(cuid())
   userId      String
   workspaceId String
-  role        String    @default("owner")
-  createdAt   DateTime  @default(now())
+  role        WorkspaceRole @default(owner)
+  createdAt   DateTime      @default(now())
 
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)

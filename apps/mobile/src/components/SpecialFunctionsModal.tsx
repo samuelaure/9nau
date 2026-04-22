@@ -8,9 +8,11 @@ import {
   ScrollView,
   Switch,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { X, Zap, ChevronRight, ChevronDown } from 'lucide-react-native';
 import { COLORS } from '@/constants';
+import { workspacesService, NauBrand } from '@/services/WorkspacesService';
 
 export type SpecialAction = 'PROACTIVE_COMMENT' | 'REACTIVE_COMMENT' | 'INSPO_BASE' | 'REPLICATE' | 'REPOST';
 
@@ -27,11 +29,6 @@ interface SpecialFunctionsModalProps {
   onActionsChange: (actions: SelectedBrandAction[]) => void;
 }
 
-// Mock brands (will be fetched from API later)
-const MOCK_BRANDS = [
-  { id: 'sa-1', name: 'Samuel Aure', color: '#3b0764' },
-  { id: 'nau-1', name: 'naŭ Engine', color: '#10b981' },
-];
 
 const AVAILABLE_ACTIONS: { id: SpecialAction; name: string; description: string; phase: number }[] = [
   { id: 'PROACTIVE_COMMENT', name: 'Add Profile (Proactive)', description: 'Monitor this profile for new posts', phase: 3 },
@@ -47,7 +44,18 @@ export const SpecialFunctionsModal: React.FC<SpecialFunctionsModalProps> = ({
   selectedActions,
   onActionsChange,
 }) => {
-  const [expandedBrand, setExpandedBrand] = React.useState<string | null>(MOCK_BRANDS[0].id);
+  const [brands, setBrands] = React.useState<NauBrand[]>([]);
+  const [loadingBrands, setLoadingBrands] = React.useState(false);
+  const [expandedBrand, setExpandedBrand] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!visible) return;
+    setLoadingBrands(true);
+    workspacesService.fetchBrands().then((fetched) => {
+      setBrands(fetched);
+      if (fetched.length > 0 && !expandedBrand) setExpandedBrand(fetched[0].id);
+    }).finally(() => setLoadingBrands(false));
+  }, [visible]);
 
   const toggleAction = (brandId: string, brandName: string, actionId: SpecialAction) => {
     const existingBrand = selectedActions.find(a => a.brandId === brandId);
@@ -93,14 +101,22 @@ export const SpecialFunctionsModal: React.FC<SpecialFunctionsModalProps> = ({
 
           <ScrollView style={styles.content}>
             <Text style={styles.sectionLabel}>Apply to Brands</Text>
-            {MOCK_BRANDS.map(brand => (
+            {loadingBrands && (
+              <ActivityIndicator size="small" color={COLORS.primary} style={{ marginBottom: 16 }} />
+            )}
+            {!loadingBrands && brands.length === 0 && (
+              <Text style={[styles.sectionLabel, { textTransform: 'none', color: '#94a3b8', fontSize: 13, fontWeight: '400' }]}>
+                No brands found. Set your naŭ User ID in Settings.
+              </Text>
+            )}
+            {brands.map(brand => (
               <View key={brand.id} style={styles.brandCard}>
                 <TouchableOpacity 
                   style={styles.brandHeader}
                   onPress={() => setExpandedBrand(expandedBrand === brand.id ? null : brand.id)}
                 >
                   <View style={styles.brandInfo}>
-                    <View style={[styles.brandDot, { backgroundColor: brand.color }]} />
+                    <View style={[styles.brandDot, { backgroundColor: COLORS.primary }]} />
                     <Text style={styles.brandName}>{brand.name}</Text>
                     {selectedActions.find(a => a.brandId === brand.id) && (
                       <View style={styles.brandBadge}>

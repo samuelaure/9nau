@@ -40,6 +40,15 @@ export class WorkspacesController {
     return this.svc.getWorkspaceById(workspaceId);
   }
 
+  @Delete(':workspaceId')
+  @UseGuards(JwtAuthGuard)
+  deleteWorkspace(
+    @CurrentUser() user: { sub: string },
+    @Param('workspaceId') workspaceId: string,
+  ) {
+    return this.svc.deleteWorkspace(user.sub, workspaceId);
+  }
+
   @Patch(':workspaceId')
   @UseGuards(JwtAuthGuard)
   renameWorkspace(
@@ -106,6 +115,16 @@ export class WorkspacesController {
     @Body() dto: UpdateBrandDto,
   ) {
     return this.svc.updateBrandService(workspaceId, brandId, dto);
+  }
+
+  @Delete(':workspaceId/brands/:brandId')
+  @UseGuards(JwtAuthGuard)
+  deleteBrand(
+    @CurrentUser() user: { sub: string },
+    @Param('workspaceId') workspaceId: string,
+    @Param('brandId') brandId: string,
+  ) {
+    return this.svc.deleteBrand(user.sub, workspaceId, brandId);
   }
 
   /** Service-to-service: delete brand without user JWT */

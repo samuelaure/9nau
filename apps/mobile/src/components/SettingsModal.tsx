@@ -30,6 +30,7 @@ interface SettingsModalProps {
 export const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
   const [apifyToken, setApifyToken] = useState('');
   const [frequencyChain, setFrequencyChain] = useState('');
+  const [nauUserId, setNauUserId] = useState('');
   const [isClearing, setIsClearing] = useState(false);
   const [isRecovering, setIsRecovering] = useState(false);
   const [isBackingUp, setIsBackingUp] = useState(false);
@@ -50,6 +51,7 @@ export const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
     if (visible) {
       getSetting('apify_api_token').then((val) => setApifyToken(val || ''));
       getSetting('frequency_chain').then((val) => setFrequencyChain(val || DEFAULT_FREQUENCY_CHAIN.join(', ')));
+      getSetting('nau_user_id').then((val) => setNauUserId(val || ''));
       loadStandbyCount();
     }
   }, [visible]);
@@ -66,6 +68,7 @@ export const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
   const handleSave = async () => {
     await setSetting('apify_api_token', apifyToken);
     await setSetting('frequency_chain', frequencyChain);
+    await setSetting('nau_user_id', nauUserId);
     onClose();
   };
 
@@ -197,7 +200,25 @@ export const SettingsModal = ({ visible, onClose }: SettingsModalProps) => {
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
               <View style={styles.content}>
+                {/* naŭ Platform */}
+                <Text style={styles.label}>naŭ User ID</Text>
+                <View style={styles.inputContainer}>
+                  <Database size={18} color={COLORS.textSecondary} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Your naŭ user ID (from 9nau profile)"
+                    value={nauUserId}
+                    onChangeText={setNauUserId}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+                <Text style={styles.helpText}>
+                  Required to load your brands in Special Functions. Find it in 9naŭ → Profile.
+                </Text>
+
                 {/* API Settings */}
+                <View style={styles.sectionDivider} />
                 <Text style={styles.label}>Apify API Token</Text>
                 <View style={styles.inputContainer}>
                   <Globe size={18} color={COLORS.textSecondary} style={styles.inputIcon} />

@@ -1,3 +1,57 @@
+// ── Workspace & Brand ─────────────────────────────────────────────────────────
+
+export type WorkspaceRole = 'owner' | 'admin' | 'member'
+
+export interface Brand {
+  id: string
+  workspaceId: string
+  name: string
+  timezone: string
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface WorkspaceMember {
+  id: string
+  userId: string
+  workspaceId: string
+  role: WorkspaceRole
+  createdAt: string
+  user: {
+    id: string
+    email: string
+    name: string | null
+  }
+}
+
+export interface Workspace {
+  id: string
+  name: string
+  role: WorkspaceRole
+  brands: Brand[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateWorkspaceDto {
+  name: string
+}
+
+export interface CreateBrandDto {
+  name: string
+  timezone?: string
+}
+
+export interface UpdateBrandDto {
+  name?: string
+  timezone?: string
+  isActive?: boolean
+  workspaceId?: string
+}
+
+// ── Block ──────────────────────────────────────────────────────────────────────
+
 export interface Block {
   id: string
   type: string

@@ -1,4 +1,6 @@
-import { IsString, MinLength, IsOptional } from 'class-validator';
+import { IsString, MinLength, IsOptional, IsIn, IsBoolean } from 'class-validator';
+
+type WorkspaceRole = 'owner' | 'admin' | 'member';
 
 export class CreateWorkspaceDto {
   @IsString()
@@ -20,9 +22,9 @@ export class AddMemberDto {
   @IsString()
   email!: string;
 
-  @IsString()
   @IsOptional()
-  role?: string;
+  @IsIn(['owner', 'admin', 'member'] satisfies WorkspaceRole[])
+  role?: WorkspaceRole;
 }
 
 export class UpdateBrandDto {
@@ -37,4 +39,8 @@ export class UpdateBrandDto {
   @IsOptional()
   @IsString()
   timezone?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 }

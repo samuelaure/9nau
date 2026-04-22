@@ -75,6 +75,19 @@ export class WorkspacesService {
     });
   }
 
+  async deleteBrand(userId: string, workspaceId: string, brandId: string) {
+    await this.assertMembership(userId, workspaceId);
+    const brand = await this.prisma.brand.findUnique({ where: { id: brandId, workspaceId } });
+    if (!brand) throw new NotFoundException('Brand not found');
+    return this.prisma.brand.delete({ where: { id: brandId } });
+  }
+
+  async deleteWorkspace(userId: string, workspaceId: string) {
+    const member = await this.assertMembership(userId, workspaceId);
+    if (member.role !== 'owner') throw new ForbiddenException('Only owners can delete a workspace');
+    return this.prisma.workspace.delete({ where: { id: workspaceId } });
+  }
+
   async updateBrand(userId: string, workspaceId: string, brandId: string, dto: UpdateBrandDto) {
     // 1. Verify existence and membership in CURRENT workspace
     const brand = await this.prisma.brand.findUnique({ where: { id: brandId } });
