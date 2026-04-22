@@ -1,6 +1,8 @@
 import * as FileSystem from 'expo-file-system';
 import { executeSql, runSql } from '../db';
 import { API_CONFIG, R2_CONFIG } from '@/constants';
+import { getSetting, setSetting } from '../repositories/SettingsRepository';
+import { randomUUID } from 'expo-crypto';
 
 interface MediaItem {
   type: 'image' | 'video';
@@ -24,11 +26,26 @@ interface UploadRequestResponse {
  *   1. POST /api/media/upload-request → { uploadUrl, storageKey, cdnUrl }
  *   2. HTTP PUT localUri directly to uploadUrl (bypasses server, no RAM impact)
  *   3. Store storageKey in posts.storage_key for CDN playback
+ *
+ * Key schema: 9nau/users/{userId}/captures/{blockId}.{ext}
+ * The userId is a stable device-level UUID stored in the settings table.
  */
 class R2UploadService {
   private isRunning = false;
   private readonly BATCH_SIZE = 3;
   private readonly THROTTLE_MS = 2000;
+
+  /**
+   * Returns the stable device-level userId, creating and persisting one if absent.
+   */
+  private async getUserId(): Promise<string> {
+    const stored = await getSetting('user_id');
+    if (stored) return stored;
+
+    const generated = randomUUID();
+    await setSetting('user_id', generated);
+    return generated;
+  }
 
   async startMigration(): Promise<void> {
     if (this.isRunning) return;
@@ -104,7 +121,6 @@ class R2UploadService {
 
     await runSql("UPDATE posts SET r2_migration_status = 'uploading' WHERE id = ?", [postId]);
 
-    // storageKeyMap: { localUri -> storageKey }
     const storageKeyMap: Record<string, string> = {};
     let allSuccess = true;
 
@@ -117,8 +133,7 @@ class R2UploadService {
 
       try {
         const mimeType = item.type === 'video' ? 'video/mp4' : 'image/jpeg';
-        const prefix = `users/captures`;
-        const result = await this.uploadFile(localPath, mimeType, prefix);
+        const result = await this.uploadFile(localPath, mimeType);
         if (result) {
           storageKeyMap[localPath] = result.storageKey;
           console.log(`[R2Upload] Uploaded ${item.type} for post ${postId}: ${result.storageKey}`);
@@ -144,20 +159,21 @@ class R2UploadService {
 
   /**
    * Request a pre-signed URL from the API then PUT the file directly to R2.
+   * The API builds the canonical key: 9nau/users/{userId}/captures/{blockId}.{ext}
    */
   private async uploadFile(
     localUri: string,
     mimeType: string,
-    prefix: string,
   ): Promise<UploadRequestResponse | null> {
-    // Step 1: Get pre-signed URL from API
+    const userId = await this.getUserId();
+
     const requestRes = await fetch(`${API_CONFIG.baseUrl}/media/upload-request`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-nau-service-key': API_CONFIG.serviceKey,
       },
-      body: JSON.stringify({ mimeType, prefix }),
+      body: JSON.stringify({ mimeType, userId }),
     });
 
     if (!requestRes.ok) {
@@ -167,13 +183,10 @@ class R2UploadService {
 
     const { uploadUrl, storageKey, cdnUrl } = (await requestRes.json()) as UploadRequestResponse;
 
-    // Step 2: PUT file directly to R2 (no server relay)
     const uploadRes = await FileSystem.uploadAsync(uploadUrl, localUri, {
       httpMethod: 'PUT',
       uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
-      headers: {
-        'Content-Type': mimeType,
-      },
+      headers: { 'Content-Type': mimeType },
     });
 
     if (uploadRes.status < 200 || uploadRes.status >= 300) {
@@ -188,13 +201,9 @@ class R2UploadService {
    * Upload a single media item immediately (e.g. new capture).
    * Returns the storageKey if successful, null otherwise.
    */
-  async uploadSingleMedia(
-    localUri: string,
-    mimeType: string,
-    prefix = 'users/captures',
-  ): Promise<string | null> {
+  async uploadSingleMedia(localUri: string, mimeType: string): Promise<string | null> {
     try {
-      const result = await this.uploadFile(localUri, mimeType, prefix);
+      const result = await this.uploadFile(localUri, mimeType);
       return result?.storageKey ?? null;
     } catch (error) {
       console.error('[R2Upload] Single upload failed:', error);

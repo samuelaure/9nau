@@ -30,8 +30,7 @@
   },
   "dependencies": {
     "@9nau/types": "workspace:^",
-    "@aws-sdk/client-s3": "^3.1032.0",
-    "@aws-sdk/s3-request-presigner": "^3.1032.0",
+    "nau-storage": "^0.1.0",
     "@nestjs/bullmq": "^11.0.4",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.2",

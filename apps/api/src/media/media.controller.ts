@@ -9,12 +9,16 @@ import {
 } from '@nestjs/common';
 import { ServiceAuthGuard } from '../common/guards/service-auth.guard';
 import { StorageService } from './storage.service';
+import { nau, extFromMime } from 'nau-storage';
 import { randomUUID } from 'crypto';
 
 interface UploadRequestDto {
   mimeType: string;
-  /** Optional prefix, e.g. "users/abc123/captures" */
-  prefix?: string;
+  /**
+   * The user's ID — used to build the canonical storage key.
+   * Falls back to a generic 'anonymous' prefix if not provided.
+   */
+  userId?: string;
 }
 
 @Controller('media')
@@ -42,10 +46,10 @@ export class MediaController {
       throw new BadRequestException('mimeType is required');
     }
 
-    const ext = this.extensionFromMime(dto.mimeType);
-    const id = randomUUID();
-    const prefix = dto.prefix ?? 'uploads';
-    const storageKey = `${prefix}/${id}.${ext}`;
+    const ext = extFromMime(dto.mimeType) || 'bin';
+    const blockId = randomUUID();
+    const userId = dto.userId ?? 'anonymous';
+    const storageKey = nau.userCapture(userId, blockId, ext);
 
     this.logger.log(`Issuing upload URL for key: ${storageKey} (${dto.mimeType})`);
 
@@ -53,20 +57,5 @@ export class MediaController {
     const cdnUrl = this.storageService.getDownloadUrl(storageKey);
 
     return { uploadUrl, storageKey, cdnUrl };
-  }
-
-  private extensionFromMime(mimeType: string): string {
-    const map: Record<string, string> = {
-      'video/mp4': 'mp4',
-      'video/quicktime': 'mov',
-      'video/webm': 'webm',
-      'image/jpeg': 'jpg',
-      'image/png': 'png',
-      'image/webp': 'webp',
-      'image/gif': 'gif',
-      'audio/mp4': 'm4a',
-      'audio/mpeg': 'mp3',
-    };
-    return map[mimeType] ?? 'bin';
   }
 }
