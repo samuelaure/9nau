@@ -113,4 +113,23 @@ export class NauthenticityService {
       return null;
     }
   }
+
+  /**
+   * Syncs structural changes (like workspaceId) to nauthenticity's operational routing copy.
+   */
+  async syncBrandStructuralData(brandId: string, data: { workspaceId?: string }) {
+    this.logger.log(`Syncing structural data for brand ${brandId} to Nauthenticity`);
+    try {
+      await axios.patch(
+        `${this.baseUrl}/api/v1/service/brands/${brandId}`,
+        data,
+        { headers: this.headers },
+      );
+    } catch (error: any) {
+      const message = error.response?.data?.error || error.message;
+      this.logger.error(`Failed to sync structural data to nauthenticity: ${message}`);
+      // We don't throw here to avoid blocking the master update if the secondary sync fails,
+      // but in a more robust system we'd queue this for retry.
+    }
+  }
 }

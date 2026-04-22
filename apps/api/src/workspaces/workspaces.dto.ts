@@ -24,3 +24,17 @@ export class AddMemberDto {
   @IsOptional()
   role?: string;
 }
+
+export class UpdateBrandDto {
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  workspaceId?: string;
+
+  @IsOptional()
+  @IsString()
+  timezone?: string;
+}

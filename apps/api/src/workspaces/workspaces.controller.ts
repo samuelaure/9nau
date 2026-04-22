@@ -1,15 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
-import { CreateBrandDto, CreateWorkspaceDto, AddMemberDto } from './workspaces.dto';
+import { CreateBrandDto, CreateWorkspaceDto, AddMemberDto, UpdateBrandDto } from './workspaces.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ServiceAuthGuard } from '../common/guards/service-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { IsString } from 'class-validator';
-
-class UpdateRoleDto {
-  @IsString()
-  role!: string;
-}
 
 class RenameWorkspaceDto {
   @IsString()
@@ -74,6 +69,17 @@ export class WorkspacesController {
     @Body() dto: CreateBrandDto,
   ) {
     return this.svc.createBrand(user.sub, workspaceId, dto);
+  }
+
+  @Patch(':workspaceId/brands/:brandId')
+  @UseGuards(JwtAuthGuard)
+  updateBrand(
+    @CurrentUser() user: { sub: string },
+    @Param('workspaceId') workspaceId: string,
+    @Param('brandId') brandId: string,
+    @Body() dto: UpdateBrandDto,
+  ) {
+    return this.svc.updateBrand(user.sub, workspaceId, brandId, dto);
   }
 
   @Get(':workspaceId/members')

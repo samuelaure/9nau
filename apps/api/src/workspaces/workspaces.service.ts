@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateWorkspaceDto, CreateBrandDto, AddMemberDto } from './workspaces.dto';
+import { CreateWorkspaceDto, CreateBrandDto, AddMemberDto, UpdateBrandDto } from './workspaces.dto';
+import { NauthenticityService } from '../integrations/nauthenticity.service';
 
 @Injectable()
 export class WorkspacesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly nauthenticity: NauthenticityService,
+  ) {}
 
   async getWorkspaceById(workspaceId: string) {
     const workspace = await this.prisma.workspace.findUnique({
@@ -46,6 +50,31 @@ export class WorkspacesService {
     return this.prisma.brand.create({
       data: { workspaceId, name: dto.name, timezone: dto.timezone ?? 'UTC' },
     });
+  }
+
+  async updateBrand(userId: string, workspaceId: string, brandId: string, dto: UpdateBrandDto) {
+    // 1. Verify existence and membership in CURRENT workspace
+    const brand = await this.prisma.brand.findUnique({ where: { id: brandId } });
+    if (!brand) throw new NotFoundException('Brand not found');
+    await this.assertMembership(userId, workspaceId);
+
+    // 2. If moving workspace, verify membership in TARGET workspace
+    if (dto.workspaceId && dto.workspaceId !== workspaceId) {
+      await this.assertMembership(userId, dto.workspaceId);
+    }
+
+    // 3. Update master record in 9naŭ
+    const updated = await this.prisma.brand.update({
+      where: { id: brandId },
+      data: dto,
+    });
+
+    // 4. Sync structural changes to Nauthenticity operational copy
+    if (dto.workspaceId) {
+      await this.nauthenticity.syncBrandStructuralData(brandId, { workspaceId: dto.workspaceId });
+    }
+
+    return updated;
   }
 
   private async assertMembership(userId: string, workspaceId: string) {
