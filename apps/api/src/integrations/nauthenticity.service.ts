@@ -28,7 +28,7 @@ export class NauthenticityService {
     );
     try {
       const response = await axios.post(
-        `${this.baseUrl}/api/targets`,
+        `${this.baseUrl}/targets`,
         { brandId, usernames },
         { headers: this.headers },
       );
@@ -46,7 +46,7 @@ export class NauthenticityService {
     );
     try {
       const response = await axios.post(
-        `${this.baseUrl}/api/generate-comment`,
+        `${this.baseUrl}/generate-comment`,
         { targetUrl, brandId },
         { headers: this.headers },
       );
@@ -62,7 +62,7 @@ export class NauthenticityService {
     this.logger.log(`Fetching brands for user: ${userId}`);
     try {
       const response = await axios.get(
-        `${this.baseUrl}/api/brands`,
+        `${this.baseUrl}/brands`,
         {
           params: { userId },
           headers: this.headers
@@ -83,7 +83,7 @@ export class NauthenticityService {
   async getBrandsForWorkspace(workspaceId: string): Promise<Array<{ id: string; brandName: string; voicePrompt: string }>> {
     try {
       const response = await axios.get(
-        `${this.baseUrl}/api/service/brands`,
+        `${this.baseUrl}/service/brands`,
         {
           params: { workspaceId },
           headers: this.headers,
@@ -103,7 +103,7 @@ export class NauthenticityService {
   async getBrandDnaLight(brandId: string): Promise<{ id: string; brandName: string; voicePrompt: string; workspaceId: string } | null> {
     try {
       const response = await axios.get(
-        `${this.baseUrl}/api/brands/${brandId}/dna-light`,
+        `${this.baseUrl}/brands/${brandId}/dna-light`,
         { headers: this.headers },
       );
       return response.data;
@@ -121,12 +121,12 @@ export class NauthenticityService {
     this.logger.log(`Syncing structural data for brand ${brandId} to Nauthenticity`);
     try {
       await axios.patch(
-        `${this.baseUrl}/api/service/brands/${brandId}`,
+        `${this.baseUrl}/service/brands/${brandId}`,
         data,
         { headers: this.headers },
       );
-    } catch (error: any) {
-      const message = error.response?.data?.error || error.message;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to sync structural data to nauthenticity: ${message}`);
       // We don't throw here to avoid blocking the master update if the secondary sync fails,
       // but in a more robust system we'd queue this for retry.
