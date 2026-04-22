@@ -52,6 +52,29 @@ export class WorkspacesService {
     });
   }
 
+  async getBrandsForWorkspaceService(workspaceId: string) {
+    return this.prisma.brand.findMany({ where: { workspaceId } });
+  }
+
+  async createBrandService(workspaceId: string, dto: CreateBrandDto) {
+    return this.prisma.brand.create({
+      data: { workspaceId, name: dto.name, timezone: dto.timezone ?? 'UTC' },
+    });
+  }
+
+  async updateBrandService(workspaceId: string, brandId: string, dto: UpdateBrandDto) {
+    return this.prisma.brand.update({
+      where: { id: brandId, workspaceId },
+      data: dto,
+    });
+  }
+
+  async deleteBrandService(workspaceId: string, brandId: string) {
+    return this.prisma.brand.delete({
+      where: { id: brandId, workspaceId },
+    });
+  }
+
   async updateBrand(userId: string, workspaceId: string, brandId: string, dto: UpdateBrandDto) {
     // 1. Verify existence and membership in CURRENT workspace
     const brand = await this.prisma.brand.findUnique({ where: { id: brandId } });

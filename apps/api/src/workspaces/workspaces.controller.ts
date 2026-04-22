@@ -63,8 +63,7 @@ export class WorkspacesController {
   @Get(':workspaceId/brands/service')
   @UseGuards(ServiceAuthGuard)
   getBrandsService(@Param('workspaceId') workspaceId: string) {
-    // No user-level auth — trusted service call
-    return this.svc['prisma'].brand.findMany({ where: { workspaceId } });
+    return this.svc.getBrandsForWorkspaceService(workspaceId);
   }
 
   @Post(':workspaceId/brands')
@@ -84,10 +83,7 @@ export class WorkspacesController {
     @Param('workspaceId') workspaceId: string,
     @Body() dto: CreateBrandDto,
   ) {
-    // Skip user membership check — trusted service
-    return this.svc['prisma'].brand.create({
-      data: { workspaceId, name: dto.name, timezone: dto.timezone ?? 'UTC' },
-    });
+    return this.svc.createBrandService(workspaceId, dto);
   }
 
   @Patch(':workspaceId/brands/:brandId')
@@ -104,27 +100,22 @@ export class WorkspacesController {
   /** Service-to-service: update brand without user JWT */
   @Patch(':workspaceId/brands/:brandId/service')
   @UseGuards(ServiceAuthGuard)
-  async updateBrandService(
+  updateBrandService(
     @Param('workspaceId') workspaceId: string,
     @Param('brandId') brandId: string,
     @Body() dto: UpdateBrandDto,
   ) {
-    return this.svc['prisma'].brand.update({
-      where: { id: brandId, workspaceId }, // Ensure it belongs to the workspace
-      data: dto,
-    });
+    return this.svc.updateBrandService(workspaceId, brandId, dto);
   }
 
   /** Service-to-service: delete brand without user JWT */
   @Delete(':workspaceId/brands/:brandId/service')
   @UseGuards(ServiceAuthGuard)
-  async deleteBrandService(
+  deleteBrandService(
     @Param('workspaceId') workspaceId: string,
     @Param('brandId') brandId: string,
   ) {
-    return this.svc['prisma'].brand.delete({
-      where: { id: brandId, workspaceId },
-    });
+    return this.svc.deleteBrandService(workspaceId, brandId);
   }
 
   @Get(':workspaceId/members')
