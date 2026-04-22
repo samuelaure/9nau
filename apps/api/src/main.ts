@@ -6,8 +6,6 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api');
-
   // Enable graceful shutdown hooks (onModuleDestroy, onApplicationShutdown)
   app.enableShutdownHooks();
 

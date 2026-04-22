@@ -1,4 +1,7 @@
-const getApiBaseUrl = () => process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const getApiBaseUrl = () => {
+  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+  return base.replace(/\/$/, '')
+}
 
 const handleResponse = async (response: Response) => {
   if (!response.ok) {

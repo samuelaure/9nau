@@ -23,7 +23,7 @@ function RegisterForm() {
 
     try {
       const nauApiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.9nau.com'
-      const res = await fetch(`${nauApiUrl}/api/auth/register`, {
+      const res = await fetch(`${nauApiUrl}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),

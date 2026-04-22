@@ -12,7 +12,7 @@ import { ArrowUp } from 'lucide-react'
 import { isDateToday } from '@9nau/core'
 import { format } from 'date-fns'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.9nau.com'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.9nau.com'
 const BOT_USERNAME = process.env.NEXT_PUBLIC_BOT_USERNAME ?? 'zazu_bot'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
