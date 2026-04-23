@@ -80,22 +80,8 @@ jobs:
             # Login to GHCR to pull private images
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Write production .env from secrets
-            cat > /root/9nau/.env.tmp << 'ENVEOF'
-            DATABASE_URL=postgresql://postgres:${{ secrets.DATABASE_PASSWORD }}@9nau-postgres:5432/9nau?schema=public
-            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
-            NAU_SERVICE_KEY=${{ secrets.NAU_SERVICE_KEY }}
-            TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-            NAUTHENTICITY_URL=http://nauthenticity:3000
-            WHATSNAU_URL=http://whatsnau-app-1:3000
-            FRONTEND_URL=https://9nau.com
-            NEXT_PUBLIC_API_URL=https://api.9nau.com
-            NEXT_PUBLIC_ACCOUNTS_URL=https://accounts.9nau.com
-            NEXT_PUBLIC_APP_URL=https://app.9nau.com
-            TAG=latest
-            ENVEOF
-            sed 's/^[[:space:]]*//' /root/9nau/.env.tmp | tr -d '\r' > /root/9nau/.env
+            # Write production .env from the ENV_FILE secret (base64-encoded to survive shell interpolation)
+            echo '${{ secrets.ENV_FILE }}' | base64 -d > /root/9nau/.env
 
             cd /root/9nau
             echo "--- Server Disk Space [BEFORE SWAP] ---"
