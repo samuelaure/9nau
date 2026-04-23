@@ -12,16 +12,10 @@ async function bootstrap() {
   const httpAdapter = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
-  const origins = [
-    process.env.FRONTEND_URL,
-    process.env.NEXT_PUBLIC_APP_URL,
-    process.env.NEXT_PUBLIC_ACCOUNTS_URL,
-    'https://nauthenticity.9nau.com',
-    'https://zazu.9nau.com',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'http://localhost:5173',
-  ].filter((origin): origin is string => !!origin);
+  const origins = (process.env.ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
 
   app.enableCors({
     origin: origins,

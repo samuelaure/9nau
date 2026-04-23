@@ -31,6 +31,7 @@ services:
       - NEXT_PUBLIC_ACCOUNTS_URL=${NEXT_PUBLIC_ACCOUNTS_URL}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - FLOWNAU_URL=${FLOWNAU_URL}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
       - PORT=3000
     labels:
       - "traefik.enable=true"
