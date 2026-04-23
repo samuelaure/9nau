@@ -81,7 +81,7 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
             # Write production .env from the ENV_FILE secret (base64-encoded to survive shell interpolation)
-            echo '${{ secrets.ENV_FILE }}' | base64 -d > /root/9nau/.env
+            echo '${{ secrets.ENV_FILE }}' | base64 -d | tr -d '\r' > /root/9nau/.env
 
             cd /root/9nau
             echo "--- Server Disk Space [BEFORE SWAP] ---"
