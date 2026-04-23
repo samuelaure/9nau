@@ -94,6 +94,9 @@ jobs:
             TAG=latest docker compose pull
             TAG=latest docker compose up -d --remove-orphans
             
+            # Run database migrations
+            docker exec -w /app/apps/api 9nau-api node node_modules/prisma/build/index.js migrate deploy
+            
             # Prune old images
             docker image prune -a -f --filter "until=2h" || true
 

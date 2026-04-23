@@ -33,6 +33,8 @@ services:
       - FLOWNAU_URL=${FLOWNAU_URL}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
       - PORT=3000
+    env_file:
+      - .env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.9nau-api.rule=Host(`api.9nau.com`)"
@@ -104,6 +106,7 @@ services:
     image: postgres:16
     container_name: 9nau-postgres
     environment:
+      POSTGRES_DB: ${DATABASE_NAME:-9nau}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
     networks:
       - nau-network
