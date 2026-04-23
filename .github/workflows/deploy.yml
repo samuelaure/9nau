@@ -95,7 +95,7 @@ jobs:
             NEXT_PUBLIC_APP_URL=https://app.9nau.com
             TAG=latest
             ENVEOF
-            tr -d '\r' < /root/9nau/.env.tmp > /root/9nau/.env
+            sed 's/^[[:space:]]*//' /root/9nau/.env.tmp | tr -d '\r' > /root/9nau/.env
 
             cd /root/9nau
             echo "--- Server Disk Space [BEFORE SWAP] ---"
